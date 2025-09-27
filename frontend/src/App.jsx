@@ -4,6 +4,7 @@ import { clearToken } from "./lib/auth";           // ⬅️ import tương đ�
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import Forgot from "./pages/Forgot";
+import OAuthCallback from "./pages/OAuthCallback";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile   = lazy(() => import("./pages/Profile"));
@@ -49,19 +50,18 @@ export default function App() {
     <BrowserRouter>
       <Shell token={token} logout={logout}>
         <Suspense fallback={<div style={{padding:24}}>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Navigate to={token ? "/app/dashboard" : "/auth/login"} replace />} />
-            <Route path="/auth/login"  element={token ? <Navigate to="/app/dashboard" replace /> : <Login onAuthed={setToken} />} />
-            <Route path="/auth/forgot" element={token ? <Navigate to="/app/dashboard" replace /> : <Forgot />} />
-
-            <Route path="/app" element={<Protected authed={!!token}><AppLayout/></Protected>}>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="profile"   element={<Profile />} />
-            </Route>
-
-            <Route path="*" element={<div style={{padding:24}}>404</div>} />
-          </Routes>
+        <Routes>
+          <Route path="/" element={<Navigate to={token ? "/app/dashboard" : "/auth/login"} replace />} />
+          <Route path="/auth/login"  element={token ? <Navigate to="/app/dashboard" replace /> : <Login onAuthed={setToken} />} />
+          <Route path="/auth/forgot" element={token ? <Navigate to="/app/dashboard" replace /> : <Forgot />} />
+          <Route path="/oauth/callback" element={<OAuthCallback onAuthed={setToken} />} />
+          <Route path="/app" element={<Protected authed={!!token}><AppLayout/></Protected>}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="profile"   element={<Profile />} />
+          </Route>
+          <Route path="*" element={<div style={{padding:24}}>404</div>} />
+        </Routes>
         </Suspense>
       </Shell>
     </BrowserRouter>

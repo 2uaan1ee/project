@@ -3,9 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "start:backend": "npm run start --prefix backend",
-    "start:frontend": "npm run preview --prefix frontend"
+    "dev:be": "npm --prefix backend run dev",
+    "dev:fe": "npm --prefix frontend run dev",
+    "dev": "concurrently -n BE,FE -c magenta,cyan \"npm:dev:be\" \"npm:dev:fe\"",
+
+    "sev": "npm run dev",       
+
+    "build:fe": "npm --prefix frontend run build",
+    "start:backend": "npm --prefix backend run start",
+    "start:frontend": "npm --prefix frontend run preview",
+
+    "start": "concurrently -n BE,FE -c magenta,cyan \"npm:start:backend\" \"npm:start:frontend\""
   },
   "devDependencies": {
     "concurrently": "^9.0.0",

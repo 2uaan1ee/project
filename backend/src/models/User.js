@@ -1,13 +1,23 @@
+// src/models/User.js
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, trim: true },
-  email: { type: String, unique: true, required: true, lowercase: true, index: true },
-  passwordHash: { type: String, required: true },
+const UserSchema = new mongoose.Schema(
+  {
+    email:        { type: String, unique: true, index: true, required: true },
+    name:         { type: String },
+    role:         { type: String, default: "user" },
+    passwordHash: { type: String }, // trống nếu đăng nhập Google
+    googleId:     { type: String },
 
-  // quên mật khẩu
-  resetTokenHash: String,
-  resetTokenExp: Date,
-}, { timestamps: true, collection: "user_account", });
+    resetTokenHash: { type: String },
+    resetTokenExp:  { type: Date },
+  },
+  {
+    timestamps: true,
+    collection: "user_account", // ⬅️ lưu đúng collection này
+  }
+);
 
-export default mongoose.model("User", userSchema);
+// Dùng model đã tồn tại nếu có (tránh lỗi khi hot-reload)
+export default mongoose.models.User
+  || mongoose.model("User", UserSchema, "user_account"); // ⬅️ tham số 3 củng cố tên collection

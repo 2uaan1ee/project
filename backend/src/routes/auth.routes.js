@@ -1,13 +1,41 @@
 import { Router } from "express";
-import { login, forgot, resetPassword } from "../controllers/auth.controller.js";
-import { verifyJwt } from "../middleware/auth.js";
+import passport from "passport";
+import { signAccess, signRefresh, setRefreshCookie } from "../middleware/auth.js";
 const router = Router();
-router.get("/profile", verifyJwt, (req, res) => {
-    // req.user có chứa payload từ token
-    res.json({ message: "Welcome!", user: req.user });
-    });
-router.post("/login", login);         // POST /api/auth/login
-router.post("/forgot", forgot);       // POST /api/auth/forgot
-router.post("/reset", resetPassword); // POST /api/auth/reset
+const CLIENT = process.env.CLIENT_URL || "http://localhost:5173";
+
+// 🚀 Kick off OAuth with hints
+router.get("/google", (req, res, next) => {
+  // Ưu tiên hd từ query (vd: gm.uit.edu.vn), fallback domain chính (uit.edu.vn)
+  const hd = (req.query.hd || "uit.edu.vn").toLowerCase();
+  const login_hint = (req.query.login_hint || "").toLowerCase();
+
+  // Lưu ý: passport-google-oauth20 sẽ forward các authParams như hd, loginHint, prompt...
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    prompt: "select_account",
+    hd,                               // ✅ gợi ý domain Google Workspace
+    loginHint: login_hint || undefined, // ✅ gợi ý email nếu có
+  })(req, res, next);
+});
+
+// ✅ Custom callback để phát JWT + set refresh cookie, đồng thời hiện lý do fail nếu có
+router.get("/google/callback", (req, res, next) => {
+  console.log("HIT /api/auth/google/callback");
+  passport.authenticate("google", { session: false }, (err, user, info) => {
+    if (err) {
+      console.error("Passport error:", err);
+      return res.redirect(`${CLIENT}/auth/login?oauth=failed&reason=server_error`);
+    }
+    if (!user) {
+      const reason = encodeURIComponent(info?.message || "unknown");
+      return res.redirect(`${CLIENT}/auth/login?oauth=failed&reason=${reason}`);
+    }
+    const accessToken  = signAccess({ sub: String(user._id), email: user.email, role: user.role || "user" });
+    const refreshToken = signRefresh({ sub: String(user._id) });
+    setRefreshCookie(res, refreshToken);
+    return res.redirect(`${CLIENT}/oauth/callback#token=${accessToken}`);
+  })(req, res, next);
+});
 
 export default router;

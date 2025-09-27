@@ -16,7 +16,8 @@ export default function Login({ onAuthed }) {
   const [msg, setMsg] = useState("");
 
   const submit = async (e) => {
-    e.preventDefault(); if (loading) return;
+    e.preventDefault();
+    if (loading) return;
     setMsg(""); setLoading(true);
     try {
       const res = await fetch("/api/auth/login", {
@@ -24,23 +25,31 @@ export default function Login({ onAuthed }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Đăng nhập thất bại");
+  
+      // ✅ An toàn: nếu không phải JSON thì đọc text
+      const ct = res.headers.get("content-type") || "";
+      const data = ct.includes("application/json") ? await res.json() : { message: await res.text() };
+  
+      if (!res.ok) {
+        let m = data?.message || "";
+        // Nếu BE trả HTML/text hoặc rỗng → gán thông điệp mong muốn
+        if (!m || /<!DOCTYPE|<html/i.test(m)) {
+          m = "Tài khoản email không được phép. Chỉ chấp nhận: uit.edu.vn, gm.uit.edu.vn";
+        }
+        throw new Error(m);
+      }
   
       const token = data.token || data.access;
       if (!token) throw new Error("Không có token");
-  
-      // ✅ Lưu JWT
-      localStorage.setItem("token", token);
-  
-      onAuthed?.(token); // nếu bạn vẫn muốn cập nhật state App
+      onAuthed?.(token);
       nav("/app/dashboard", { replace: true });
-    } catch (e) {
-      setMsg(e.message);
+    } catch (err) {
+      setMsg(err.message || "Có lỗi xảy ra");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="auth__root">
@@ -103,11 +112,16 @@ export default function Login({ onAuthed }) {
             </button>
 
             {/* nút đăng nhập google */}
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn btn--google"
-              onClick={()=>window.location.href="/api/auth/google"}
-              style={{ marginTop: "10px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}
+              onClick={() => {
+                const hd = "gm.uit.edu.vn"; // ưu tiên gm; nếu muốn thử domain gốc thì đổi "uit.edu.vn"
+                const qs = new URLSearchParams();
+                if (email) qs.set("login_hint", email);
+                qs.set("hd", hd);
+                window.location.href = `/api/auth/google?${qs.toString()}`;
+              }}
             >
               <img className="btn__glogo" src="/img/google-logo.png" alt="Google Logo" />
               Đăng nhập bằng Google
