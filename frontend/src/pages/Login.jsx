@@ -20,27 +20,45 @@ export default function Login({ onAuthed }) {
     if (loading) return;
     setMsg(""); setLoading(true);
     try {
+      const payload = {
+        email: email.trim().toLowerCase(),  // ✅
+        password
+      };
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(payload)
       });
   
       // ✅ An toàn: nếu không phải JSON thì đọc text
-      const ct = res.headers.get("content-type") || "";
-      const data = ct.includes("application/json") ? await res.json() : { message: await res.text() };
-  
+      const ct  = res.headers.get("content-type") || "";
+      const raw = await res.text();
+      let data  = null;
+      if (ct.includes("application/json")) {
+        try { data = JSON.parse(raw); } catch {;}
+      }
+      
       if (!res.ok) {
         let m = data?.message || "";
-        // Nếu BE trả HTML/text hoặc rỗng → gán thông điệp mong muốn
-        if (!m || /<!DOCTYPE|<html/i.test(m)) {
+      
+        // map theo status code
+        if (res.status === 403 && !m) {
           m = "Tài khoản email không được phép. Chỉ chấp nhận: uit.edu.vn, gm.uit.edu.vn";
+        } else if (res.status === 401 && !m) {
+          m = "Mật khẩu không đúng";
+        } else if (res.status === 404 && !m) {
+          m = "Không tìm thấy người dùng";
+        } else if (!m && /<!DOCTYPE|<html/i.test(raw)) {
+          m = "Phản hồi không hợp lệ từ máy chủ (HTML). Kiểm tra proxy API.";
+        } else if (!m) {
+          m = "Đăng nhập thất bại";
         }
+      
         throw new Error(m);
       }
-  
-      const token = data.token || data.access;
-      if (!token) throw new Error("Không có token");
+      
+      const token = data?.token || data?.access;
+      if (!token) throw new Error("Không nhận được token");
       onAuthed?.(token);
       nav("/app/dashboard", { replace: true });
     } catch (err) {

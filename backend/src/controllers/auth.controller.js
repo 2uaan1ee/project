@@ -1,3 +1,5 @@
+// src/controllers/auth.controller.js
+console.log("[auth.controller] loaded from:", import.meta.url);
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import fetch from "node-fetch";
@@ -14,82 +16,41 @@ import { sendMail } from "../utils/sendMail.js";
 const ok  = (res, data = {}) => res.json(data);
 const bad = (res, code, message) => res.status(code).json({ message });
 
-// ========= Policies =========
-const pwPolicy = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{9,}$/;
-
-// danh sách miền cho phép, đọc từ ENV hoặc dùng mặc định
+// ========= Helpers & Constants =========
+const DEFAULT_DOMAINS = "uit.edu.vn,gm.uit.edu.vn";
 function getAllowedDomains() {
-  return (process.env.ALLOWED_EMAIL_DOMAINS || "uit.edu.vn,gm.uit.edu.vn")
-    .toLowerCase()
-    .split(",")
-    .map(s => s.trim())
-    .filter(Boolean);
+  return (process.env.ALLOWED_EMAIL_DOMAINS || DEFAULT_DOMAINS)
+    .toLowerCase().split(",").map(s=>s.trim()).filter(Boolean);
 }
-function isEmailAllowed(email) {
-  const e = String(email || "").toLowerCase();
-  const allowed = getAllowedDomains();
-  return allowed.length ? allowed.some(d => e.endsWith(`@${d}`)) : true;
-}
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const normEmail = v => String(v ?? "").trim().toLowerCase();
+const isEmailAllowed = (email, domains = getAllowedDomains()) =>
+  EMAIL_RE.test(normEmail(email)) && domains.some(d => normEmail(email).endsWith(`@${d}`));
 
-// reCAPTCHA (bật khi có SECRET)
-async function verifyRecaptcha(token) {
-  const secret =
-    process.env.RECAPTCHA_SECRET ||
-    process.env.SECRET_KEY ||            // hỗ trợ cả tên biến cũ
-    "";
-
-  if (!secret) return true;              // không cấu hình -> bỏ qua (dev)
-  if (!token)  return false;
-
-  try {
-    const resp = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`,
-      { method: "POST" }
-    );
-    const data = await resp.json();
-    return !!data.success;
-  } catch (e) {
-    console.error("reCAPTCHA verify error:", e);
-    return false;
-  }
-}
-
-// ===== LOGIN (local) =====
 export async function login(req, res) {
-  const { email, password /*, recaptchaToken*/ } = req.body || {};
-  if (!email || !password) return bad(res, 400, "Thiếu email hoặc mật khẩu");
+  const e = normEmail(req.body?.email);
+  const { password } = req.body || {};
+  console.log("[login] email =", JSON.stringify(e));
+  console.log("[login] allowed =", getAllowedDomains());
 
-  // ✅ Kiểm tra miền TRƯỚC khi kiểm tra mật khẩu
-  if (!isEmailAllowed(email)) {
-    return bad(
-      res,
-      403,
-      "Tài khoản email không được phép. Chỉ chấp nhận: " + getAllowedDomains().join(", ")
-    );
+  if (!e || !password) return res.status(400).json({ message: "Thiếu email hoặc mật khẩu" });
+  if (!isEmailAllowed(e)) {
+    return res.status(403).json({ message: "Tài khoản email không được phép. Chỉ chấp nhận: " + getAllowedDomains().join(", ") });
   }
 
-  // Kiểm tra chính sách mật khẩu
-  if (!pwPolicy.test(password)) {
-    return bad(res, 400, "Mật khẩu ≥ 9 ký tự, có chữ hoa, chữ thường và ký tự đặc biệt");
-  }
-
-  // Nếu muốn bắt buộc reCAPTCHA cho login, mở comment:
-  // const captchaOk = await verifyRecaptcha(recaptchaToken);
-  // if (!captchaOk) return bad(res, 400, "Xác minh reCAPTCHA thất bại");
-
-  const user = await User.findOne({ email });
-  if (!user) return bad(res, 404, "Không tìm thấy người dùng");
+  const user = await User.findOne({ email: e });
+  if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
 
   const match = await bcrypt.compare(String(password), user.passwordHash || "");
-  if (!match) return bad(res, 401, "Mật khẩu không đúng");
+  if (!match) return res.status(401).json({ message: "Mật khẩu không đúng" });
 
   const payload = { sub: String(user._id), email: user.email, role: user.role || "user" };
   const accessToken  = signAccess(payload);
   const refreshToken = signRefresh({ sub: payload.sub });
-
   setRefreshCookie(res, refreshToken);
-  return ok(res, { token: accessToken });
+  return res.json({ token: accessToken });
 }
+
 
 // ===== REFRESH =====
 export async function refreshToken(req, res) {

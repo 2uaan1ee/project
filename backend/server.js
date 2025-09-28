@@ -1,3 +1,4 @@
+// src/server.js
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -28,7 +29,11 @@ initGoogleAuth();
 
 // Routes
 app.get("/", (_req, res) => res.json({ ok: true }));
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", (req, _res, next) => {
+  console.log(`[AUTH] ${req.method} ${req.originalUrl}`);
+  next();
+}, authRoutes);
+
 
 // Start server sau khi kết nối DB
 const port = process.env.PORT || 5000;
