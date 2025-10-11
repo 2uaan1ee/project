@@ -13,6 +13,7 @@ function Protected({ authed, children }) {
   return authed ? children : <Navigate to="/auth/login" replace />;
 }
 
+
 function Shell({ token, logout, children }) {
   const { pathname } = useLocation();
   const nav = useNavigate();

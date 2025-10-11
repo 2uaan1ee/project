@@ -6,13 +6,10 @@
     "dev:be": "npm --prefix backend run dev",
     "dev:fe": "npm --prefix frontend run dev",
     "dev": "concurrently -n BE,FE -c magenta,cyan \"npm:dev:be\" \"npm:dev:fe\"",
-
-    "sev": "npm run dev",       
-
+    "sev": "npm run dev",
     "build:fe": "npm --prefix frontend run build",
     "start:backend": "npm --prefix backend run start",
     "start:frontend": "npm --prefix frontend run preview",
-
     "start": "concurrently -n BE,FE -c magenta,cyan \"npm:start:backend\" \"npm:start:frontend\""
   },
   "devDependencies": {
@@ -26,6 +23,7 @@
     "ansi-styles": "^4.3.0",
     "bcryptjs": "^3.0.2",
     "chalk": "^4.1.2",
+    "cheerio": "^1.1.2",
     "cliui": "^8.0.1",
     "color-convert": "^2.0.1",
     "color-name": "^1.1.4",
