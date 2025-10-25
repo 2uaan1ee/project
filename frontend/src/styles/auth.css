@@ -1,3 +1,4 @@
+/* src/styles/auth.css */
 :root {
   --bg: #f7f8fa;
   --text: #0f172a;
@@ -20,10 +21,10 @@ body {
   margin: 0;
   color: var(--text);
   font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
-  
-  background: url('/img/cover_page_uit.png') no-repeat center center fixed;
-  background-size: cover; /* ✅ thêm dòng này để không bị lặp và phủ toàn khung */
+  background: var(--bg);
 }
+
+/* ✅ Áp dụng nền UIT chỉ cho trang đăng nhập / quên mật khẩu */
 
 
 /* === Layout tổng === */
@@ -31,6 +32,8 @@ body {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background: url('/img/cover_page_uit.png') no-repeat center center fixed;
+  background-size: cover;
 }
 
 /* === LEFT === */
