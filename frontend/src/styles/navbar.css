@@ -9,11 +9,11 @@
     --radius: 12px;
   }
   
-  /* Navbar layout */
+  /* ===== Navbar ===== */
   .navbar {
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 1000; /* ✅ đảm bảo trên mọi thứ */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -24,49 +24,46 @@
     box-shadow: var(--shadow);
   }
   
-  /* Left logo + text */
+  /* Logo */
   .nav-left {
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  
   .logo {
     width: 38px;
     height: 38px;
   }
-  
   .nav-left h1 {
     font-size: 18px;
     font-weight: 700;
     color: var(--primary);
   }
   
-  /* Horizontal menu */
+  /* Menu ngang */
   .nav-menu {
     display: flex;
     align-items: center;
     gap: 24px;
   }
   
-  /* Main nav items */
+  /* Item */
   .nav-item {
     position: relative;
     font-weight: 500;
     color: var(--text);
     cursor: pointer;
     transition: color 0.2s;
-    user-select: none;
+    padding-bottom: 12px; /* vùng đệm hover */
   }
-  
   .nav-item:hover {
     color: var(--primary);
   }
   
-  /* Dropdown */
+  /* Dropdown menu con */
   .dropdown {
     position: absolute;
-    top: 48px;
+    top: calc(100% + 6px);
     left: 0;
     background: #fff;
     border: 1px solid var(--border);
@@ -76,21 +73,67 @@
     flex-direction: column;
     width: 260px;
     animation: fadeIn 0.25s ease;
+    z-index: 999;
   }
-  
   .dropdown div {
     padding: 10px 14px;
     color: var(--text);
     font-size: 14px;
-    transition: background 0.2s, color 0.2s;
     cursor: pointer;
+    transition: background 0.2s, color 0.2s;
   }
-  
   .dropdown div:hover {
     background: var(--primary-light);
     color: var(--primary);
   }
   
+  /* ===== Avatar bên phải ===== */
+  .avatar {
+    position: relative;
+    cursor: pointer;
+  }
+  .avatar img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  
+  /* Dropdown user */
+  .user-dropdown {
+    position: absolute;
+    top: 52px;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    padding: 6px 0;
+    z-index: 1001; /* ✅ nằm trên cả navbar */
+  }
+  .user-dropdown button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .user-dropdown button:hover {
+    background: var(--primary-light);
+  }
+  .user-dropdown .logout {
+    color: #dc2626;
+    font-weight: 600;
+  }
+  
+  /* Animation */
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -102,15 +145,10 @@
     }
   }
   
-  /* Responsive (ẩn menu khi nhỏ) */
+  /* Responsive */
   @media (max-width: 768px) {
     .nav-menu {
       display: none;
-    }
-  
-    .navbar {
-      justify-content: space-between;
-      padding: 0 16px;
     }
   }
   

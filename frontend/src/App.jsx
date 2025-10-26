@@ -6,7 +6,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import React, { useEffect, useState, lazy, Suspense } from "react";
-import { clearToken } from "./lib/auth";
 import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
@@ -27,11 +26,6 @@ export default function App() {
     token ? localStorage.setItem("token", token) : localStorage.removeItem("token");
   }, [token]);
 
-  const logout = () => {
-    clearToken();
-    setToken("");
-  };
-
   return (
     <BrowserRouter>
       <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>
@@ -44,7 +38,7 @@ export default function App() {
           </Route>
 
           <Route path="/oauth/callback" element={<OAuthCallback onAuthed={setToken} />} />
-
+          
           <Route
             path="/app/*"
             element={

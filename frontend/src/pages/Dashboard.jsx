@@ -51,6 +51,19 @@ export default function Dashboard() {
       <main className="dashboard-content">
         <header className="topbar">
           <h1>📰 Tin tức & Khóa học</h1>
+
+          <div className="avatar" onClick={() => setMenuOpen(v => !v)}>
+            <img src="/img/avatar_me.jpg" alt="user" />
+            {menuOpen && (
+              <div className="user-dropdown">
+                <button>⚙️ Cài đặt</button>
+                <button>🔑 Đổi mật khẩu</button>
+                <button className="logout" onClick={handleLogout}>
+                  🚪 Đăng xuất
+                </button>
+              </div>
+            )}
+          </div>
         </header>
 
         <section className="grid">

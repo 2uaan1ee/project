@@ -1,6 +1,7 @@
 // src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Login({ onAuthed }) {
   const nav = useNavigate();
@@ -9,6 +10,10 @@ export default function Login({ onAuthed }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    localStorage.removeItem("token");
+  }, []);
 
   // 🧩 Hàm parse lỗi từ server hoặc HTTP
   const parseError = (res, data, raw) => {
