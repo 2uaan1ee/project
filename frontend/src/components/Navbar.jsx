@@ -1,16 +1,11 @@
+// src/components/Navbar.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/navbar.css";
 
 export default function Navbar() {
   const nav = useNavigate();
-  const [openMenu, setOpenMenu] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-
-  const handleNavigate = (path) => {
-    setOpenMenu(null);
-    nav(path);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -18,69 +13,19 @@ export default function Navbar() {
   };
 
   return (
-    <header className="navbar">
+    <header className="navbar clean-navbar">
       <div className="nav-left">
         <img src="/img/logo_uit.svg" alt="logo" className="logo" />
-        <h1>Trường Đại học Công nghệ Thông tin</h1>
+        <h1 className="title">Trường Đại học Công nghệ Thông tin</h1>
       </div>
 
-      <nav className="nav-menu">
-        <div
-          className="nav-item"
-          onMouseEnter={() => setOpenMenu("students")}
-          onMouseLeave={() => setOpenMenu(null)}
-        >
-          👨‍🎓 Quản lý sinh viên
-          {openMenu === "students" && (
-            <div
-              className="dropdown"
-              onMouseEnter={() => setOpenMenu("students")}
-              onMouseLeave={() => setOpenMenu(null)}
-            >
-              <div onClick={() => handleNavigate("/students")}>
-                📄 Lập hồ sơ sinh viên (BM1)
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div
-          className="nav-item"
-          onMouseEnter={() => setOpenMenu("courses")}
-          onMouseLeave={() => setOpenMenu(null)}
-        >
-          📚 Quản lý môn học
-          {openMenu === "courses" && (
-            <div
-              className="dropdown"
-              onMouseEnter={() => setOpenMenu("courses")}
-              onMouseLeave={() => setOpenMenu(null)}
-            >
-              <div onClick={() => handleNavigate("/courses")}>
-                📘 Nhập danh sách môn học (BM2)
-              </div>
-              <div onClick={() => handleNavigate("/courses/program")}>
-                📕 Nhập chương trình học (BM3)
-              </div>
-              <div onClick={() => handleNavigate("/courses/open")}>
-                📗 Nhập môn học mở trong học kỳ (BM4)
-              </div>
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* ✅ Avatar nằm bên phải navbar */}
+      {/* Avatar user */}
       <div className="avatar" onClick={() => setUserMenuOpen(!userMenuOpen)}>
-        <img src="/img/avatar_me.jpg" alt="user" />
+        <img src="/img/anh_avt_1-1.jpg" alt="user" />
         {userMenuOpen && (
           <div className="user-dropdown">
-            <button onClick={() => handleNavigate("/settings/profile")}>
-              👤 Hồ sơ cá nhân
-            </button>
-            <button onClick={() => handleNavigate("/settings/password")}>
-              🔑 Đổi mật khẩu
-            </button>
+            <button onClick={() => nav("/settings/profile")}>👤 Hồ sơ cá nhân</button>
+            <button onClick={() => nav("/settings/password")}>🔑 Đổi mật khẩu</button>
             <button className="logout" onClick={handleLogout}>
               🚪 Đăng xuất
             </button>

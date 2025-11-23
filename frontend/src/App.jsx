@@ -11,6 +11,8 @@ import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Forgot from "./pages/Forgot";
 import OAuthCallback from "./pages/OAuthCallback";
+import StudentList from "./components/StudentList.jsx";
+import StudentProfile from "./components/StudentProfile.jsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile   = lazy(() => import("./pages/Profile"));
@@ -50,6 +52,8 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="students" element={<StudentList />} />
+            <Route path="students/:student_id" element={<StudentProfile />} />
           </Route>
 
           <Route path="*" element={<div style={{ padding: 24 }}>404 - Not Found</div>} />

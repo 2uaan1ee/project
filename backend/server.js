@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import passport from "passport";
 
 import authRoutes from "./src/routes/auth.routes.js";
+import studentRoutes from "./src/routes/students.routes.js";
 import { connectDB } from "./src/config/db.js";
 import { initGoogleAuth } from "./src/config/googleAuth.js";
 
@@ -33,10 +34,14 @@ app.use("/api/auth", (req, _res, next) => {
   console.log(`[AUTH] ${req.method} ${req.originalUrl}`);
   next();
 }, authRoutes);
+app.use("/api/students", (req, _res, next) => {
+  console.log(`[STUDENTS] ${req.method} ${req.originalUrl}`);
+  next();
+}, studentRoutes);
 
 
 // Start server sau khi kết nối DB
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 connectDB()
   .then(() => {
