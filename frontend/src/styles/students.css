@@ -225,6 +225,19 @@
   text-decoration: none;
   font-weight: 600;
   margin-bottom: 12px;
+  font-size: 16px !important;
+
+  border: none !important;
+  outline: none !important;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+.profile-back:focus,
+.profile-back:active {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .profile-toolbar {
