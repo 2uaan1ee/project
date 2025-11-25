@@ -1,16 +1,21 @@
-// backend/src/models/subject.model.js
 import mongoose from "mongoose";
 
-const subjectSchema = new mongoose.Schema(
+const SubjectSchema = new mongoose.Schema(
   {
-    code: { type: String, required: true, unique: true }, // mã môn
-    name: { type: String, required: true },               // tên môn
-    type: { type: String, enum: ["LT", "TH"], required: true }, // loại môn
-    periods: { type: Number, required: true, min: 1 },    // số tiết
-    credits: { type: Number, required: true },            // số tín chỉ = periods / (15 hoặc 30)
+    subject_id: String,
+    subject_name: String,
+    subjectEL_name: String,
+    faculty_id: String,
+    subject_type: String,
+    theory_credits: Number,
+    practice_credits: Number,
+    prerequisite_id: [String],
+    equivalent_id: [String],
+    previous_id: [String],
+    old_id: [String],
   },
-  { timestamps: true }
+  { timestamps: true, collection: "subject" }
 );
 
-const Subject = mongoose.model("Subject", subjectSchema, "subjects");
-export default Subject;
+export default mongoose.models.Subject ||
+  mongoose.model("Subject", SubjectSchema);

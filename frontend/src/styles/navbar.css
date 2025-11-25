@@ -1,154 +1,265 @@
 :root {
-    --primary: #4f46e5;
-    --primary-light: #eef2ff;
-    --text: #0f172a;
-    --muted: #6b7280;
-    --border: #e5e7eb;
-    --bg: #ffffff;
-    --shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-    --radius: 12px;
+  --primary: #4f46e5;
+  --primary-light: #eef2ff;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #ffffff;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --radius: 12px;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* ✅ đảm bảo trên mọi thứ */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  padding: 0 32px;
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* Logo */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+}
+
+.nav-left h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.nav-clickable {
+  cursor: pointer;
+}
+
+/* Bố cục user info */
+.nav-user-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Tên + email */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #111827;
+  font-size: 15px;
+}
+
+.user-email {
+  font-size: 13px;
+  color: #374151;
+}
+
+/* Avatar */
+.avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.nav-clickable {
+  cursor: pointer;
+}
+
+.nav-user-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.user-email {
+  font-size: 13px;
+  color: #555;
+}
+
+/* FIX avatar hiển thị */
+.avatar-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  z-index: 20;
+}
+
+.user-dropdown button {
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.user-dropdown button.logout {
+  color: red;
+}
+
+
+/* Menu ngang */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Item */
+.nav-item {
+  position: relative;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding-bottom: 12px;
+  /* vùng đệm hover */
+}
+
+.nav-item:hover {
+  color: var(--primary);
+}
+
+/* Dropdown menu con */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  animation: fadeIn 0.25s ease;
+  z-index: 999;
+}
+
+.dropdown div {
+  padding: 10px 14px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown div:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* ===== Avatar bên phải ===== */
+.avatar {
+  position: relative;
+  cursor: pointer;
+}
+
+
+/* Dropdown user */
+.user-dropdown {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+  padding: 6px 0;
+  z-index: 1001;
+  /* ✅ nằm trên cả navbar */
+}
+
+.user-dropdown button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.user-dropdown button:hover {
+  background: var(--primary-light);
+}
+
+.user-dropdown .logout {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
   }
-  
-  /* ===== Navbar ===== */
-  .navbar {
-    position: sticky;
-    top: 0;
-    z-index: 1000; /* ✅ đảm bảo trên mọi thứ */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--bg);
-    padding: 0 32px;
-    height: 64px;
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow);
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* Logo */
-  .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .logo {
-    width: 38px;
-    height: 38px;
-  }
-  .nav-left h1 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--primary);
-  }
-  
-  /* Menu ngang */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .nav-menu {
-    display: flex;
-    align-items: center;
-    gap: 24px;
+    display: none;
   }
-  
-  /* Item */
-  .nav-item {
-    position: relative;
-    font-weight: 500;
-    color: var(--text);
-    cursor: pointer;
-    transition: color 0.2s;
-    padding-bottom: 12px; /* vùng đệm hover */
-  }
-  .nav-item:hover {
-    color: var(--primary);
-  }
-  
-  /* Dropdown menu con */
-  .dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    width: 260px;
-    animation: fadeIn 0.25s ease;
-    z-index: 999;
-  }
-  .dropdown div {
-    padding: 10px 14px;
-    color: var(--text);
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-  }
-  .dropdown div:hover {
-    background: var(--primary-light);
-    color: var(--primary);
-  }
-  
-  /* ===== Avatar bên phải ===== */
-  .avatar {
-    position: relative;
-    cursor: pointer;
-  }
-  .avatar img {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--border);
-    box-shadow: var(--shadow);
-  }
-  
-  /* Dropdown user */
-  .user-dropdown {
-    position: absolute;
-    top: 52px;
-    right: 0;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    width: 180px;
-    padding: 6px 0;
-    z-index: 1001; /* ✅ nằm trên cả navbar */
-  }
-  .user-dropdown button {
-    background: none;
-    border: none;
-    text-align: left;
-    padding: 10px 16px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .user-dropdown button:hover {
-    background: var(--primary-light);
-  }
-  .user-dropdown .logout {
-    color: #dc2626;
-    font-weight: 600;
-  }
-  
-  /* Animation */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-6px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .nav-menu {
-      display: none;
-    }
-  }
-  
+}

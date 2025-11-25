@@ -1,46 +1,58 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+﻿import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { authFetch } from "../lib/auth";
 import "../styles/students.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+// Support both absolute (http://...) and relative (/api) API bases
+const API_BASE = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
+
+function buildStudentUrl(id) {
+  if (!id) return null;
+  if (API_BASE.startsWith("http")) return `${API_BASE}/students/${id}`;
+  const prefix = API_BASE.startsWith("/") ? "" : "/";
+  return `${prefix}${API_BASE}/students/${id}`;
+}
 
 export default function StudentProfile() {
   const { student_id } = useParams();
-  const nav = useNavigate();
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   useEffect(() => {
     const fetchStudent = async () => {
       setLoading(true);
+      setError("");
       try {
-        const res = await fetch(`${API_BASE}/students/${student_id}`);
+        const url = buildStudentUrl(student_id);
+        const res = await authFetch(url);
         if (!res.ok) throw new Error("Student not found");
         const data = await res.json();
         setStudent(data);
       } catch (err) {
         console.error("[student-profile] fetch error", err);
-        nav("/app/students", { replace: true });
+        setError("Khong tai duoc ho so sinh vien.");
       } finally {
         setLoading(false);
       }
     };
     fetchStudent();
-  }, [student_id, nav]);
+  }, [student_id]);
 
-  if (loading) return <div className="student-page">Đang tải hồ sơ...</div>;
-  if (!student) return <div className="student-page">Không tìm thấy sinh viên.</div>;
+  if (loading) return <div className="student-page">Dang tai ho so...</div>;
+  if (error) return <div className="student-page" style={{ color: "#b91c1c" }}>{error}</div>;
+  if (!student) return <div className="student-page">Khong tim thay sinh vien.</div>;
 
   const { contact = {}, address = {}, identity = {}, family = {} } = student;
 
   return (
     <div className="student-page">
       <div className="profile-toolbar">
-        <Link className="profile-back" to="/app/students">← Quay về danh sách</Link>
+        <Link className="profile-back" to="/app/students">
+          ← Quay về danh sách
+        </Link>
         <button className="print-btn" type="button" onClick={handlePrint}>
           🖨️ In lý lịch
         </button>
@@ -48,27 +60,27 @@ export default function StudentProfile() {
 
       <div className="profile-hero student-card" style={{ padding: 0, border: "none", boxShadow: "none" }}>
         <div className="profile-hero__block">
-          <span className="profile-hero__label">Mã sinh viên</span>
+          <span className="profile-hero__label">Mã số sinh viên (MSSV)</span>
           <span className="profile-hero__value">{student.student_id}</span>
           <div className="profile-meta">
-            <span className="meta-pill">CCCD: {identity.identity_number || "—"}</span>
-            <span className="meta-pill">Lớp sinh hoạt: {student.class_id || "—"}</span>
-            <span className="meta-pill">Chương trình: {student.program_type || student.program_id || "—"}</span>
+            <span className="meta-pill">CCCD: {identity.identity_number || ""}</span>
+            <span className="meta-pill">Lớp sinh hoạt: {student.class_id || ""}</span>
+            <span className="meta-pill">Chương trình đào tạo: {student.program_type || student.program_id || ""}</span>
           </div>
         </div>
 
         <div className="profile-hero__block">
           <span className="profile-hero__label">Họ và tên</span>
           <span className="profile-hero__value">{student.name}</span>
-          <span>Ngày sinh: {student.birth_date || "—"}</span>
-          <span>Nơi sinh: {student.birthplace || "—"}</span>
+          <span>Ngày sinh: {student.birth_date || ""}</span>
+          <span>Nơi sinh: {student.birthplace || ""}</span>
         </div>
 
         <div className="profile-hero__block">
           <span className="profile-hero__label">Ngành học</span>
-          <span className="profile-hero__value">{student.major_id || "—"}</span>
+          <span className="profile-hero__value">{student.major_id || ""}</span>
           <span>Giới tính: {student.gender === "Male" ? "Nam" : "Nữ"}</span>
-          <span>Đào tạo: {student.program_type || "—"}</span>
+          <span>Đào tạo: {student.program_type || ""}</span>
         </div>
       </div>
 
@@ -98,8 +110,8 @@ export default function StudentProfile() {
           <Field label="Dân tộc" value={identity.ethnicity} />
           <Field label="Tôn giáo" value={identity.religion} />
           <Field label="Thành phần gia đình" value={identity.origin} />
-          <Field label="Ngày vào Đoàn" value={identity.union_join_date || "—"} />
-          <Field label="Ngày vào Đảng" value={identity.party_join_date || "—"} />
+          <Field label="Ngày vào Đoàn" value={identity.union_join_date || ""} />
+          <Field label="Ngày vào Đảng" value={identity.party_join_date || ""} />
           <Field label="Nơi cấp CCCD" value={identity.identity_issue_place} wide />
           <Field label="Ngày cấp CCCD" value={identity.identity_issue_date} />
         </div>
@@ -118,9 +130,9 @@ export default function StudentProfile() {
           <Field label="Mẹ - Điện thoại" value={family.mother?.phone} />
           <Field label="Mẹ - Địa chỉ" value={family.mother?.address} wide />
 
-          <Field label="Người giám hộ - Họ tên" value={family.guardian?.name || "—"} />
-          <Field label="Người giám hộ - Điện thoại" value={family.guardian?.phone || "—"} />
-          <Field label="Người giám hộ - Địa chỉ" value={family.guardian?.address || "—"} wide />
+          <Field label="Người giám hộ - Họ tên" value={family.guardian?.name || ""} />
+          <Field label="Người giám hộ - Điện thoại" value={family.guardian?.phone || ""} />
+          <Field label="Người giám hộ - Địa chỉ" value={family.guardian?.address || ""} wide />
         </div>
       </div>
     </div>

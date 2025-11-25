@@ -100,8 +100,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 18px;
-  background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.14), rgba(255,255,255,0)),
-    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.16), rgba(255,255,255,0)),
+  background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0)),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0)),
     linear-gradient(120deg, #1d4ed8 0%, #38bdf8 50%, #0ea5e9 100%);
   color: #f8fafc;
   border-radius: 16px;
@@ -240,6 +240,10 @@
   box-shadow: none !important;
 }
 
+.profile-back:hover {
+  cursor: pointer;
+}
+
 .profile-toolbar {
   display: flex;
   justify-content: space-between;
@@ -260,7 +264,7 @@
   cursor: pointer;
   font-weight: 600;
   color: #0f172a;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
 .print-btn:hover {
@@ -268,21 +272,25 @@
 }
 
 @media print {
+
   .profile-toolbar,
   .navbar,
   .student-list__header {
     display: none !important;
   }
+
   .student-page {
     max-width: 100%;
     margin: 0;
     padding: 0;
   }
+
   .section {
     box-shadow: none;
     border: 1px solid #e5e7eb;
     page-break-inside: avoid;
   }
+
   .profile-hero {
     page-break-inside: avoid;
   }

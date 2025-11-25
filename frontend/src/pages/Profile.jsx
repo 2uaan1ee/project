@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import { authFetch } from "../lib/auth";
 
 export default function Profile() {
   const [me, setMe] = useState(null);
   const [err, setErr] = useState("");
   useEffect(()=>{ (async()=>{
     try{
-      const token = localStorage.getItem("token") || "";
-      const res = await fetch("/api/me", { headers: { Authorization: `Bearer ${token}` }});
+      const res = await authFetch("/api/me");
       const data = await res.json();
       if(!res.ok) throw new Error(data.message||"Failed");
       setMe(data);
