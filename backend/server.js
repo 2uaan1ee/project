@@ -10,6 +10,8 @@ import studentRoutes from "./src/routes/students.routes.js";
 import { connectDB } from "./src/config/db.js";
 import { initGoogleAuth } from "./src/config/googleAuth.js";
 
+import subjectRoutes from "./src/routes/subjects.routes.js";
+
 dotenv.config();
 
 const app = express();
@@ -39,9 +41,11 @@ app.use("/api/students", (req, _res, next) => {
   next();
 }, studentRoutes);
 
+app.use("/api/subjects", subjectRoutes);
+
 
 // Start server sau khi kết nối DB
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 connectDB()
   .then(() => {

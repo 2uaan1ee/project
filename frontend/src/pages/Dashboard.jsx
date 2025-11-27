@@ -25,7 +25,12 @@ export default function Dashboard() {
       <aside className="sidebar-left improved">
         <h3>Trang chủ</h3>
         <ul>
-          <li>Các môn học đã giảng dạy</li>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/subject-open")}
+          >
+            Danh sách môn học
+          </li>
           <li>Lịch trình giảng dạy</li>
           <li>
             <button

@@ -1,32 +1,41 @@
-import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/students.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+// Support both absolute (http://...) and relative (/api) API bases
+const API_BASE = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
+
+function buildStudentsUrl(keyword = "") {
+  const qs = keyword.trim() ? `?search=${encodeURIComponent(keyword.trim())}` : "";
+  if (API_BASE.startsWith("http")) return `${API_BASE}/students${qs}`;
+  const prefix = API_BASE.startsWith("/") ? "" : "/";
+  return `${prefix}${API_BASE}/students${qs}`;
+}
 
 export default function StudentList() {
   const nav = useNavigate();
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchStudents = async (keyword = "") => {
     setLoading(true);
+    setError("");
     try {
-      const url = new URL(`${API_BASE}/students`);
-      if (keyword.trim()) url.searchParams.set("search", keyword.trim());
+      const url = buildStudentsUrl(keyword);
       const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to load students");
+      if (!res.ok) throw new Error(`Failed to load students (${res.status})`);
       const data = await res.json();
       setStudents(data || []);
     } catch (err) {
       console.error("[student-list] fetch error", err);
+      setError("Websites hiện tại đang quá tải...");
     } finally {
       setLoading(false);
     }
   };
 
-  // debounce search
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -53,7 +62,6 @@ export default function StudentList() {
         <div className="student-list__header">
           <div>
             <p className="status-chip" style={{ margin: 0 }}>
-              <span aria-hidden>📋</span>
               Danh sách sinh viên
             </p>
             <p style={{ margin: "6px 0 0", color: "#475569", fontSize: 13 }}>
@@ -64,7 +72,7 @@ export default function StudentList() {
             <span role="img" aria-label="search">🔍</span>
             <input
               type="text"
-              placeholder="Tìm MSSV, họ tên hoặc lớp..."
+              placeholder="Tìm theo MSSV, Họ tên hoặc lớp..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -73,13 +81,15 @@ export default function StudentList() {
 
         {loading ? (
           <div style={{ padding: 18, fontSize: 14 }}>Đang tải danh sách...</div>
+        ) : error ? (
+          <div style={{ padding: 18, fontSize: 14, color: "#b91c1c" }}>{error}</div>
         ) : (
           <table className="student-table">
             <thead>
               <tr>
                 <th>MSSV</th>
                 <th>Họ tên</th>
-                <th>Lớp</th>
+                <th>ớp</th>
                 <th>Ngành</th>
                 <th>Giới tính</th>
               </tr>

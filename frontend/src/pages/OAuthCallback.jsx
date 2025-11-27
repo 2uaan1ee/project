@@ -1,4 +1,3 @@
-// src/pages/OAuthCallback.jsx
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,28 +5,32 @@ export default function OAuthCallback({ onAuthed }) {
   const nav = useNavigate();
 
   useEffect(() => {
-    // Lấy token từ hash (#token=...) hoặc query (?token=...)
-    const hash = new URLSearchParams(window.location.hash.slice(1));
-    let token = hash.get("token");
+    const qs = new URLSearchParams(window.location.search);
+
+    const token = qs.get("token");
+    const name = qs.get("name");
+    const email = qs.get("email");
+    const avatar = qs.get("avatar");
 
     if (!token) {
-      const qs = new URLSearchParams(window.location.search);
-      token = qs.get("token");
-    }
-
-    if (token) {
-      // ✅ Đừng xóa toàn bộ URL ngay, chỉ thay hash = ""
-      window.history.replaceState({}, document.title, "/oauth/callback");
-      localStorage.setItem("token", token);
-      onAuthed?.(token);
-
-      // ✅ Điều hướng sau khi lưu token
-      setTimeout(() => {
-        nav("/app/dashboard", { replace: true });
-      }, 100);
-    } else {
       nav("/auth/login?oauth=failed", { replace: true });
+      return;
     }
+
+    // Lưu thông tin vào localStorage
+    localStorage.setItem("token", token);
+    if (name) localStorage.setItem("user_name", name);
+    if (email) localStorage.setItem("user_email", email);
+    if (avatar) localStorage.setItem("user_avatar", decodeURIComponent(avatar));
+
+    onAuthed?.(token);
+
+    // Xóa query khỏi URL
+    window.history.replaceState({}, document.title, "/oauth/callback");
+
+    setTimeout(() => {
+      nav("/app/dashboard", { replace: true });
+    }, 50);
   }, [nav, onAuthed]);
 
   return <div style={{ padding: 24 }}>Đang đăng nhập bằng Google…</div>;

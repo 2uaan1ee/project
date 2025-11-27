@@ -1,4 +1,4 @@
-// models/User.js (cả web admin & web chính)
+// models/User.js
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
@@ -6,13 +6,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    index: true,
-    lowercase: true,  // ✅ tự động toLowerCase
-    trim: true,       // ✅ tự động trim
+    index: true,         // giữ lại index ở đây
+    lowercase: true,
+    trim: true,
   },
   name:         { type: String, default: "" },
   role:         { type: String, default: "user", enum: ["user","admin"] },
-  passwordHash: { type: String },      // rỗng nếu login Google
+  passwordHash: { type: String },
   googleId:     { type: String },
 
   resetTokenHash: { type: String },
@@ -26,8 +26,8 @@ const UserSchema = new mongoose.Schema({
   collection: "user_account",
 });
 
-// đảm bảo unique theo email (phòng khi index chưa tạo)
-UserSchema.index({ email: 1 }, { unique: true });
+// ❌ XOÁ dòng này
+// UserSchema.index({ email: 1 }, { unique: true });
 
 export default mongoose.models.User
   || mongoose.model("User", UserSchema, "user_account");
