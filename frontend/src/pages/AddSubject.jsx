@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../styles/subject-open.css";
+import { useNavigate } from "react-router-dom";
+import "../styles/add-subject.css";
 
 const DEFAULT_FORM = {
   subject_id: "",
@@ -20,17 +20,17 @@ const DEFAULT_FORM = {
 
 const listPlaceholder = "VD: ACCT1000, ACCT2000";
 
+const splitToArray = (value = "") =>
+  value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+
 export default function AddSubject() {
   const navigate = useNavigate();
   const [form, setForm] = useState(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-
-  const splitToArray = (value = "") =>
-    value
-      .split(",")
-      .map((v) => v.trim())
-      .filter(Boolean);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +49,8 @@ export default function AddSubject() {
 
   const creditSummary = useMemo(
     () =>
-      (Number(form.theory_credits) || 0) + (Number(form.practice_credits) || 0),
+      (Number(form.theory_credits) || 0) +
+      (Number(form.practice_credits) || 0),
     [form.practice_credits, form.theory_credits]
   );
 
@@ -120,8 +121,7 @@ export default function AddSubject() {
             <p className="breadcrumb">Môn học</p>
             <h2>Thêm hoặc cập nhật môn học</h2>
           </div>
-          <div className="header-actions">
-          </div>
+          <div className="header-actions"></div>
         </header>
 
         <div className="subject-toolbar">
@@ -140,14 +140,6 @@ export default function AddSubject() {
           <div className="toolbar-actions">
             <span className="pill soft">
               Tổng số tín chỉ: {creditSummary || 0}
-            </span>
-            <span className="pill primary">
-              Trạng thái:{" "}
-              {form.status === "open"
-                ? "Đang mở"
-                : form.status === "closed"
-                ? "Đã đóng"
-                : form.status.toUpperCase()}
             </span>
           </div>
         </div>
@@ -269,18 +261,6 @@ export default function AddSubject() {
                 />
               </div>
 
-              <div className="field-group stacked">
-                <label>Trạng thái</label>
-                <select
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                >
-                  <option value="open">Đang mở</option>
-                  <option value="closed">Đã đóng</option>
-                </select>
-              </div>
-
               <div className="field-group stacked checkbox-line">
                 <label>
                   <input
@@ -289,7 +269,7 @@ export default function AddSubject() {
                     checked={form.upsert}
                     onChange={handleCheckboxChange}
                   />{" "}
-                  Tự động cập nhật nếu đã tồn tại
+                  Tự động cập nhật nếu môn đã tồn tại
                 </label>
               </div>
             </div>
@@ -297,7 +277,7 @@ export default function AddSubject() {
             <footer className="subject-form-actions">
               <div className="action-buttons">
                 <button className="ghost" type="button" onClick={handleReset}>
-                  Đặt lại 
+                  Đặt lại
                 </button>
                 <button className="ghost" type="submit" disabled={loading}>
                   {loading ? "Đang lưu..." : "Lưu"}

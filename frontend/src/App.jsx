@@ -14,6 +14,7 @@ import OAuthCallback from "./pages/OAuthCallback";
 import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
 import AddSubject from "./pages/AddSubject.jsx";
+import SubjectOpen from "./pages/SubjectOpen.jsx";
 
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -42,6 +43,7 @@ export default function App() {
           </Route>
 
           <Route path="/add-subject" element={<AddSubject />}/>  
+          <Route path="/subject-open" element={<SubjectOpen/>}/>  
 
           <Route path="/oauth/callback" element={<OAuthCallback onAuthed={setToken} />} />
           

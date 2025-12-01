@@ -1,5 +1,6 @@
 // src/controllers/subject.controller.js
 import { Subject, SubjectType } from "../models/subject.model.js";
+import { OpenedSubject } from "../models/opened-subject.model.js";
 
 const ensureArray = (v) => {
   if (Array.isArray(v)) return v;
@@ -111,5 +112,66 @@ export const listSubjects = async (req, res) => {
   } catch (err) {
     console.error("❌ listSubjects error:", err);
     res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+export const openSubjects = async (req, res) => {
+  try {
+    const { year, semester, subject_ids } = req.body || {};
+
+    const normalizedYear = String(year || "").trim();
+    const normalizedSemester = String(semester || "").trim();
+    const subjectCodes = Array.from(
+      new Set(
+        ensureArray(subject_ids)
+          .map((code) => String(code || "").trim())
+          .filter(Boolean)
+      )
+    );
+
+    if (!normalizedYear || !normalizedSemester) {
+      return res
+        .status(400)
+        .json({ message: "Năm học và học kỳ là bắt buộc." });
+    }
+
+    if (subjectCodes.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Cần ít nhất 1 mã môn học để mở đăng ký." });
+    }
+
+    const subjects = await Subject.find({
+      subject_id: { $in: subjectCodes },
+    }).select("_id subject_id");
+
+    const missing = subjectCodes.filter(
+      (code) => !subjects.some((subject) => subject.subject_id === code)
+    );
+
+    if (missing.length) {
+      return res.status(400).json({
+        message: `Không tìm thấy các mã môn học: ${missing.join(", ")}`,
+        missing_subject_ids: missing,
+      });
+    }
+
+    const opened = await OpenedSubject.findOneAndUpdate(
+      { year: normalizedYear, semester: normalizedSemester },
+      { $set: { subject_ids: subjects.map((subject) => subject._id) } },
+      { upsert: true, new: true }
+    ).populate("subject_ids");
+
+    return res.json({
+      ok: true,
+      opened_subject: opened,
+      subject_count: subjects.length,
+    });
+  } catch (err) {
+    console.error("❌ openSubjects error:", err);
+    res.status(500).json({
+      message: "Đã xảy ra lỗi khi lưu danh sách môn học mở đăng ký.",
+      error: err.message,
+    });
   }
 };

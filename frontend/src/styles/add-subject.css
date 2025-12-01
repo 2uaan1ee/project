@@ -216,23 +216,6 @@ button.ghost:disabled {
   background: #f7f9fc;
 }
 
-.toolbar-fields {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  width: 75%;
-}
-
-.toolbar-fields .field-group {
-  width: 100%;
-  flex: 1;
-}
-
-.semester-field {
-  flex: 0 0 200px;
-  max-width: 220px;
-}
-
 .field-group {
   display: flex;
   flex-direction: column;
@@ -415,161 +398,12 @@ button.ghost:disabled {
   box-shadow: var(--shadow);
   padding: 16px;
   border: 1px solid var(--border);
-  overflow: visible;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
-}
-
-/* Layout for the subject/time rows */
-.subject-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.subject-row {
-  position: relative;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  padding: 32px 14px 14px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-  box-shadow: 0 4px 16px rgba(18, 48, 71, 0.08);
-}
-
-.subject-row .field-group.stacked {
-  margin: 0;
-}
-
-.subject-field {
-  position: relative;
-}
-
-.subject-suggestions {
-  list-style: none;
-  margin: 6px 0 0;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: var(--shadow);
-  max-height: 220px;
-  overflow-y: auto;
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  z-index: 5;
-}
-
-.subject-suggestion {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.subject-suggestion:hover {
-  background: #f7f9fc;
-}
-
-.suggestion-code {
-  font-weight: 700;
-  color: var(--text);
-}
-
-.suggestion-name {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.add-row-wrapper {
-  display: flex;
-  justify-content: center;
-}
-
-.add-row-button {
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  padding: 10px 16px;
-  background: #fff;
-  color: var(--primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.add-row-button:hover {
-  border-color: var(--primary);
-  background: var(--primary-light);
-}
-
-.add-row-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(18, 107, 175, 0.3);
-}
-
-.remove-row-button {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: #ffecec;
-  color: #b42318;
-  font-size: 18px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.1s ease, background 0.2s ease;
-}
-
-.remove-row-button:hover {
-  background: #ffd1d1;
-  transform: translateY(-1px);
-}
-
-.remove-row-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(180, 35, 24, 0.25);
-}
-
-.subject-hint {
-  font-size: 13px;
-  color: var(--muted);
-  margin: 6px 0 0;
-  text-align: center;
-}
-
-.subject-hint.error {
-  color: #b42318;
-}
-
-.plus-symbol {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  border: 1px solid currentColor;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
 }
 
 .field-group.stacked input,
@@ -661,16 +495,6 @@ button.ghost:disabled {
   .subject-toolbar {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .toolbar-fields {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .semester-field {
-    flex: 1;
-    max-width: 100%;
   }
 
   .toolbar-actions {
