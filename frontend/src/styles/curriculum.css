@@ -1,0 +1,318 @@
+.curriculum-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.curriculum-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.curriculum-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.curriculum-back {
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #fff;
+  color: #0f172a;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.curriculum-back:hover {
+  background: #0f172a;
+  color: #fff;
+}
+
+.curriculum-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.curriculum-controls label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #475467;
+  gap: 4px;
+  flex: 1 1 220px;
+}
+
+.curriculum-controls select,
+.curriculum-controls input,
+.curriculum-controls textarea {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  min-width: 220px;
+  width: 100%;
+}
+
+.curriculum-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.semester-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.semester-card h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.semester-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #475467;
+  flex-wrap: wrap;
+}
+
+.curriculum-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  table-layout: fixed;
+}
+
+.curriculum-table th,
+.curriculum-table td {
+  border-bottom: 1px solid #f3f4f6;
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 0.92rem;
+  word-break: break-word;
+}
+
+.curriculum-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.curriculum-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.curriculum-empty {
+  padding: 32px;
+  text-align: center;
+  border: 1px dashed #cbd5f5;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #475467;
+}
+
+.curriculum-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.curriculum-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.curriculum-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.curriculum-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.curriculum-card h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.subject-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subject-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) minmax(220px, 1fr) minmax(240px, 1fr) 40px;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.subject-row input,
+.subject-row textarea,
+.curriculum-card input,
+.curriculum-card textarea,
+.curriculum-card select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.subject-info {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  color: #0f172a;
+  background: #f8fafc;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 44px;
+}
+
+.subject-info strong {
+  font-weight: 600;
+}
+
+.subject-info--missing {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fff5f5;
+}
+
+.subject-row--error .subject-info {
+  border-color: #fecaca;
+}
+
+.subject-add-button {
+  padding: 8px 0;
+  width: fit-content;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.curriculum-card button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.curriculum-card button.primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.curriculum-card button.ghost {
+  background: transparent;
+  color: #2563eb;
+}
+
+.curriculum-card button.danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.edit-banner {
+  background: #ecfdf5;
+  color: #047857;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-list-header label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: #475467;
+}
+
+.admin-list-header select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  min-width: 200px;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.curriculum-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.status-inline {
+  font-size: 0.85rem;
+  color: #dc2626;
+}
+
+.status-banner {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.status-banner.success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.status-banner.error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.upload-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.upload-field input[type="file"] {
+  padding: 6px;
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+  background: #f8fafc;
+}

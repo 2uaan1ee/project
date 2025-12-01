@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authFetch } from "../lib/auth.js";
 import "../styles/students.css";
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 export default function StudentList() {
   const nav = useNavigate();
@@ -13,10 +12,12 @@ export default function StudentList() {
   const fetchStudents = async (keyword = "") => {
     setLoading(true);
     try {
-      const url = new URL(`${API_BASE}/students`);
-      if (keyword.trim()) url.searchParams.set("search", keyword.trim());
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to load students");
+      const params = new URLSearchParams();
+      if (keyword.trim()) params.set("search", keyword.trim());
+      const query = params.toString();
+      const endpoint = query ? `/api/students?${query}` : "/api/students";
+      const res = await authFetch(endpoint);
+      if (!res.ok) throw new Error("Không thể tải danh sách");
       const data = await res.json();
       setStudents(data || []);
     } catch (err) {

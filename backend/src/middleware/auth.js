@@ -31,6 +31,20 @@ export function verifyJwt(req, res, next) {
   }
 }
 
+// ====== Role guard for protected APIs ======
+export function requireRole(...roles) {
+  const allow = roles.flat().filter(Boolean);
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    if (allow.length && !allow.includes(req.user.role)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    next();
+  };
+}
+
 // ====== Refresh token cookie helpers ======
 export function setRefreshCookie(res, refreshToken) {
   const maxAgeMs = 7 * 24 * 60 * 60 * 1000; // 7d

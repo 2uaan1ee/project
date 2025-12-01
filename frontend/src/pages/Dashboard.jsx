@@ -2,8 +2,11 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 import CalendarWidget from "../components/CalendarWidget.jsx";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext.jsx";
 export default function Dashboard() {
   const nav = useNavigate();
+  const { user } = useContext(AuthContext);
   const courses = [
     {
       thumb: "/img/course_1.jpg",
@@ -36,6 +39,26 @@ export default function Dashboard() {
               Danh sách sinh viên
             </button>
           </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => nav("/app/curriculum")}
+              style={{ background: "none", border: "none", padding: 0, color: "#2563eb", cursor: "pointer" }}
+            >
+              Chương trình đào tạo
+            </button>
+          </li>
+          {user?.role === "admin" && (
+            <li>
+              <button
+                type="button"
+                onClick={() => nav("/app/curriculum/manage")}
+                style={{ background: "none", border: "none", padding: 0, color: "#16a34a", cursor: "pointer" }}
+              >
+                Quản lý chương trình
+              </button>
+            </li>
+          )}
           <li>Bảng điểm</li>
           <li>Tin tức</li>
         </ul>

@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // ⬅️ đổi sang 5000
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
         // không cần rewrite vì BE đã mount /api/*

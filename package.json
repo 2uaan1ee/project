@@ -13,6 +13,7 @@
     "start": "concurrently -n BE,FE -c magenta,cyan \"npm:start:backend\" \"npm:start:frontend\""
   },
   "devDependencies": {
+    "baseline-browser-mapping": "^2.8.32",
     "concurrently": "^9.0.0",
     "nodemon": "^3.1.10"
   },

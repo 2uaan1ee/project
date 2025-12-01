@@ -5,7 +5,12 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "subjects:list": "node scripts/listSubjects.js",
+    "db:collections": "node scripts/listCollections.js",
+    "subjects:peek": "node scripts/peekSubject.js",
+    "subjects:export": "node scripts/exportSubjectsCsv.js",
+    "subjects:find": "node scripts/findSubjects.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -14,8 +19,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.8.7",
+    "multer": "^1.4.5-lts.1",
+    "myapp-root": "file:..",
     "nodemailer": "^6.9.13"
   },
   "devDependencies": {
