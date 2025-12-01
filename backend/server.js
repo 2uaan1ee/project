@@ -7,6 +7,7 @@ import passport from "passport";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import studentRoutes from "./src/routes/students.routes.js";
+import subjectRoutes from "./src/routes/subject.routes.js";
 import { connectDB } from "./src/config/db.js";
 import { initGoogleAuth } from "./src/config/googleAuth.js";
 
@@ -38,6 +39,10 @@ app.use("/api/students", (req, _res, next) => {
   console.log(`[STUDENTS] ${req.method} ${req.originalUrl}`);
   next();
 }, studentRoutes);
+app.use("/api/subjects", (req, _res, next) => {
+  console.log(`[SUBJECTS] ${req.method} ${req.originalUrl}`);
+  next();
+}, subjectRoutes);
 
 
 // Start server sau khi kết nối DB

@@ -13,6 +13,8 @@ import Forgot from "./pages/Forgot";
 import OAuthCallback from "./pages/OAuthCallback";
 import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
+import AddSubject from "./pages/AddSubject.jsx";
+
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile   = lazy(() => import("./pages/Profile"));
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="login" element={<Login onAuthed={setToken} />} />
             <Route path="forgot" element={<Forgot />} />
           </Route>
+
+          <Route path="/add-subject" element={<AddSubject />}/>  
 
           <Route path="/oauth/callback" element={<OAuthCallback onAuthed={setToken} />} />
           
