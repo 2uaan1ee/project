@@ -115,6 +115,38 @@ export const listSubjects = async (req, res) => {
   }
 };
 
+export const getOpenedSubjects = async (req, res) => {
+  try {
+    const { year, semester } = req.query || {};
+    const normalizedYear = String(year || "").trim();
+    const normalizedSemester = String(semester || "").trim();
+
+    const filter = {};
+    if (normalizedYear) {
+      filter.year = normalizedYear;
+    }
+    if (normalizedSemester) {
+      filter.semester = normalizedSemester;
+    }
+
+    const openedSubjects = await OpenedSubject.find(filter)
+      .populate("subject_ids")
+      .sort({ year: -1, semester: 1 });
+
+    return res.json({
+      ok: true,
+      opened_subjects: openedSubjects,
+      count: openedSubjects.length,
+    });
+  } catch (err) {
+    console.error("❌ getOpenedSubjects error:", err);
+    res.status(500).json({
+      message: "Không thể tải danh sách môn học đã mở.",
+      error: err.message,
+    });
+  }
+};
+
 export const openSubjects = async (req, res) => {
   try {
     const { year, semester, subject_ids } = req.body || {};

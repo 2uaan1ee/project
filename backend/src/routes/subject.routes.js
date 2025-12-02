@@ -4,6 +4,7 @@ import {
   createOrUpdateSubject,
   listSubjects,
   openSubjects,
+  getOpenedSubjects,
 } from "../controllers/subject.controller.js";
 
 const router = Router();
@@ -14,6 +15,9 @@ router
   .get(listSubjects)        // GET /api/subjects
   .post(createOrUpdateSubject); // POST /api/subjects
 
-router.post("/open", openSubjects); // POST /api/subjects/open
+router
+  .route("/open")
+  .get(getOpenedSubjects) // GET /api/subjects/open
+  .post(openSubjects); // POST /api/subjects/open
 
 export default router;

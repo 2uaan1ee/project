@@ -42,9 +42,6 @@ export default function App() {
             <Route path="forgot" element={<Forgot />} />
           </Route>
 
-          <Route path="/add-subject" element={<AddSubject />}/>  
-          <Route path="/subject-open" element={<SubjectOpen/>}/>  
-
           <Route path="/oauth/callback" element={<OAuthCallback onAuthed={setToken} />} />
           
           <Route
@@ -60,6 +57,8 @@ export default function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="students" element={<StudentList />} />
             <Route path="students/:student_id" element={<StudentProfile />} />
+            <Route path="add-subject" element={<AddSubject />} />
+            <Route path="subject-open" element={<SubjectOpen />} />
           </Route>
 
           <Route path="*" element={<div style={{ padding: 24 }}>404 - Not Found</div>} />

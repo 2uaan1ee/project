@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/subject-open.css";
 
@@ -64,6 +64,67 @@ export default function SubjectOpen() {
 
     return () => {
       isMounted = false;
+    };
+  }, []);
+
+  const fetchOpenedSubjectInfo = useCallback(async (year, semester) => {
+    const normalizedYear = String(year || "").trim();
+    const normalizedSemester = String(semester || "").trim();
+
+    if (!normalizedYear || !normalizedSemester) {
+      return { subjectCodes: [], hasExistingList: false };
+    }
+
+    const params = new URLSearchParams({
+      year: normalizedYear,
+      semester: normalizedSemester,
+    });
+
+    const res = await fetch(`/api/subjects/open?${params.toString()}`);
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
+    }
+
+    if (!res.ok) {
+      throw new Error(
+        data?.message ||
+          data?.error ||
+          "Không thể tải danh sách môn học đã mở."
+      );
+    }
+
+    const entries = Array.isArray(data?.opened_subjects)
+      ? data.opened_subjects
+      : [];
+    const entry = entries[0];
+    const subjectCodes = Array.from(
+      new Set(
+        Array.isArray(entry?.subject_ids)
+          ? entry.subject_ids
+              .map((subject) => {
+                if (!subject) return "";
+                if (typeof subject === "string") {
+                  return subject;
+                }
+                if (
+                  typeof subject === "object" &&
+                  typeof subject.subject_id === "string"
+                ) {
+                  return subject.subject_id;
+                }
+                return "";
+              })
+              .filter(Boolean)
+          : []
+      )
+    );
+
+    return {
+      subjectCodes,
+      hasExistingList: Boolean(entry),
     };
   }, []);
 
@@ -161,8 +222,11 @@ export default function SubjectOpen() {
     const subjects = splitToArray(
       form.subject_rows.map((row) => row.subject_id).join(",")
     );
+    const uniqueSubjects = Array.from(new Set(subjects));
+    const yearInput = (form.academic_year || "").trim();
+    const semesterInput = (form.semester || "").trim();
 
-    if (!form.academic_year || !form.semester || subjects.length === 0) {
+    if (!yearInput || !semesterInput || uniqueSubjects.length === 0) {
       setLoading(false);
       setMessage({
         type: "error",
@@ -171,11 +235,40 @@ export default function SubjectOpen() {
       return;
     }
 
+    let openedInfo;
+    try {
+      openedInfo = await fetchOpenedSubjectInfo(yearInput, semesterInput);
+    } catch (err) {
+      setLoading(false);
+      setMessage({
+        type: "error",
+        text:
+          err?.message ||
+          "Không thể tải danh sách môn học đã mở hiện tại.",
+      });
+      return;
+    }
+
+    const combinedSubjectIds = Array.from(
+      new Set([...openedInfo.subjectCodes, ...uniqueSubjects])
+    );
+    const newSubjectCount =
+      combinedSubjectIds.length - openedInfo.subjectCodes.length;
+
+    if (newSubjectCount <= 0) {
+      setLoading(false);
+      setMessage({
+        type: "error",
+        text: "Tất cả các mã môn đã có trong danh sách mở hiện tại.",
+      });
+      return;
+    }
+
     try {
       const payload = {
-        year: form.academic_year,
-        semester: form.semester,
-        subject_ids: subjects,
+        year: yearInput,
+        semester: semesterInput,
+        subject_ids: combinedSubjectIds,
       };
 
       // Backend is expected to handle this endpoint to actually
@@ -188,14 +281,26 @@ export default function SubjectOpen() {
         body: JSON.stringify(payload),
       });
 
+      let responseData = null;
+      try {
+        responseData = await res.json();
+      } catch {
+        responseData = null;
+      }
+
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Mở đăng ký môn học thất bại.");
+        throw new Error(
+          responseData?.message ||
+            responseData?.error ||
+            "Mở đăng ký môn học thất bại."
+        );
       }
 
       setMessage({
         type: "success",
-        text: "Đã gửi yêu cầu mở đăng ký cho các môn đã chọn.",
+        text: openedInfo.hasExistingList
+          ? `Đã thêm ${newSubjectCount} môn vào danh sách ${yearInput} - ${semesterLabel}.`
+          : `Đã tạo danh sách môn mở mới cho ${yearInput} - ${semesterLabel} với ${newSubjectCount} môn.`,
       });
     } catch (err) {
       setMessage({

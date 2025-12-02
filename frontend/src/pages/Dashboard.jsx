@@ -4,6 +4,13 @@ import "../styles/dashboard.css";
 import CalendarWidget from "../components/CalendarWidget.jsx";
 export default function Dashboard() {
   const nav = useNavigate();
+  const sidebarButtonStyle = {
+    background: "none",
+    border: "none",
+    padding: 0,
+    color: "#2563eb",
+    cursor: "pointer",
+  };
   const courses = [
     {
       thumb: "/img/course_1.jpg",
@@ -31,9 +38,27 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => nav("/app/students")}
-              style={{ background: "none", border: "none", padding: 0, color: "#2563eb", cursor: "pointer" }}
+              style={sidebarButtonStyle}
             >
               Danh sách sinh viên
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => nav("/app/add-subject")}
+              style={sidebarButtonStyle}
+            >
+              Thêm môn học
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() => nav("/app/subject-open")}
+              style={sidebarButtonStyle}
+            >
+              Mở đăng ký môn học
             </button>
           </li>
           <li>Bảng điểm</li>
