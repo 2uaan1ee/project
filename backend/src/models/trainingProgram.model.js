@@ -2,14 +2,17 @@ import mongoose from "mongoose";
 
 const trainingProgramSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    code: { type: String, required: true, unique: true },
-    description: { type: String },
+    major: { type: String, required: true }, // Ngành học
+    faculty: { type: String, required: true }, // Khoa
+    semester: { type: String, required: true }, // Học kỳ
+    subjects: [{ type: String }], // Mảng các mã môn học
   },
   { timestamps: true }
 );
 
-// 👇 ép Mongoose dùng đúng collection name mong muốn
+// Index để query nhanh theo ngành, khoa, học kỳ
+trainingProgramSchema.index({ major: 1, faculty: 1, semester: 1 });
+
 const TrainingProgram = mongoose.model("TrainingProgram", trainingProgramSchema, "training_programs");
 
 export default TrainingProgram;

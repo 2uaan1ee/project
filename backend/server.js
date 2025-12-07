@@ -11,6 +11,7 @@ import { connectDB } from "./src/config/db.js";
 import { initGoogleAuth } from "./src/config/googleAuth.js";
 
 import subjectRoutes from "./src/routes/subjects.routes.js";
+import trainingProgramRoutes from "./src/routes/trainingProgram.routes.js";
 
 dotenv.config();
 
@@ -42,6 +43,10 @@ app.use("/api/students", (req, _res, next) => {
 }, studentRoutes);
 
 app.use("/api/subjects", subjectRoutes);
+app.use("/api/training-programs", (req, _res, next) => {
+  console.log(`[TRAINING-PROGRAMS] ${req.method} ${req.originalUrl}`);
+  next();
+}, trainingProgramRoutes);
 
 
 // Start server sau khi kết nối DB

@@ -15,19 +15,23 @@ import OAuthCallback from "./pages/OAuthCallback";
 import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
 import SubjectOpen from "./pages/SubjectOpen.jsx";
+import TrainingProgram from "./pages/TrainingProgram.jsx";
+import AdminTrainingProgram from "./pages/AdminTrainingProgram.jsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 
-function Protected({ authed, children }) {
+function Protected({ authed, ready, children }) {
+  if (!ready) return <div style={{ padding: 24 }}>Loading...</div>;
   return authed ? children : <Navigate to="/auth/login" replace />;
 }
 
 export default function App() {
-  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const [token, setToken] = useState(() => sessionStorage.getItem("token") || "");
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
-    token ? localStorage.setItem("token", token) : localStorage.removeItem("token");
+    token ? sessionStorage.setItem("token", token) : sessionStorage.removeItem("token");
   }, [token]);
 
   // Attempt silent refresh on first load if refresh cookie exists
@@ -41,9 +45,25 @@ export default function App() {
         });
         if (!res.ok) return;
         const data = await res.json();
-        if (!cancelled && data?.token) setToken(data.token);
+        if (!cancelled && data?.token) {
+          setToken(data.token);
+          
+          // Decode JWT to get user info
+          try {
+            const base64Url = data.token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(window.atob(base64));
+            
+            if (payload.role) sessionStorage.setItem("user_role", payload.role);
+            if (payload.email) sessionStorage.setItem("user_email", payload.email);
+          } catch (decodeErr) {
+            console.warn("Failed to decode token:", decodeErr);
+          }
+        }
       } catch {
         /* ignore: stay logged out */
+      } finally {
+        if (!cancelled) setAuthReady(true);
       }
     };
     tryRefresh();
@@ -52,11 +72,29 @@ export default function App() {
     };
   }, []);
 
+  // If refresh endpoint fails (no cookie), still allow the app to render using existing sessionStorage token
+  useEffect(() => {
+    if (authReady) return;
+    // Fallback to mark ready when there is an existing token but refresh returned early
+    if (sessionStorage.getItem("token")) {
+      setAuthReady(true);
+    }
+  }, [authReady]);
+
   return (
     <BrowserRouter>
       <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>
         <Routes>
-          <Route path="/" element={<Navigate to={token ? "/app/dashboard" : "/auth/login"} replace />} />
+          <Route
+            path="/"
+            element={
+              authReady ? (
+                <Navigate to={token ? "/app/dashboard" : "/auth/login"} replace />
+              ) : (
+                <div style={{ padding: 24 }}>Loading...</div>
+              )
+            }
+          />
 
           <Route path="/auth/*" element={<AuthLayout />}>
             <Route path="login" element={<Login onAuthed={setToken} />} />
@@ -68,7 +106,7 @@ export default function App() {
           <Route
             path="/app/*"
             element={
-              <Protected authed={!!token}>
+              <Protected authed={!!token} ready={authReady}>
                 <AppLayout />
               </Protected>
             }
@@ -77,6 +115,8 @@ export default function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
             <Route path="subject-open" element={<SubjectOpen />} />
+            <Route path="training-program" element={<TrainingProgram />} />
+            <Route path="admin/training-program" element={<AdminTrainingProgram />} />
             <Route path="students" element={<StudentList />} />
             <Route path="students/:student_id" element={<StudentProfile />} />
           </Route>
