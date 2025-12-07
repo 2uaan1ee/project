@@ -15,6 +15,8 @@ import OAuthCallback from "./pages/OAuthCallback";
 import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
 import SubjectOpen from "./pages/SubjectOpen.jsx";
+import TrainingProgram from "./pages/TrainingProgram.jsx";
+import AdminTrainingProgram from "./pages/AdminTrainingProgram.jsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -41,7 +43,21 @@ export default function App() {
         });
         if (!res.ok) return;
         const data = await res.json();
-        if (!cancelled && data?.token) setToken(data.token);
+        if (!cancelled && data?.token) {
+          setToken(data.token);
+          
+          // Decode JWT to get user info
+          try {
+            const base64Url = data.token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(window.atob(base64));
+            
+            if (payload.role) localStorage.setItem("user_role", payload.role);
+            if (payload.email) localStorage.setItem("user_email", payload.email);
+          } catch (decodeErr) {
+            console.warn("Failed to decode token:", decodeErr);
+          }
+        }
       } catch {
         /* ignore: stay logged out */
       }
@@ -77,6 +93,8 @@ export default function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
             <Route path="subject-open" element={<SubjectOpen />} />
+            <Route path="training-program" element={<TrainingProgram />} />
+            <Route path="admin/training-program" element={<AdminTrainingProgram />} />
             <Route path="students" element={<StudentList />} />
             <Route path="students/:student_id" element={<StudentProfile />} />
           </Route>

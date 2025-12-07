@@ -166,7 +166,6 @@ body {
 }
 
 .actions button {
-  background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 6px 14px;

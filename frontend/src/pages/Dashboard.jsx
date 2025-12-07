@@ -6,6 +6,7 @@ import CalendarWidget from "../components/CalendarWidget.jsx";
 
 export default function Dashboard() {
   const nav = useNavigate();
+  const userRole = localStorage.getItem("user_role") || "user";
 
   const courses = [
     {
@@ -41,8 +42,26 @@ export default function Dashboard() {
             Danh sách môn học
           </li>
 
-          <li>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/training-program")}
+          >
             <span className="step-number">2</span>
+            Chương trình đào tạo
+          </li>
+
+          {userRole === "admin" && (
+            <li
+              style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
+              onClick={() => nav("/app/admin/training-program")}
+            >
+              <span className="step-number">🔑</span>
+              Quản lý CT đào tạo (Admin)
+            </li>
+          )}
+
+          <li>
+            <span className="step-number">3</span>
             Lịch trình giảng dạy
           </li>
 
@@ -50,17 +69,17 @@ export default function Dashboard() {
             style={{ cursor: "pointer", color: "#2563eb" }}
             onClick={() => nav("/app/students")}
           >
-            <span className="step-number">3</span>
+            <span className="step-number">4</span>
             Danh sách sinh viên
           </li>
 
           <li>
-            <span className="step-number">4</span>
+            <span className="step-number">5</span>
             Bảng điểm
           </li>
 
           <li>
-            <span className="step-number">5</span>
+            <span className="step-number">6</span>
             Tin tức
           </li>
         </ol>

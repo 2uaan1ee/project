@@ -23,6 +23,17 @@ export default function OAuthCallback({ onAuthed }) {
     if (email) localStorage.setItem("user_email", email);
     if (avatar) localStorage.setItem("user_avatar", decodeURIComponent(avatar));
 
+    // Decode JWT to get user role
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(window.atob(base64));
+      
+      if (payload.role) localStorage.setItem("user_role", payload.role);
+    } catch (decodeErr) {
+      console.warn("Failed to decode token:", decodeErr);
+    }
+
     onAuthed?.(token);
 
     // Xóa query khỏi URL

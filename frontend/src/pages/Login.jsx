@@ -57,6 +57,19 @@ export default function Login({ onAuthed }) {
       const token = data?.token || data?.access;
       if (!token) throw new Error("Không nhận được token từ máy chủ");
 
+      // Decode JWT to get user info
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+        
+        // Store user role and email in localStorage
+        if (payload.role) localStorage.setItem("user_role", payload.role);
+        if (payload.email) localStorage.setItem("user_email", payload.email);
+      } catch (decodeErr) {
+        console.warn("Failed to decode token:", decodeErr);
+      }
+
       onAuthed?.(token);
       nav("/app/dashboard", { replace: true });
     } catch (err) {
