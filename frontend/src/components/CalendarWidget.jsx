@@ -4,8 +4,9 @@ import "../styles/calendar.css";
 export default function CalendarWidget() {
   const today = new Date();
 
-  const [month, setMonth] = useState(10); // 10 = tháng 11 (0-index)
-  const [year, setYear] = useState(2025);
+  // Khởi tạo với tháng/năm hiện tại
+  const [month, setMonth] = useState(() => today.getMonth());
+  const [year, setYear] = useState(() => today.getFullYear());
 
   // Ngày có sự kiện (ví dụ)
   const events = [8, 10, 11, 18];
@@ -13,27 +14,27 @@ export default function CalendarWidget() {
   // Số ngày trong tháng
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // Thứ của ngày đầu tiên
-  const firstDay = new Date(year, month, 1).getDay(); // 0 = CN, 1 = T2 …
+  // Thứ của ngày đầu tiên trong tháng (0 = Chủ nhật, 1 = Thứ 2, ...)
+  const firstDay = new Date(year, month, 1).getDay();
 
-  // Chuyển sang dạng T2 = 1 → CN = 7
+  // Chuyển sang dạng: Thứ 2 = 0, ..., Chủ nhật = 6
   const startOffset = (firstDay + 6) % 7;
 
   const handlePrev = () => {
     if (month === 0) {
       setMonth(11);
-      setYear(year - 1);
+      setYear((prev) => prev - 1);
     } else {
-      setMonth(month - 1);
+      setMonth((prev) => prev - 1);
     }
   };
 
   const handleNext = () => {
     if (month === 11) {
       setMonth(0);
-      setYear(year + 1);
+      setYear((prev) => prev + 1);
     } else {
-      setMonth(month + 1);
+      setMonth((prev) => prev + 1);
     }
   };
 
@@ -48,13 +49,19 @@ export default function CalendarWidget() {
 
       {/* HEADER */}
       <div className="calendar-header-row">
-        <span className="nav-btn" onClick={handlePrev}>◀ tháng trước</span>
+        <span className="nav-btn" onClick={handlePrev}>
+          Tháng trước
+        </span>
 
         <div className="month-year">
-          tháng {month + 1} <br /> <b>{year}</b>
+          Tháng {month + 1}
+          <br />
+          <b>{year}</b>
         </div>
 
-        <span className="nav-btn" onClick={handleNext}>tháng sau ▶</span>
+        <span className="nav-btn" onClick={handleNext}>
+          Tháng sau
+        </span>
       </div>
 
       {/* Tên thứ */}
@@ -70,7 +77,7 @@ export default function CalendarWidget() {
 
       {/* Ngày */}
       <div className="calendar-grid">
-        {/* offset đầu tháng */}
+        {/* khoảng trống đầu tháng */}
         {Array.from({ length: startOffset }).map((_, i) => (
           <div key={"blank-" + i}></div>
         ))}
@@ -92,7 +99,14 @@ export default function CalendarWidget() {
       </div>
 
       <div className="calendar-footer">
-        <a href="#">Full calendar</a> • <a href="#">Quản lí theo dõi</a>
+        <a
+          href="https://student.uit.edu.vn/kehoachnam"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Lịch năm
+        </a>{" "}
+        &nbsp;|&nbsp; <a href="#">Quản lý theo dõi</a>
       </div>
     </div>
   );

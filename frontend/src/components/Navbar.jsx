@@ -6,12 +6,12 @@ export default function Navbar() {
   const nav = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const userName = localStorage.getItem("user_name") || "Người dùng";
-  const userEmail = localStorage.getItem("user_email") || "email@example.com";
-  const userAvatar = localStorage.getItem("user_avatar");
+  const userName = sessionStorage.getItem("user_name") || "Người dùng";
+  const userEmail = sessionStorage.getItem("user_email") || "email@example.com";
+  const userAvatar = sessionStorage.getItem("user_avatar");
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     nav("/auth/login", { replace: true });
   };
 

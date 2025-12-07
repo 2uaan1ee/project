@@ -29,7 +29,7 @@ export default function AdminTrainingProgram() {
   const [subjectInput, setSubjectInput] = useState("");
   const [subjectsWithNames, setSubjectsWithNames] = useState([]);
 
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];

@@ -1,14 +1,14 @@
 // src/lib/auth.js
 export function getToken() {
-  return localStorage.getItem("token");
+  return sessionStorage.getItem("token");
 }
 
 export function setToken(token) {
-  localStorage.setItem("token", token);
+  sessionStorage.setItem("token", token);
 }
 
 export function clearToken() {
-  localStorage.removeItem("token");
+  sessionStorage.removeItem("token");
 }
 
 /** fetch có gắn Authorization: Bearer <token>, tự refresh 1 lần khi 401 */

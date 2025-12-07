@@ -14,7 +14,7 @@ export default function TrainingProgram() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
 
   // Fetch faculties on component mount
   useEffect(() => {

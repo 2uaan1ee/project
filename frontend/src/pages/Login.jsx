@@ -12,7 +12,7 @@ export default function Login({ onAuthed }) {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
   }, []);
 
   // 🧩 Hàm parse lỗi từ server hoặc HTTP
@@ -59,13 +59,13 @@ export default function Login({ onAuthed }) {
 
       // Decode JWT to get user info
       try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(window.atob(base64));
-        
-        // Store user role and email in localStorage
-        if (payload.role) localStorage.setItem("user_role", payload.role);
-        if (payload.email) localStorage.setItem("user_email", payload.email);
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(window.atob(base64));
+      
+      // Store user role and email in sessionStorage
+      if (payload.role) sessionStorage.setItem("user_role", payload.role);
+      if (payload.email) sessionStorage.setItem("user_email", payload.email);
       } catch (decodeErr) {
         console.warn("Failed to decode token:", decodeErr);
       }

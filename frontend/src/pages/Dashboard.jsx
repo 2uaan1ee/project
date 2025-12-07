@@ -6,7 +6,7 @@ import CalendarWidget from "../components/CalendarWidget.jsx";
 
 export default function Dashboard() {
   const nav = useNavigate();
-  const userRole = localStorage.getItem("user_role") || "user";
+  const userRole = sessionStorage.getItem("user_role") || "user";
 
   const courses = [
     {
