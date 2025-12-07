@@ -1,9 +1,12 @@
 // src/pages/Dashboard.jsx
 import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
+import "../styles/subject-open.css"; // dùng lại style sidebar bên subject-open
 import CalendarWidget from "../components/CalendarWidget.jsx";
+
 export default function Dashboard() {
   const nav = useNavigate();
+
   const courses = [
     {
       thumb: "/img/course_1.jpg",
@@ -21,29 +24,51 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-layout cleaner">
-      {/* Sidebar trái */}
-      <aside className="sidebar-left improved">
-        <h3>Trang chủ</h3>
-        <ul>
+      {/* Sidebar bên trái - dùng lại subject-open-steps */}
+      <aside className="subject-open-steps">
+        <div className="step-brand">
+          <img src="/img/logo_uit.svg" alt="Logo UIT" />
+        </div>
+
+        <h3 style={{ textAlign: "center", marginBottom: 6 }}>Trang chủ</h3>
+
+        <ol>
           <li
             style={{ cursor: "pointer", color: "#2563eb" }}
             onClick={() => nav("/app/subject-open")}
           >
+            <span className="step-number">1</span>
             Danh sách môn học
           </li>
-          <li>Lịch trình giảng dạy</li>
+
           <li>
-            <button
-              type="button"
-              onClick={() => nav("/app/students")}
-              style={{ background: "none", border: "none", padding: 0, color: "#2563eb", cursor: "pointer" }}
-            >
-              Danh sách sinh viên
-            </button>
+            <span className="step-number">2</span>
+            Lịch trình giảng dạy
           </li>
-          <li>Bảng điểm</li>
-          <li>Tin tức</li>
-        </ul>
+
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/students")}
+          >
+            <span className="step-number">3</span>
+            Danh sách sinh viên
+          </li>
+
+          <li>
+            <span className="step-number">4</span>
+            Bảng điểm
+          </li>
+
+          <li>
+            <span className="step-number">5</span>
+            Tin tức
+          </li>
+        </ol>
+
+        <div className="step-footer">
+          <button type="button">Like & Share</button>
+          <span className="star-count">458 ⭐</span>
+        </div>
       </aside>
 
       {/* Nội dung chính */}
