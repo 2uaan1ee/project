@@ -41,9 +41,9 @@ export default function StudentProfile() {
     fetchStudent();
   }, [student_id]);
 
-  if (loading) return <div className="student-page">Dang tai ho so...</div>;
+  if (loading) return <div className="student-page">Đang tải hồ sơ sinh viên...</div>;
   if (error) return <div className="student-page" style={{ color: "#b91c1c" }}>{error}</div>;
-  if (!student) return <div className="student-page">Khong tim thay sinh vien.</div>;
+  if (!student) return <div className="student-page">Không tìm thấy sinh viên.</div>;
 
   const { contact = {}, address = {}, identity = {}, family = {} } = student;
 
