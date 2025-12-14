@@ -58,14 +58,20 @@ export default function StudentProfile() {
         </button>
       </div>
 
-      <div className="profile-hero student-card" style={{ padding: 0, border: "none", boxShadow: "none" }}>
+      {/* HERO */}
+      <div
+        className="profile-hero student-card"
+        style={{ padding: 0, border: "none", boxShadow: "none" }}
+      >
         <div className="profile-hero__block">
           <span className="profile-hero__label">Mã số sinh viên (MSSV)</span>
           <span className="profile-hero__value">{student.student_id}</span>
           <div className="profile-meta">
             <span className="meta-pill">CCCD: {identity.identity_number || ""}</span>
             <span className="meta-pill">Lớp sinh hoạt: {student.class_id || ""}</span>
-            <span className="meta-pill">Chương trình đào tạo: {student.program_type || student.program_id || ""}</span>
+            <span className="meta-pill">
+              Chương trình đào tạo: {student.program_type || student.program_id || ""}
+            </span>
           </div>
         </div>
 
@@ -84,7 +90,8 @@ export default function StudentProfile() {
         </div>
       </div>
 
-      <div className="section">
+      {/* 1. THÔNG TIN LIÊN HỆ */}
+      <div className="section section--contact">
         <h3>Thông tin liên hệ</h3>
         <div className="field-grid">
           <Field label="Email trường" value={contact.school_email} />
@@ -94,63 +101,90 @@ export default function StudentProfile() {
         </div>
       </div>
 
-      <div className="section">
+      {/* 2. ĐỊA CHỈ */}
+      <div className="section section--address">
         <h3>Địa chỉ</h3>
         <div className="field-grid">
           <Field label="Địa chỉ thường trú" value={address.permanent_address} wide />
-          <Field label="Địa chỉ tạm trú" value={address.temporary_address} wide />
           <Field label="Quê quán" value={address.hometown} />
-          <Field label="Vùng sâu, vùng xa" value={address.is_remote_area ? "Có" : "Không"} />
+          <Field label="Địa chỉ tạm trú" value={address.temporary_address} wide />
+          <Field
+            label="Vùng sâu, vùng xa"
+            value={address.is_remote_area ? "Có" : "Không"}
+          />
         </div>
       </div>
 
-      <div className="section">
+      {/* 3. THÔNG TIN NHÂN THÂN */}
+      <div className="section section--identity">
         <h3>Thông tin nhân thân</h3>
         <div className="field-grid">
+          {/* Hàng 1 */}
           <Field label="Dân tộc" value={identity.ethnicity} />
           <Field label="Tôn giáo" value={identity.religion} />
           <Field label="Thành phần gia đình" value={identity.origin} />
+
+          {/* Hàng 2 */}
           <Field label="Ngày vào Đoàn" value={identity.union_join_date || ""} />
           <Field label="Ngày vào Đảng" value={identity.party_join_date || ""} />
-          <Field label="Nơi cấp CCCD" value={identity.identity_issue_place} wide />
           <Field label="Ngày cấp CCCD" value={identity.identity_issue_date} />
+
+          {/* Hàng 3 – full width */}
+          <Field
+            label="Nơi cấp CCCD"
+            value={identity.identity_issue_place}
+            wide
+          />
         </div>
       </div>
 
-      <div className="section">
+      {/* 4. GIA ĐÌNH */}
+      <div className="section section--family">
         <h3>Gia đình</h3>
+
+        <div className="family-subtitle">Cha</div>
         <div className="field-grid">
-          <Field label="Cha - Họ tên" value={family.father?.name} />
-          <Field label="Cha - Nghề nghiệp" value={family.father?.job} />
-          <Field label="Cha - Điện thoại" value={family.father?.phone} />
-          <Field label="Cha - Địa chỉ" value={family.father?.address} wide />
+          <Field label="Họ tên" value={family.father?.name} />
+          <Field label="Nghề nghiệp" value={family.father?.job} />
+          <Field label="Điện thoại" value={family.father?.phone} />
+          <Field label="Địa chỉ" value={family.father?.address} wide />
+        </div>
 
-          <Field label="Mẹ - Họ tên" value={family.mother?.name} />
-          <Field label="Mẹ - Nghề nghiệp" value={family.mother?.job} />
-          <Field label="Mẹ - Điện thoại" value={family.mother?.phone} />
-          <Field label="Mẹ - Địa chỉ" value={family.mother?.address} wide />
+        <div className="family-subtitle">Mẹ</div>
+        <div className="field-grid">
+          <Field label="Họ tên" value={family.mother?.name} />
+          <Field label="Nghề nghiệp" value={family.mother?.job} />
+          <Field label="Điện thoại" value={family.mother?.phone} />
+          <Field label="Địa chỉ" value={family.mother?.address} wide />
+        </div>
 
-          <Field label="Người giám hộ - Họ tên" value={family.guardian?.name || ""} />
-          <Field label="Người giám hộ - Điện thoại" value={family.guardian?.phone || ""} />
-          <Field label="Người giám hộ - Địa chỉ" value={family.guardian?.address || ""} wide />
+        <div className="family-subtitle">Người giám hộ</div>
+        <div className="field-grid">
+          <Field label="Họ tên" value={family.guardian?.name || ""} />
+          <Field label="Nghề nghiệp" value={family.guardian?.job || ""} />
+          <Field label="Điện thoại" value={family.guardian?.phone || ""} />
+          <Field label="Địa chỉ" value={family.guardian?.address || ""} wide />
         </div>
       </div>
     </div>
   );
 }
 
+/**
+ * Field: tự chọn input hoặc textarea
+ * - Các label chứa "địa chỉ", "họ tên", "nghề nghiệp" luôn multiline
+ * - Hoặc text dài > 60 ký tự cũng chuyển sang textarea
+ */
 function Field({ label, value, wide }) {
   const val = value || "";
-  const isLong = val.length > 40;
-  const Input = isLong ? "textarea" : "input";
+
   return (
     <div className={`field${wide ? " field--wide" : ""}`}>
       <label>{label}</label>
-      <Input
+      <input
         readOnly
         value={val}
-        rows={isLong ? 2 : 1}
-        className={isLong ? "field-textarea" : ""}
+        title={val}        // hover để xem full nội dung
       />
     </div>
   );

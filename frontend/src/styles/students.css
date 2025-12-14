@@ -1,3 +1,7 @@
+h3 {
+  font-size: 20px !important;
+}
+
 /* Basic styling for student list and profile pages */
 .student-page {
   max-width: 1200px;
@@ -214,6 +218,71 @@
   font-size: 14px;
   width: 100%;
   color: #0f172a;
+}
+
+/* ===== Layout đẹp hơn cho các section trong StudentProfile ===== */
+/* Layout riêng cho từng section trên trang hồ sơ sinh viên */
+
+/* Thông tin liên hệ: 2 cột */
+.section--contact .field-grid {
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+}
+
+/* Địa chỉ: 2 cột, các ô wide full chiều ngang */
+.section--address .field-grid {
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+}
+
+.section--address .field--wide {
+  grid-column: 1 / -1;
+}
+
+/* Thông tin nhân thân: 3 cột giống screenshot */
+.section--identity .field-grid {
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+}
+
+.section--identity .field--wide {
+  grid-column: 1 / -1;
+}
+
+/* Gia đình: mỗi nhóm (Cha / Mẹ / Người giám hộ) cũng 3 cột */
+.section--family .field-grid {
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+}
+
+.section--family .field--wide {
+  grid-column: 1 / -1;
+}
+
+/* Tiêu đề nhỏ trong phần Gia đình */
+.family-subtitle {
+  margin-top: 16px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.section--family .family-subtitle:first-of-type {
+  margin-top: 4px;
+}
+
+/* Responsive: trên màn nhỏ các grid tự co lại 1–2 cột */
+@media (max-width: 1024px) {
+
+  .section--contact .field-grid,
+  .section--address .field-grid,
+  .section--identity .field-grid,
+  .section--family .field-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .section--address .field--wide,
+  .section--identity .field--wide,
+  .section--family .field--wide {
+    grid-column: 1 / -1;
+  }
 }
 
 

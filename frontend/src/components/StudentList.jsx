@@ -5,6 +5,30 @@ import "../styles/students.css";
 // Support both absolute (http://...) and relative (/api) API bases
 const API_BASE = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
 
+// 👉 Mapping mã ngành -> tên tiếng Việt
+const MAJOR_LABELS = {
+  TTNT: "Trí tuệ Nhân tạo",
+  ATTT: "An toàn Thông tin",
+  KHMT: "Khoa học Máy tính",
+  MMTT: "Mạng máy tính & Truyền thông Dữ liệu",
+  TKVM: "Thiết kế Vi mạch",
+  KHDL: "Khoa học Dữ liệu",
+  KTPM: "Kỹ thuật Phần mềm",
+  TTDPT: "Truyền thông Đa phương tiện",
+  KTMT: "Kỹ thuật Máy tính",
+
+  // thêm cho đủ bộ UIT (nếu data có)
+  CNTT: "Công nghệ Thông tin",
+  HTTT: "Hệ thống Thông tin",
+  TMDT: "Thương mại Điện tử",
+};
+
+function formatMajor(majorId) {
+  if (!majorId) return "";
+  const code = String(majorId).trim();
+  return MAJOR_LABELS[code] || code; // fallback: hiện mã nếu chưa mapping
+}
+
 function buildStudentsUrl(keyword = "") {
   const qs = keyword.trim()
     ? `?search=${encodeURIComponent(keyword.trim())}`
@@ -20,7 +44,7 @@ export default function StudentList() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [visibleCount, setVisibleCount] = useState(20); // 👈 hiển thị 20 dòng
+  const [visibleCount, setVisibleCount] = useState(20); // hiển thị 20 dòng
 
   const fetchStudents = async (keyword = "") => {
     setLoading(true);
@@ -137,24 +161,28 @@ export default function StudentList() {
                 <tr>
                   <th>MSSV</th>
                   <th>Họ tên</th>
-                  <th>Lớp</th> {/* 👈 Sửa lại chỗ này, bỏ <L></L> */}
+                  <th>Lớp</th>
                   <th>Ngành</th>
                   <th>Giới tính</th>
                 </tr>
               </thead>
               <tbody>
-                {rowsToShow.map((s) => (
-                  <tr
-                    key={s._id || s.student_id}
-                    onClick={() => nav(`/app/students/${s.student_id}`)}
-                  >
-                    <td>{s.student_id}</td>
-                    <td>{s.name}</td>
-                    <td>{s.class_id}</td>
-                    <td>{s.major_id}</td>
-                    <td>{s.gender === "Male" ? "Nam" : "Nữ"}</td>
-                  </tr>
-                ))}
+                {rowsToShow.map((s) => {
+                  const majorName = formatMajor(s.major_id);
+                  return (
+                    <tr
+                      key={s._id || s.student_id}
+                      onClick={() => nav(`/app/students/${s.student_id}`)}
+                    >
+                      <td>{s.student_id}</td>
+                      <td>{s.name}</td>
+                      <td>{s.class_id}</td>
+                      {/* 👇 Hiển thị tên ngành đẹp + hover thấy mã ngành */}
+                      <td title={s.major_id}>{majorName}</td>
+                      <td>{s.gender === "Male" ? "Nam" : "Nữ"}</td>
+                    </tr>
+                  );
+                })}
                 {!rowsToShow.length && (
                   <tr>
                     <td
@@ -175,11 +203,11 @@ export default function StudentList() {
             {/* Thanh điều khiển show more / show less */}
             {rows.length > 0 && (
               <div className="student-loadmore-bar">
-                <span className="student-loadmore-info">
+                <span className="student-loadmore-info" style={{ marginLeft: 16 }}>
                   Đang hiển thị <strong>{rowsToShow.length}</strong> /{" "}
                   <strong>{rows.length}</strong> sinh viên
                 </span>
-                <div className="student-loadmore-actions">
+                <div className="student-loadmore-actions" style={{ marginRight: 16 }}>
                   {visibleCount < rows.length && (
                     <button
                       type="button"
