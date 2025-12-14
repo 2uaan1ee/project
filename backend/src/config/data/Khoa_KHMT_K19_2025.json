@@ -1,0 +1,163 @@
+[
+    {
+        "major": "Khoa học máy tính",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "MA006",
+            "MA003",
+            "CS005",
+            "ENG01",
+            "SS006",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Khoa học máy tính",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "IT003",
+            "IT012",
+            "MA004",
+            "MA005",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Khoa học máy tính",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT004",
+            "IT005",
+            "IT007",
+            "ENG03",
+            "CS115",
+            "SS007"
+        ]
+    },
+    {
+        "major": "Khoa học máy tính",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "CS112",
+            "SS004",
+            "SS008",
+            "PE231"
+        ]
+    },
+    {
+        "major": "Khoa học máy tính",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "SS009",
+            "SS010",
+            "PE232"
+        ]
+    },
+    {
+        "major": "Khoa học máy tính",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "SS003"
+        ]
+    },
+    {
+        "major": "Khoa học máy tính",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "CS553",
+            "CS554",
+            "CS505"
+        ]
+    },
+    {
+        "major": "Trí tuệ nhân tạo",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "MA006",
+            "MA003",
+            "AI001",
+            "ENG01",
+            "SS004",
+            "SS006",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Trí tuệ nhân tạo",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "IT003",
+            "IT012",
+            "MA004",
+            "MA005",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Trí tuệ nhân tạo",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT004",
+            "IT007",
+            "ENG03",
+            "AI002",
+            "CS115"
+        ]
+    },
+    {
+        "major": "Trí tuệ nhân tạo",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "IT005",
+            "CS112",
+            "CS106",
+            "CS114",
+            "SS007",
+            "PE231"
+        ]
+    },
+    {
+        "major": "Trí tuệ nhân tạo",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "SS008",
+            "SS009"
+        ]
+    },
+    {
+        "major": "Trí tuệ nhân tạo",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "SS003",
+            "SS010",
+            "PE232"
+        ]
+    },
+    {
+        "major": "Trí tuệ nhân tạo",
+        "faculty": "Khoa Khoa học máy tính",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "AI505",
+            "AI504",
+            "AI503"
+        ]
+    }
+]

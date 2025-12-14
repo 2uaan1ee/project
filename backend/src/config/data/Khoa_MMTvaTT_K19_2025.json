@@ -1,0 +1,262 @@
+[
+    {
+        "major": "Truyền thông đa phương tiện",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "MM101",
+            "MM008",
+            "MM006",
+            "ENG01",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Truyền thông đa phương tiện",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "SS007",
+            "MA005",
+            "MM007",
+            "IT004",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Truyền thông đa phương tiện",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "MM005",
+            "MM103",
+            "MM110",
+            "MM102",
+            "MM104",
+            "ENG03"
+        ]
+    },
+    {
+        "major": "Truyền thông đa phương tiện",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "SS006",
+            "MM109",
+            "IT002",
+            "MM105",
+            "MM106",
+            "SS008"
+        ]
+    },
+    {
+        "major": "Truyền thông đa phương tiện",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "MM107",
+            "MM108",
+            "SS009",
+            "SS010"
+        ]
+    },
+    {
+        "major": "Truyền thông đa phương tiện",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "SS004",
+            "SS003"
+        ]
+    },
+    {
+        "major": "Truyền thông đa phương tiện",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "MM301",
+            "MM302"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "MA006",
+            "MA003",
+            "PH002",
+            "NT005",
+            "ENG01",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "IT005",
+            "MA004",
+            "IT006",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT004",
+            "IT007",
+            "IT003",
+            "NT106",
+            "ENG03"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "NT132",
+            "NT105",
+            "NT131",
+            "MA005",
+            "SS004"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "NT101",
+            "NT118",
+            "SS003",
+            "SS007"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "NT114",
+            "NT113",
+            "SS009"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "NT215",
+            "SS006",
+            "SS008",
+            "SS010"
+        ]
+    },
+    {
+        "major": "Mạng máy tính và truyền thông dữ liệu",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 8",
+        "subjects": [
+            "NT505",
+            "NT506",
+            "NT508"
+        ]
+    },
+    {
+        "major": "An toàn thông tin",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "MA006",
+            "MA003",
+            "PH002",
+            "NT015",
+            "ENG01",
+            "ME001"
+        ]
+    },
+    {
+        "major": "An toàn thông tin",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "IT005",
+            "MA004",
+            "IT006",
+            "SS006",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "An toàn thông tin",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT004",
+            "NT209",
+            "IT003",
+            "SS004",
+            "MA005",
+            "ENG03"
+        ]
+    },
+    {
+        "major": "An toàn thông tin",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "IT007",
+            "NT106",
+            "NT219",
+            "NT208",
+            "SS010",
+            "SS007",
+            "PE231"
+        ]
+    },
+    {
+        "major": "An toàn thông tin",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "SS008",
+            "SS009",
+            "NT132",
+            "NT140",
+            "NT521",
+            "PE232"
+        ]
+    },
+    {
+        "major": "An toàn thông tin",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "NT230",
+            "SS003",
+            "NT114"
+        ]
+    },
+    {
+        "major": "An toàn thông tin",
+        "faculty": "Khoa Mạng máy tính và truyền thông",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "NT215",
+            "NT505",
+            "NT506",
+            "NT508"
+        ]
+    }
+]

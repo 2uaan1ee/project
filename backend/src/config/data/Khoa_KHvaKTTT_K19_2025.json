@@ -1,0 +1,279 @@
+[
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 1",
+    "subjects": [
+      "IT001",
+      "MA006",
+      "MA003",
+      "IE005",
+      "SS006",
+      "ENG01",
+      "ME001"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 2",
+    "subjects": [
+      "IT002",
+      "IT003",
+      "SS004",
+      "MA004",
+      "ENG02"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 3",
+    "subjects": [
+      "IT004",
+      "IT005",
+      "IT012",
+      "MA005",
+      "ENG03"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 4",
+    "subjects": [
+      "SS003",
+      "SS007",
+      "IT007",
+      "IE101",
+      "IE103"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 5",
+    "subjects": [
+      "SS008",
+      "SS009",
+      "IE104",
+      "IE106",
+      "PE231"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 6",
+    "subjects": [
+      "SS010",
+      "IE105",
+      "IE108",
+      "PE232"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 7",
+    "subjects": [
+      "IE400"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 8",
+    "subjects": [
+      "IE505",
+      "IE501",
+      "IE502"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 1",
+    "subjects": [
+      "IT001",
+      "MA006",
+      "MA003",
+      "IE005",
+      "SS003",
+      "JAN01",
+      "ME001"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 2",
+    "subjects": [
+      "IT002",
+      "IT003",
+      "SS007",
+      "MA005",
+      "JAN02"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 3",
+    "subjects": [
+      "IT004",
+      "IT005",
+      "IT012",
+      "MA004",
+      "JAN03"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 4",
+    "subjects": [
+      "IE101",
+      "SS010",
+      "IT007",
+      "IE103",
+      "SS008",
+      "JAN04"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 5",
+    "subjects": [
+      "SS006",
+      "IE104",
+      "IE105",
+      "JAN05",
+      "PE231"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 6",
+    "subjects": [
+      "IE106",
+      "SS004",
+      "JAN06",
+      "PE232"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 7",
+    "subjects": [
+      "CU001",
+      "SS009",
+      "JAN07",
+      "IE400"
+    ]
+  },
+  {
+    "major": "Công nghệ thông tin Việt Nhật",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 8",
+    "subjects": [
+      "JAN08",
+      "IE505",
+      "IE501",
+      "IE502"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 1",
+    "subjects": [
+      "IT001",
+      "MA006",
+      "MA003",
+      "SS006",
+      "DS005",
+      "ENG01",
+      "ME001"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 2",
+    "subjects": [
+      "IT010",
+      "SS004",
+      "IT003",
+      "MA004",
+      "MA005",
+      "ENG02"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 3",
+    "subjects": [
+      "IT004",
+      "IT005",
+      "IT002",
+      "DS101",
+      "ENG03"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 4",
+    "subjects": [
+      "SS007",
+      "IT007",
+      "DS108",
+      "DS107"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 5",
+    "subjects": [
+      "SS008",
+      "DS111",
+      "DS102",
+      "PE231"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 6",
+    "subjects": [
+      "SS009",
+      "PE232"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 7",
+    "subjects": [
+      "SS010",
+      "SS003",
+      "DS400"
+    ]
+  },
+  {
+    "major": "Khoa học dữ liệu",
+    "faculty": "Khoa Khoa học và Kỹ thuật Thông tin",
+    "semester": "Học kỳ 8",
+    "subjects": [
+      "DS505",
+      "DS501",
+      "DS502"
+    ]
+  }
+]

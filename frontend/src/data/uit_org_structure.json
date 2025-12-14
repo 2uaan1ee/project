@@ -1,0 +1,271 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2025-12-14T08:09:05.552476",
+  "source": "Sơ đồ tổ chức Trường Đại học Công nghệ thông tin (UIT) - trích từ ảnh người dùng cung cấp",
+  "root": {
+    "id": "UIT",
+    "name": "Trường Đại học Công nghệ thông tin",
+    "type": "university",
+    "children": [
+      {
+        "id": "UIT_HDT",
+        "name": "Hội đồng trường",
+        "type": "governing_council",
+        "children": []
+      },
+      {
+        "id": "UIT_BGH",
+        "name": "Ban Giám hiệu",
+        "type": "executive_board",
+        "children": [
+          {
+            "id": "UIT_HT",
+            "name": "Hiệu trưởng",
+            "type": "role",
+            "children": [
+              {
+                "id": "UIT_PHT",
+                "name": "Các Phó Hiệu trưởng",
+                "type": "role_group",
+                "children": []
+              }
+            ],
+            "relations": {
+              "advisory_interaction": [
+                {
+                  "id": "UIT_HDTuvan",
+                  "name": "Các hội đồng tư vấn",
+                  "type": "advisory_councils",
+                  "children": [
+                    {
+                      "id": "UIT_HDKHDT",
+                      "name": "Hội đồng Khoa học và đào tạo",
+                      "type": "council"
+                    },
+                    {
+                      "id": "UIT_HDTuyendung",
+                      "name": "Hội đồng tuyển dụng",
+                      "type": "council"
+                    },
+                    {
+                      "id": "UIT_HDXetNangLuong",
+                      "name": "Hội đồng xét nâng lương",
+                      "type": "council"
+                    },
+                    {
+                      "id": "UIT_HDTuyenSinh",
+                      "name": "Hội đồng tuyển sinh ĐH/SĐH",
+                      "type": "council"
+                    },
+                    {
+                      "id": "UIT_HDDBCL",
+                      "name": "Hội đồng đảm bảo chất lượng giáo dục",
+                      "type": "council"
+                    },
+                    {
+                      "id": "UIT_HDKhac",
+                      "name": "... (các hội đồng khác)",
+                      "type": "council_placeholder"
+                    }
+                  ]
+                }
+              ],
+              "interaction": [
+                {
+                  "id": "UIT_ToChucDoanThe",
+                  "name": "Các tổ chức Đảng, Đoàn, Công đoàn, Hội CCB",
+                  "type": "mass_organizations",
+                  "children": []
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "UIT_DonVi",
+        "name": "Các đơn vị trực thuộc",
+        "type": "units",
+        "children": [
+          {
+            "id": "UIT_PhongBan",
+            "name": "Các phòng ban chức năng",
+            "type": "functional_departments",
+            "children": [
+              {
+                "id": "UIT_P_TCHC",
+                "name": "Phòng Tổ chức - Hành chính",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_KHTC",
+                "name": "Phòng Kế hoạch - Tài chính",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_DTDH",
+                "name": "Phòng Đào tạo Đại học",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_DTSĐH_KHCN",
+                "name": "Phòng Đào tạo SĐH và KHCN",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_CTSV",
+                "name": "Phòng Công tác sinh viên",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_QHĐN",
+                "name": "Phòng Quan hệ Đối ngoại",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_QTTB",
+                "name": "Phòng Quản trị thiết bị",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_PC_DBCL",
+                "name": "Phòng Pháp chế - ĐBCL",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_DLCNTT",
+                "name": "Phòng Dữ liệu và CNTT",
+                "type": "department"
+              },
+              {
+                "id": "UIT_P_TT_TVTS",
+                "name": "Phòng Truyền thông và TVTS",
+                "type": "department"
+              },
+              {
+                "id": "UIT_B_QLCS",
+                "name": "Ban Quản lý cơ sở",
+                "type": "facility_management"
+              },
+              {
+                "id": "UIT_ThuVien",
+                "name": "Thư viện",
+                "type": "library"
+              }
+            ]
+          },
+          {
+            "id": "UIT_TrungTam",
+            "name": "Các trung tâm",
+            "type": "centers",
+            "children": [
+              {
+                "id": "UIT_CITD",
+                "name": "TT Phát triển CNTT (CITD)",
+                "type": "center"
+              },
+              {
+                "id": "UIT_CNSC",
+                "name": "TT An ninh mạng (CNSC)",
+                "type": "center"
+              },
+              {
+                "id": "UIT_HISC",
+                "name": "TT An ninh mạng ĐHQG-HCM (HISC)",
+                "type": "center"
+              },
+              {
+                "id": "UIT_CeLUIT",
+                "name": "TT Ngoại ngữ (CeLUIT)",
+                "type": "center"
+              }
+            ]
+          },
+          {
+            "id": "UIT_PTN_RD",
+            "name": "Các phòng thí nghiệm, R&D",
+            "type": "labs_rd",
+            "children": [
+              {
+                "id": "UIT_PTN_ATTT",
+                "name": "PTN An toàn thông tin",
+                "type": "lab"
+              },
+              {
+                "id": "UIT_PTN_HTTT",
+                "name": "PTN Hệ thống thông tin",
+                "type": "lab"
+              },
+              {
+                "id": "UIT_PTN_TTDT",
+                "name": "PTN Truyền thông Đa phương tiện",
+                "type": "lab"
+              },
+              {
+                "id": "UIT_RD_Rosen",
+                "name": "Phòng R&D Rosen",
+                "type": "rd_unit"
+              },
+              {
+                "id": "UIT_ASIC_LAB",
+                "name": "Phòng thí nghiệm ASIC LAB",
+                "type": "lab"
+              }
+            ]
+          },
+          {
+            "id": "UIT_KhoaBoMon",
+            "name": "Các khoa, bộ môn",
+            "type": "faculties_departments",
+            "children": [
+              {
+                "id": "UIT_KHMT",
+                "name": "Khoa Khoa học máy tính",
+                "type": "faculty"
+              },
+              {
+                "id": "UIT_KHKT_TT",
+                "name": "Khoa Khoa học và Kỹ thuật thông tin",
+                "type": "faculty"
+              },
+              {
+                "id": "UIT_KTMT",
+                "name": "Khoa Kỹ thuật máy tính",
+                "type": "faculty"
+              },
+              {
+                "id": "UIT_CNPM",
+                "name": "Khoa Công nghệ phần mềm",
+                "type": "faculty"
+              },
+              {
+                "id": "UIT_HTTT",
+                "name": "Khoa Hệ thống thông tin",
+                "type": "faculty"
+              },
+              {
+                "id": "UIT_MMTTT",
+                "name": "Khoa Mạng máy tính và truyền thông",
+                "type": "faculty"
+              },
+              {
+                "id": "UIT_ToanLy",
+                "name": "Bộ môn Toán - Lý",
+                "type": "department"
+              },
+              {
+                "id": "UIT_VP_CTDacBiet",
+                "name": "Văn phòng các chương trình đặc biệt",
+                "type": "office"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "legend": {
+      "solid_arrow": "Mối quan hệ chỉ đạo",
+      "dashed_arrow": "Mối quan hệ tư vấn, tương tác"
+    }
+  }
+}

@@ -1,0 +1,185 @@
+[
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "CE005",
+            "IT001",
+            "MA006",
+            "MA003",
+            "SS007",
+            "ENG01",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "PH002",
+            "MA005",
+            "MA004",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT003",
+            "IT005",
+            "IT006",
+            "CE119",
+            "SS003",
+            "ENG03"
+        ]
+    },
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "CE103",
+            "IT007",
+            "CE122",
+            "SS009",
+            "SS010"
+        ]
+    },
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "IT004",
+            "CE124",
+            "CE224",
+            "CE118",
+            "SS008"
+        ]
+    },
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "CE212",
+            "CE201",
+            "SS006"
+        ]
+    },
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "CE502",
+            "CE206",
+            "SS004"
+        ]
+    },
+    {
+        "major": "Kỹ thuật máy tính",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 8",
+        "subjects": [
+            "CE505"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "CE006",
+            "SS006",
+            "MA003",
+            "MA006",
+            "ENG01",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT003",
+            "PH002",
+            "CE126",
+            "MA004",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "MA005",
+            "IT006",
+            "CE119",
+            "CE118",
+            "CE125",
+            "ENG03"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "SS008",
+            "IT007",
+            "CE103",
+            "CE213",
+            "CE124",
+            "SS010"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "CE226",
+            "CE433",
+            "CE436",
+            "SS009",
+            "SS003",
+            "SS004"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "SS007",
+            "CE409",
+            "CE207"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "CE208",
+            "CE502"
+        ]
+    },
+    {
+        "major": "Thiết kế Vi mạch",
+        "faculty": "Khoa Kỹ thuật máy tính",
+        "semester": "Học kỳ 8",
+        "subjects": [
+            "CE505"
+        ]
+    }
+]

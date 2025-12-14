@@ -1,0 +1,90 @@
+[
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "MA006",
+            "MA003",
+            "ENG01",
+            "SE005",
+            "IT001",
+            "IT007",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "IT003",
+            "MA004",
+            "MA005",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT004",
+            "IT005",
+            "IT012",
+            "IT008",
+            "ENG03"
+        ]
+    },
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "SE104",
+            "SS007",
+            "SS008",
+            "SS004"
+        ]
+    },
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "SS009",
+            "SS010",
+            "SE100",
+            "PE231"
+        ]
+    },
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "SS006",
+            "SS003",
+            "SE503",
+            "PE232"
+        ]
+    },
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "SE502"
+        ]
+    },
+    {
+        "major": "Kỹ thuật phần mềm",
+        "faculty": "Khoa Công nghệ phần mềm",
+        "semester": "Học kỳ 8",
+        "subjects": [
+            "SE505",
+            "SE506"
+        ]
+    }
+]

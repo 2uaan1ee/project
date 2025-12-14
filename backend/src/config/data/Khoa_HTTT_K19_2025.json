@@ -1,0 +1,309 @@
+[
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "MA006",
+            "MA003",
+            "IT010",
+            "IS005",
+            "ENG01",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "IT003",
+            "MA004",
+            "MA005",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT004",
+            "IT005",
+            "SS007",
+            "SS008",
+            "ENG03",
+            "SS006",
+            "SS004"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "IS201",
+            "IS210",
+            "IS208",
+            "IS216",
+            "IT007",
+            "IS349",
+            "IS346"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "PE231",
+            "SS010",
+            "IS403",
+            "IS217",
+            "IS207",
+            "IS336",
+            "IS347",
+            "IS344",
+            "IS348"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "PE232",
+            "SS003",
+            "IS252",
+            "IS211",
+            "IS405",
+            "IS345",
+            "IS356",
+            "IS355",
+            "IS354"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "SS009",
+            "IS502",
+            "NT118",
+            "DS312"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 8",
+        "subjects": [
+            "IS401",
+            "IS402",
+            "IS355",
+            "IS353",
+            "IS406",
+            "IE501",
+            "IE502"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IS005",
+            "SS007",
+            "SS008",
+            "ENG01",
+            "ENG02",
+            "ENG03",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "PHYS 1215",
+            "MATH 2154",
+            "MATH 3013",
+            "CS 2134",
+            "CS 3443",
+            "ENG04",
+            "ENG05",
+            "ENG06"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "ENG07",
+            "SPCH 3723",
+            "CS 5423",
+            "CS 4343",
+            "CS 4323",
+            "CS 4283",
+            "SPCH 2713"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "CS 3653",
+            "STAT 4033",
+            "MSIS 5723",
+            "MSIS 3033",
+            "ACCT 5123",
+            "MSIS 2433"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "PE231",
+            "SS010",
+            "SS009",
+            "SS006",
+            "STAT 3013",
+            "MSIS 4013",
+            "MSIS 207",
+            "MSIS 4263"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "CS 5433",
+            "CS 4153",
+            "MKTG 5883",
+            "PE232"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "MSIS 406",
+            "SS003",
+            "CS 5032"
+        ]
+    },
+    {
+        "major": "Hệ thống thông tin tiên tiến",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 8",
+        "subjects": [
+            "CS 5000"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 1",
+        "subjects": [
+            "IT001",
+            "MA006",
+            "MA003",
+            "EC005",
+            "ENG01",
+            "ME001"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 2",
+        "subjects": [
+            "IT002",
+            "IT003",
+            "EC001",
+            "MA004",
+            "MA005",
+            "ENG02"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 3",
+        "subjects": [
+            "IT004",
+            "IT005",
+            "IS334",
+            "SS004",
+            "ENG03"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 4",
+        "subjects": [
+            "EC101",
+            "IS207",
+            "EC208",
+            "EC201",
+            "SS009"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 5",
+        "subjects": [
+            "PE231",
+            "EC312",
+            "EC204",
+            "EC213",
+            "SS003",
+            "SS006"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 6",
+        "subjects": [
+            "PE232",
+            "IS336",
+            "EC335",
+            "EC229",
+            "SS007"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 7",
+        "subjects": [
+            "EC222",
+            "EC337",
+            "SS008",
+            "SS010"
+        ]
+    },
+    {
+        "major": "Thương mại điện tử",
+        "faculty": "Khoa Hệ thống thông tin",
+        "semester": "Học kỳ 8",
+        "subjects": [
+            "EC401",
+            "EC404",
+            "EC405"
+        ]
+    }
+]
