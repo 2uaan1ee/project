@@ -89,7 +89,7 @@ export default function StudentList() {
               <tr>
                 <th>MSSV</th>
                 <th>Họ tên</th>
-                <th>ớp</th>
+                <th>Lớp</th>
                 <th>Ngành</th>
                 <th>Giới tính</th>
               </tr>
