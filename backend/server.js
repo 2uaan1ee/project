@@ -7,6 +7,7 @@ import passport from "passport";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import studentRoutes from "./src/routes/students.routes.js";
+import tuitionRoutes from "./src/routes/tuition.routes.js";
 import { connectDB } from "./src/config/db.js";
 import { initGoogleAuth } from "./src/config/googleAuth.js";
 
@@ -47,6 +48,14 @@ app.use("/api/training-programs", (req, _res, next) => {
   console.log(`[TRAINING-PROGRAMS] ${req.method} ${req.originalUrl}`);
   next();
 }, trainingProgramRoutes);
+app.use(
+  "/api/tuition-payments",
+  (req, _res, next) => {
+    console.log(`[TUITION] ${req.method} ${req.originalUrl}`);
+    next();
+  },
+  tuitionRoutes
+);
 
 
 // Start server sau khi kết nối DB

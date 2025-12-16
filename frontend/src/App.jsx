@@ -16,6 +16,7 @@ import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
 import SubjectOpen from "./pages/SubjectOpen.jsx";
 import TrainingProgram from "./pages/TrainingProgram.jsx";
+import TuitionPayments from "./pages/TuitionPayments.jsx";
 import AdminTrainingProgram from "./pages/AdminTrainingProgram.jsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -117,6 +118,7 @@ export default function App() {
             <Route path="subject-open" element={<SubjectOpen />} />
             <Route path="training-program" element={<TrainingProgram />} />
             <Route path="admin/training-program" element={<AdminTrainingProgram />} />
+            <Route path="tuition" element={<TuitionPayments />} />
             <Route path="students" element={<StudentList />} />
             <Route path="students/:student_id" element={<StudentProfile />} />
           </Route>
