@@ -31,6 +31,9 @@ export function verifyJwt(req, res, next) {
   }
 }
 
+// Alias for authenticateToken
+export const authenticateToken = verifyJwt;
+
 // ====== Refresh token cookie helpers ======
 export function setRefreshCookie(res, refreshToken) {
   const maxAgeMs = 7 * 24 * 60 * 60 * 1000; // 7d

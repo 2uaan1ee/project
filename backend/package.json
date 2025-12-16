@@ -5,9 +5,13 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed:subject-open": "node src/config/seedSubjectOpen.js",
+    "create:template": "node src/config/createTemplate.js",
+    "check:training": "node src/config/checkTrainingPrograms.js"
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "cheerio": "^1.1.2",
     "cookie-parser": "^1.4.7",
@@ -16,7 +20,9 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.8.7",
-    "nodemailer": "^6.9.13"
+    "multer": "^2.0.2",
+    "nodemailer": "^6.9.13",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

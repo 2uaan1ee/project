@@ -12,6 +12,7 @@ import { initGoogleAuth } from "./src/config/googleAuth.js";
 
 import subjectRoutes from "./src/routes/subjects.routes.js";
 import trainingProgramRoutes from "./src/routes/trainingProgram.routes.js";
+import subjectOpenRoutes from "./src/routes/subjectOpen.routes.js";
 
 dotenv.config();
 
@@ -47,6 +48,10 @@ app.use("/api/training-programs", (req, _res, next) => {
   console.log(`[TRAINING-PROGRAMS] ${req.method} ${req.originalUrl}`);
   next();
 }, trainingProgramRoutes);
+app.use("/api/subject-open", (req, _res, next) => {
+  console.log(`[SUBJECT-OPEN] ${req.method} ${req.originalUrl}`);
+  next();
+}, subjectOpenRoutes);
 
 
 // Start server sau khi kết nối DB

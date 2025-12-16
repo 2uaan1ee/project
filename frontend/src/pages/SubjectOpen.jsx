@@ -437,11 +437,14 @@ export default function SubjectOpen() {
         setIsLoading(true);
         setError("");
         try {
-            const res = await fetch("/api/subjects/open");
+            const token = sessionStorage.getItem("token");
+            const res = await fetch("/api/subject-open", {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
             if (!res.ok) throw new Error(`API lỗi (mã ${res.status})`);
             const data = await res.json();
-            const rows = Array.isArray(data) ? data : [];
-            setRowData(rows);
+            const subjects = data.success && data.data ? data.data.flatMap(list => list.subjects) : [];
+            setRowData(subjects);
         } catch (err) {
             setError(err.message || "Không thể tải danh sách môn học");
             setRowData([]);

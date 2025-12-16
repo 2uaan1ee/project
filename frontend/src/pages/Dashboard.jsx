@@ -204,18 +204,35 @@ export default function Dashboard() {
             Chương trình đào tạo
           </li>
 
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/subject-open")}
+          >
+            <span className="step-number">3</span>
+            Môn học mở
+          </li>
+
           {userRole === "admin" && (
-            <li
-              style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
-              onClick={() => nav("/app/admin/training-program")}
-            >
-              <span className="step-number">🔑</span>
-              Quản lý CT đào tạo (Admin)
-            </li>
+            <>
+              <li
+                style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
+                onClick={() => nav("/app/admin/training-program")}
+              >
+                <span className="step-number">🔑</span>
+                Quản lý CT đào tạo (Admin)
+              </li>
+              <li
+                style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
+                onClick={() => nav("/app/admin/subject-open")}
+              >
+                <span className="step-number">📚</span>
+                Quản lý môn học mở (Admin)
+              </li>
+            </>
           )}
 
           <li>
-            <span className="step-number">3</span>
+            <span className="step-number">4</span>
             Lịch trình giảng dạy
           </li>
 
@@ -223,17 +240,17 @@ export default function Dashboard() {
             style={{ cursor: "pointer", color: "#2563eb" }}
             onClick={() => nav("/app/students")}
           >
-            <span className="step-number">4</span>
+            <span className="step-number">5</span>
             Danh sách sinh viên
           </li>
 
           <li>
-            <span className="step-number">5</span>
+            <span className="step-number">6</span>
             Bảng điểm
           </li>
 
           <li>
-            <span className="step-number">6</span>
+            <span className="step-number">7</span>
             Tin tức
           </li>
         </ol>
