@@ -118,5 +118,5 @@ const StudentSchema = new mongoose.Schema(
     collection: "students_v2.0",
   }
 );
-
+StudentSchema.index({ class_id: 1 });
 export default mongoose.model("Student", StudentSchema);

@@ -15,6 +15,7 @@ import OAuthCallback from "./pages/OAuthCallback";
 import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
 import SubjectOpen from "./pages/SubjectOpen.jsx";
+import SubjectList from "./pages/SubjectList.jsx";
 import SubjectOpenList from "./pages/SubjectOpenList.jsx";
 import TrainingProgram from "./pages/TrainingProgram.jsx";
 import TuitionPayments from "./pages/TuitionPayments.jsx";
@@ -50,13 +51,13 @@ export default function App() {
         const data = await res.json();
         if (!cancelled && data?.token) {
           setToken(data.token);
-          
+
           // Decode JWT to get user info
           try {
             const base64Url = data.token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const payload = JSON.parse(window.atob(base64));
-            
+
             if (payload.role) sessionStorage.setItem("user_role", payload.role);
             if (payload.email) sessionStorage.setItem("user_email", payload.email);
           } catch (decodeErr) {
@@ -119,6 +120,7 @@ export default function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="subject-open" element={<SubjectOpenList />} />
             <Route path="subjects" element={<SubjectOpen />} />
+            <Route path="subject-list" element={<SubjectList />} />
             <Route path="training-program" element={<TrainingProgram />} />
             <Route path="admin/training-program" element={<AdminTrainingProgram />} />
             <Route path="admin/subject-open" element={<AdminSubjectOpen />} />

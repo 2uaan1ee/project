@@ -12,7 +12,6 @@
 
 body {
   margin: 0;
-  font-family: "Inter", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -509,6 +508,16 @@ body {
   background: #2563eb;
   color: white;
   border-color: #2563eb;
+}
+
+.app__root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app__root>main {
+  flex: 1;
 }
 
 

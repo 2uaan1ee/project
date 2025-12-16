@@ -191,11 +191,13 @@ export default function Dashboard() {
         <h3 style={{ textAlign: "center", marginBottom: 6 }}>Trang chủ</h3>
 
         <ol>
-          <li style={{ cursor: "pointer", color: "#2563eb" }}>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/subject-list")}
+          >
             <span className="step-number">1</span>
-            Danh bạ phòng ban
+            Danh sách môn học
           </li>
-
           <li
             style={{ cursor: "pointer", color: "#2563eb" }}
             onClick={() => nav("/app/training-program")}
@@ -258,7 +260,7 @@ export default function Dashboard() {
             style={{ cursor: "pointer", color: "#2563eb" }}
             onClick={() => nav("/app/tuition")}
           >
-            <span className="step-number">7</span>
+            <span className="step-number">8</span>
             Tình trạng học phí
           </li>
         </ol>
