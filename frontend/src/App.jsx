@@ -17,6 +17,7 @@ import StudentProfile from "./components/StudentProfile.jsx";
 import SubjectOpen from "./pages/SubjectOpen.jsx";
 import SubjectOpenList from "./pages/SubjectOpenList.jsx";
 import TrainingProgram from "./pages/TrainingProgram.jsx";
+import TuitionPayments from "./pages/TuitionPayments.jsx";
 import AdminTrainingProgram from "./pages/AdminTrainingProgram.jsx";
 import AdminSubjectOpen from "./pages/AdminSubjectOpen.jsx";
 
@@ -121,6 +122,7 @@ export default function App() {
             <Route path="training-program" element={<TrainingProgram />} />
             <Route path="admin/training-program" element={<AdminTrainingProgram />} />
             <Route path="admin/subject-open" element={<AdminSubjectOpen />} />
+            <Route path="tuition" element={<TuitionPayments />} />
             <Route path="students" element={<StudentList />} />
             <Route path="students/:student_id" element={<StudentProfile />} />
           </Route>

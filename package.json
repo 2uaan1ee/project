@@ -13,8 +13,10 @@
     "start": "concurrently -n BE,FE -c magenta,cyan \"npm:start:backend\" \"npm:start:frontend\""
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
     "concurrently": "^9.0.0",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "vite": "^7.3.0"
   },
   "description": "",
   "main": "index.js",
