@@ -75,6 +75,48 @@
   background: #fff;
 }
 
+.tuition-controls input {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.tuition-class-filter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tuition-class-filter input {
+  flex: 1;
+  min-width: 0;
+}
+
+.tuition-class-reset {
+  border: 1px solid #cbd5f5;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tuition-class-reset:hover:not(:disabled) {
+  background: #eef2ff;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.tuition-class-reset:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .tuition-actions {
   display: flex;
   justify-content: flex-end;

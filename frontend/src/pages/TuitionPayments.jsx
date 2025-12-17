@@ -13,6 +13,7 @@ export default function TuitionPayments() {
   const [filters, setFilters] = useState([]);
   const [academicYear, setAcademicYear] = useState("");
   const [semester, setSemester] = useState("");
+  const [classFilter, setClassFilter] = useState("");
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,6 +47,34 @@ export default function TuitionPayments() {
   const semesterOptions = useMemo(() => {
     return filters.find((f) => f.academic_year === academicYear)?.semesters || [];
   }, [filters, academicYear]);
+
+  const classOptions = useMemo(() => {
+    const unique = new Set();
+    rows.forEach((row) => {
+      if (row.class_id) unique.add(String(row.class_id));
+    });
+    return Array.from(unique).sort((a, b) =>
+      a.localeCompare(b, "vi", { sensitivity: "base" })
+    );
+  }, [rows]);
+
+  const normalizedClassFilter = useMemo(() => {
+    const trimmed = classFilter.trim();
+    if (!trimmed) return "";
+    const lowered = trimmed.toLowerCase();
+    if (["tất cả", "tất cả lớp", "tat ca", "tat ca lop", "all"].includes(lowered)) {
+      return "";
+    }
+    return trimmed;
+  }, [classFilter]);
+
+  const filteredRows = useMemo(() => {
+    if (!normalizedClassFilter) return rows;
+    const needle = normalizedClassFilter.toLowerCase();
+    return rows.filter((row) =>
+      String(row.class_id || "").toLowerCase().includes(needle)
+    );
+  }, [rows, normalizedClassFilter]);
 
   useEffect(() => {
     if (!academicYear || !semesterOptions.length) return;
@@ -90,8 +119,8 @@ export default function TuitionPayments() {
   }, [academicYear, semester]);
 
   const sortedRows = useMemo(() => {
-    if (!sortField) return rows;
-    const cloned = [...rows];
+    if (!sortField) return filteredRows;
+    const cloned = [...filteredRows];
     cloned.sort((a, b) => {
       if (sortField === "_index") {
         return sortDir === "asc" ? a.__index - b.__index : b.__index - a.__index;
@@ -111,7 +140,7 @@ export default function TuitionPayments() {
         : String(vb).localeCompare(String(va), "vi", { sensitivity: "base" });
     });
     return cloned;
-  }, [rows, sortField, sortDir]);
+  }, [filteredRows, sortField, sortDir]);
 
   const toggleSort = (field) => {
     if (sortField !== field) {
@@ -141,7 +170,7 @@ export default function TuitionPayments() {
       [
         item.student_id || "",
         item.student_name || "",
-        item.major_id || "",
+        item.class_id|| "",
         Number(item.tuition_total) || 0,
         Number(item.total_paid) || 0,
         Number(item.remaining_balance) || 0,
@@ -203,6 +232,23 @@ export default function TuitionPayments() {
           </select>
         </label>
 
+        <label>
+          Lớp
+          <div className="tuition-class-filter">
+            <input
+              list="tuition-class-options"
+              value={classFilter}
+              onChange={(e) => setClassFilter(e.target.value)}
+              placeholder="Tất cả"
+            />
+          </div>
+          <datalist id="tuition-class-options">
+            {classOptions.map((item) => (
+              <option key={item} value={item} />
+            ))}
+          </datalist>
+        </label>
+
         <div className="tuition-actions">
           <button type="button" className="export-btn" onClick={handleExport} disabled={!sortedRows.length}>
             Xuất Excel
@@ -216,6 +262,10 @@ export default function TuitionPayments() {
         ) : rows.length === 0 ? (
           <div className="tuition-empty">
             Chưa có dữ liệu cho bộ lọc này. Hãy chọn năm/học kỳ khác hoặc kiểm tra dữ liệu nguồn.
+          </div>
+        ) : filteredRows.length === 0 ? (
+          <div className="tuition-empty">
+            Không có lớp phù hợp với bộ lọc hiện tại. Hãy chọn lớp khác hoặc hiển thị tất cả.
           </div>
         ) : (
           <div className="tuition-table-wrapper">
@@ -234,8 +284,8 @@ export default function TuitionPayments() {
                     </button>
                   </th>
                   <th>
-                    <button type="button" className="sort-btn" onClick={() => toggleSort("major_id")}>
-                      Ngành <span className="sort-icon">{renderSortIcon("major_id")}</span>
+                    <button type="button" className="sort-btn" onClick={() => toggleSort("class_id")}>
+                      Lớp <span className="sort-icon">{renderSortIcon("class_id")}</span>
                     </button>
                   </th>
                   <th>
@@ -261,7 +311,7 @@ export default function TuitionPayments() {
                     <td>{idx + 1}</td>
                     <td>{item.student_id}</td>
                     <td className="cell-strong">{item.student_name || "—"}</td>
-                    <td>{item.major_id || "-"}</td>
+                    <td>{item.class_id|| "-"}</td>
                     <td className="cell-number">{formatCurrency(item.tuition_total)}</td>
                     <td className="cell-number paid">{formatCurrency(item.total_paid)}</td>
                     <td className="cell-number remaining">{formatCurrency(item.remaining_balance)}</td>
