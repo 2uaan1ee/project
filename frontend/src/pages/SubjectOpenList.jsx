@@ -145,6 +145,7 @@ const SubjectOpenList = () => {
                   <TableRow>
                     <TableCell>STT</TableCell>
                     <TableCell>Mã môn</TableCell>
+                      <TableCell>Mã lớp</TableCell>
                     <TableCell>Tên môn học</TableCell>
                     <TableCell align="center">Tín chỉ LT</TableCell>
                     <TableCell align="center">Tín chỉ TH</TableCell>
@@ -158,6 +159,7 @@ const SubjectOpenList = () => {
                       <TableCell>
                         <strong>{subject.subject_id}</strong>
                       </TableCell>
+                      <TableCell>{subject.class_code || ""}</TableCell>
                       <TableCell>{subject.subject_name}</TableCell>
                       <TableCell align="center">{subject.theory_credits}</TableCell>
                       <TableCell align="center">{subject.practice_credits}</TableCell>

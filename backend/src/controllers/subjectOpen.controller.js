@@ -5,18 +5,16 @@ import xlsx from "xlsx";
 
 // Helper function để validate subjects tồn tại trong database
 async function validateSubjectsExist(subjectIds) {
+  // Bulk fetch to avoid sequential DB calls
+  const uniqueIds = [...new Set(subjectIds)];
+  const found = await Subject.find({ subject_id: { $in: uniqueIds } }).select("subject_id").lean();
+  const foundSet = new Set((found || []).map((s) => s.subject_id));
   const validSubjects = [];
   const invalidSubjects = [];
-
-  for (const subjectId of subjectIds) {
-    const subject = await Subject.findOne({ subject_id: subjectId });
-    if (subject) {
-      validSubjects.push(subjectId);
-    } else {
-      invalidSubjects.push(subjectId);
-    }
-  }
-
+  uniqueIds.forEach((id) => {
+    if (foundSet.has(id)) validSubjects.push(id);
+    else invalidSubjects.push(id);
+  });
   return { valid: validSubjects, invalid: invalidSubjects };
 }
 
@@ -159,38 +157,46 @@ export async function getSubjectOpenList(req, res) {
       query.isPublic = true;
     }
 
-    const subjectOpenList = await SubjectOpen.find(query).sort({ createdAt: -1 });
+    const subjectOpenList = await SubjectOpen.find(query).sort({ createdAt: -1 }).lean();
 
-    // Populate thông tin môn học
-    const result = await Promise.all(
-      subjectOpenList.map(async (item) => {
-        const subjectsWithDetails = await Promise.all(
-          item.subjects.map(async (subj) => {
-            const subjectInfo = await Subject.findOne({
-              subject_id: subj.subject_id,
-            });
-            return {
-              stt: subj.stt,
-              subject_id: subj.subject_id,
-              subject_name: subjectInfo?.subject_name || "N/A",
-              theory_credits: subjectInfo?.theory_credits || 0,
-              practice_credits: subjectInfo?.practice_credits || 0,
-            };
-          })
-        );
+    // Collect all subject_ids across lists and fetch subject info in bulk to improve performance
+    const allSubjectIds = new Set();
+    subjectOpenList.forEach((item) => {
+      (item.subjects || []).forEach((s) => {
+        if (s && s.subject_id) allSubjectIds.add(s.subject_id);
+      });
+    });
 
+    const subjectInfos = await Subject.find({ subject_id: { $in: Array.from(allSubjectIds) } }).lean();
+    const infoMap = {};
+    subjectInfos.forEach((si) => {
+      infoMap[si.subject_id] = si;
+    });
+
+    const result = subjectOpenList.map((item) => {
+      const subjectsWithDetails = (item.subjects || []).map((subj) => {
+        const subjectInfo = infoMap[subj.subject_id] || {};
         return {
-          _id: item._id,
-          academicYear: item.academicYear,
-          semester: item.semester,
-          subjects: subjectsWithDetails,
-          isPublic: item.isPublic,
-          createdBy: item.createdBy,
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt,
+          stt: subj.stt,
+          subject_id: subj.subject_id,
+          subject_name: subjectInfo.subject_name || subj.subject_name || "N/A",
+          theory_credits: subjectInfo.theory_credits || subj.theory_credits || 0,
+          practice_credits: subjectInfo.practice_credits || subj.practice_credits || 0,
+          class_code: subj.class_code || "",
         };
-      })
-    );
+      });
+
+      return {
+        _id: item._id,
+        academicYear: item.academicYear,
+        semester: item.semester,
+        subjects: subjectsWithDetails,
+        isPublic: item.isPublic,
+        createdBy: item.createdBy,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      };
+    });
 
     res.json({ success: true, data: result });
   } catch (error) {
@@ -250,7 +256,9 @@ export async function importSubjectOpenFromExcel(req, res) {
       }
 
       const worksheet = workbook.Sheets[sheetName];
-      data = xlsx.utils.sheet_to_json(worksheet);
+      // Read sheet as raw rows so we can detect header row within first 10 rows
+      const rows = xlsx.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+      data = rows; // keep for backward compatibility variable name
     } catch (parseError) {
       return res.status(400).json({
         success: false,
@@ -265,55 +273,153 @@ export async function importSubjectOpenFromExcel(req, res) {
         message: "File không có dữ liệu hoặc định dạng không đúng",
       });
     }
+    // Detect header row within the first 10 rows and map columns
+    const rows = data; // array of arrays
+    const maxHeaderSearch = Math.min(10, rows.length);
 
-    // Kiểm tra headers có đúng không
-    const firstRow = data[0];
-    const hasValidHeaders = 
-      firstRow.hasOwnProperty("Stt") || 
-      firstRow.hasOwnProperty("STT") || 
-      firstRow.hasOwnProperty("Môn học") || 
-      firstRow.hasOwnProperty("Mã môn học") || 
-      firstRow.hasOwnProperty("subject_id");
+    const normalize = (s) =>
+      String(s || "")
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toUpperCase();
 
-    if (!hasValidHeaders) {
+    const mapHeaderToField = (text) => {
+      const t = normalize(text);
+      if (!t) return null;
+      if (t === "STT") return "stt";
+      if (t.includes("MAMH") || t.includes("MA MH") || t.includes("MA MON") || t.includes("MAMON") || t.includes("MA MON HOC") || t.includes("MAMONHOC") || t.includes("MA MON HOC")) return "subject_id";
+      if (t.includes("MA LOP") || t.includes("MALOP")) return "class_code";
+      if ((t.includes("TEN") && t.includes("MON")) || t.includes("TEN MON HOC") || t.includes("TENMONHOC")) return "subject_name";
+      if (t.includes("MA GIANG") || t.includes("MAGIANGVIEN") || t.includes("MAGV")) return "teacher_id";
+      if (t.includes("TEN GIANG") || t.includes("TENGIANGVIEN") || t.includes("TENGV")) return "teacher_name";
+      if (t.includes("SI SO") || t === "SISO" || t === "S I S O") return "capacity";
+      if (t.includes("TONG") && t.includes("TC") || t === "TC" || t.includes("TO TC") || t.includes("TOTC") || t.includes("TO TC")) return "credits";
+      if (t.includes("THUC HANH") || t.includes("THU CHANH") || t.includes("TH\u1EF0C HANH")) return "practice_credits";
+      if (t === "HTGD") return "htgd";
+      if (t.includes("THU") && t.length <= 6) return "day";
+      if (t.includes("TIET")) return "period";
+      if (t.includes("CACH") || t.includes("CACH TUAN") || t.includes("CACHTUAN")) return "week_pattern";
+      if (t.includes("PHONG")) return "room";
+      if (t.includes("KHOA HOC") || t.includes("KHOAHOC")) return "course";
+      if (t.includes("HOC KY") || t.includes("HOC KY") || t === "HK") return "semester_label";
+      if (t.includes("NAM HOC") || t.includes("NAMHOC")) return "academicYear_label";
+      if (t.includes("HE DT") || t.includes("HEDT") || t.includes("HEDAO")) return "education_system";
+      if (t.includes("KHOA QL") || (t.includes("KHOA") && t.includes("QL")) || t === "KHOA") return "faculty";
+      if (t === "NBD" || t.includes("NGAY BD") || (t.includes("NGAY") && t.includes("BD"))) return "start_date";
+      if (t === "NKT" || t.includes("NGAY KT") || (t.includes("NGAY") && t.includes("KT"))) return "end_date";
+      if (t.includes("GHI")) return "notes";
+      if (t.includes("DA DK") || t.includes("DADK") || t.includes("DK") || t.includes("DANG KY")) return "registered_flag";
+      return null;
+    };
+
+    let headerRowIndex = -1;
+    let headerRow = [];
+    for (let i = 0; i < maxHeaderSearch; i++) {
+      const r = rows[i] || [];
+      const mapped = r.map((c) => mapHeaderToField(c));
+      // We require at least one recognizable subject_id and stt
+      if (mapped.includes("subject_id") || mapped.includes("stt")) {
+        headerRowIndex = i;
+        headerRow = r;
+        break;
+      }
+    }
+
+    if (headerRowIndex === -1) {
       return res.status(400).json({
         success: false,
-        message: "File không đúng định dạng. Cần có cột 'STT' và 'Môn học' (hoặc 'Mã môn học')",
-        hint: "Tải template mẫu tại: backend/src/config/output/template_mon_hoc_mo.xlsx",
+        message: "Không tìm thấy hàng header trong 10 dòng đầu. Vui lòng đảm bảo file tkb_he dùng header chuẩn.",
+        expectedHeaders: [
+          "STT","MÃ MH","MÃ LỚP","TÊN MÔN HỌC","MÃ GIẢNG VIÊN","TÊN GIẢNG VIÊN","SĨ SỐ","TỐ TC","THỰC HÀNH","HTGD","THỨ","TIẾT","CÁCH TUẦN","PHÒNG HỌC","KHOÁ HỌC","HỌC KỲ","NĂM HỌC","HỆ ĐT","KHOA QL","NBD","NKT","GHICHU","Đã ĐK"
+        ],
       });
     }
 
-    // Parse dữ liệu từ Excel
+    // Build column -> field mapping
+    const colToField = {};
+    for (let c = 0; c < headerRow.length; c++) {
+      const fld = mapHeaderToField(headerRow[c]);
+      if (fld) colToField[c] = fld;
+    }
+
+    // Ensure we can find subject_id column
+    const hasSubjectId = Object.values(colToField).includes("subject_id");
+    if (!hasSubjectId) {
+      return res.status(400).json({
+        success: false,
+        message: "Header không chứa cột mã môn học (MÃ MH / MÃ MÔN).",
+      });
+    }
+
+    // Parse rows after headerRowIndex
     const subjects = [];
     const errors = [];
 
-    data.forEach((row, index) => {
-      const rowNumber = index + 2; // +2 vì index bắt đầu từ 0 và row 1 là header
-      const subject_id = (row["Môn học"] || row["Mã môn học"] || row["subject_id"] || "").toString().trim();
-      
-      if (!subject_id) {
+    for (let r = headerRowIndex + 1; r < rows.length; r++) {
+      const row = rows[r];
+      if (!row || row.every((cell) => cell === "")) continue; // skip empty rows
+
+      const subjectObj = {};
+      for (const [colIdx, field] of Object.entries(colToField)) {
+        const val = row[colIdx] !== undefined ? row[colIdx] : "";
+        if (val === "") continue;
+        try {
+          switch (field) {
+            case "stt":
+              subjectObj.stt = Number(val) || undefined;
+              break;
+            case "subject_id":
+              subjectObj.subject_id = String(val).trim().toUpperCase();
+              break;
+            case "capacity":
+              subjectObj.capacity = Number(val) || undefined;
+              break;
+            case "credits":
+              subjectObj.credits = Number(val) || undefined;
+              break;
+            case "practice_credits":
+              subjectObj.practice_credits = Number(val) || undefined;
+              break;
+            case "start_date":
+            case "end_date":
+              const d = new Date(val);
+              if (!isNaN(d)) subjectObj[field] = d;
+              else subjectObj[field] = null;
+              break;
+            default:
+              subjectObj[field] = String(val).trim();
+          }
+        } catch (e) {
+          // ignore single-cell parse errors
+          subjectObj[field] = String(val).trim();
+        }
+      }
+
+      // Validate minimal
+      const rowNumber = r + 1;
+      if (!subjectObj.subject_id) {
         errors.push(`Dòng ${rowNumber}: Thiếu mã môn học`);
-        return;
+        continue;
       }
 
-      // Kiểm tra format mã môn (VD: IT001, CS101)
-      if (!/^[A-Z]{2,4}\d{3,4}$/i.test(subject_id)) {
-        errors.push(`Dòng ${rowNumber}: Mã môn '${subject_id}' không đúng định dạng (VD: IT001, CS101)`);
+      // Normalize subject id format
+      if (!/^[A-Z]{1,4}\d{2,4}$/i.test(subjectObj.subject_id)) {
+        // allow but warn
+        errors.push(`Dòng ${rowNumber}: Mã môn '${subjectObj.subject_id}' có thể không đúng định dạng`);
       }
 
-      const stt = row["Stt"] || row["STT"] || index + 1;
-      
-      subjects.push({
-        stt: Number(stt) || index + 1,
-        subject_id: subject_id.toUpperCase(), // Chuẩn hóa thành chữ HOA
-      });
-    });
+      if (!subjectObj.stt) subjectObj.stt = subjects.length + 1;
+
+      subjects.push(subjectObj);
+    }
 
     if (errors.length > 0) {
       return res.status(400).json({
         success: false,
-        message: "File có lỗi định dạng",
-        errors: errors.slice(0, 10), // Chỉ show 10 lỗi đầu
+        message: "File có lỗi định dạng hoặc thiếu dữ liệu",
+        errors: errors.slice(0, 50),
         totalErrors: errors.length,
       });
     }
@@ -321,25 +427,46 @@ export async function importSubjectOpenFromExcel(req, res) {
     if (subjects.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Không tìm thấy dữ liệu môn học hợp lệ trong file",
+        message: "Không tìm thấy dữ liệu môn học hợp lệ trong file sau header",
       });
     }
 
-    // Kiểm tra trùng lặp trong file
-    const subjectIds = subjects.map((s) => s.subject_id);
-    const duplicates = subjectIds.filter((id, index) => subjectIds.indexOf(id) !== index);
-    
-    if (duplicates.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: `File có ${[...new Set(duplicates)].length} môn học bị trùng lặp`,
-        duplicates: [...new Set(duplicates)],
-        hint: "Mỗi môn học chỉ nên xuất hiện 1 lần trong file",
+    // Kiểm tra trùng lặp: chỉ coi là trùng khi toàn bộ các cột giống nhau -> giữ lại 1 bản
+    const canonicalize = (obj) => {
+      const keys = Object.keys(obj).sort();
+      const out = {};
+      keys.forEach((k) => {
+        const v = obj[k];
+        if (v instanceof Date) out[k] = v.toISOString();
+        else if (v === null || v === undefined) out[k] = "";
+        else out[k] = String(v).trim();
       });
+      return JSON.stringify(out);
+    };
+
+    const seen = new Set();
+    const uniqueSubjects = [];
+    let identicalDuplicatesCount = 0;
+    subjects.forEach((s) => {
+      const key = canonicalize(s);
+      if (seen.has(key)) {
+        identicalDuplicatesCount += 1;
+      } else {
+        seen.add(key);
+        uniqueSubjects.push(s);
+      }
+    });
+
+    if (identicalDuplicatesCount > 0) {
+      console.log(`[Import] ⚠️ Removed ${identicalDuplicatesCount} identical duplicate rows from file`);
     }
 
-    // Validate subjects tồn tại trong database
-    console.log(`[Import] Validating ${subjects.length} subjects for ${academicYear} ${semester}...`);
+    // Use deduplicated subjects moving forward
+    const finalSubjects = uniqueSubjects;
+
+    // Validate subjects tồn tại trong database (use unique subject IDs)
+    const subjectIds = [...new Set(finalSubjects.map((s) => s.subject_id))];
+    console.log(`[Import] Validating ${subjectIds.length} unique subject IDs for ${academicYear} ${semester}...`);
     const { valid, invalid } = await validateSubjectsExist(subjectIds);
 
     if (invalid.length > 0) {
