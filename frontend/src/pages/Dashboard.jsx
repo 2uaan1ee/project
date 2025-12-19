@@ -270,6 +270,13 @@ export default function Dashboard() {
             <span className="step-number">9</span>
             Thay đổi quy định
           </li>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/all-subjects")}
+          >
+            <span className="step-number">10</span>
+            Điều chỉnh môn học
+          </li>
         </ol>
 
         <div className="step-footer">

@@ -9,6 +9,7 @@ const SubjectSchema = new mongoose.Schema(
     subject_type: String,
     theory_credits: Number,
     practice_credits: Number,
+    total_periods: Number,
     prerequisite_id: [String],
     equivalent_id: [String],
     previous_id: [String],

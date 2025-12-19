@@ -19,7 +19,6 @@ import {
     Paper,
     Checkbox,
     TableSortLabel,
-    Button,
     Tooltip,
 } from "@mui/material";
 
@@ -33,6 +32,7 @@ const headCells = [
     { id: "subject_name", label: "Tên môn học", sortable: true },
     { id: "faculty_id", label: "Khoa quản lý", sortable: true },
     { id: "total_credits", label: "Tổng số tín chỉ", sortable: true },
+    { id: "actions", label: "Thao tác", sortable: false },
 ];
 
 // mapping khoa
@@ -265,6 +265,9 @@ function SubjectDetailPanel({ subject }) {
                 <span className="subject-hero__line">TC lý thuyết: {v(subject?.theory_credits)}</span>
                 <span className="subject-hero__line">TC thực hành: {v(subject?.practice_credits)}</span>
 
+                <span className="subject-hero__line subject-ellipsis" title={v(subject?.total_periods)}>
+                    Tổng số tiết: {v(subject?.total_periods)}
+                </span>
                 <span className="subject-hero__line subject-ellipsis" title={v(subject?.prerequisite_id)}>
                     Môn tiên quyết: {v(subject?.prerequisite_id)}
                 </span>
@@ -285,6 +288,8 @@ function SortableSubjectTable({
     rows,
     selectedKey,
     onRowSelect,
+    onEditRow,
+    onDeleteRow,
     rowsPerPage = 10,
 }) {
     const [order, setOrder] = useState("asc");
@@ -328,6 +333,14 @@ function SortableSubjectTable({
     );
 
     const handleRowClick = (row, key) => onRowSelect?.(row, key);
+    const handleEditClick = (event, row) => {
+        event.stopPropagation();
+        onEditRow?.(row);
+    };
+    const handleDeleteClick = (event, row) => {
+        event.stopPropagation();
+        onDeleteRow?.(row);
+    };
 
     return (
         <>
@@ -339,8 +352,9 @@ function SortableSubjectTable({
                                 <TableCell
                                     key={headCell.id}
                                     padding={headCell.id === "checkbox" ? "checkbox" : "normal"}
+                                    align={headCell.id === "actions" ? "right" : "left"}
                                 >
-                                    {headCell.id === "checkbox" ? null : (
+                                    {headCell.id === "checkbox" ? null : headCell.sortable ? (
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
                                             direction={orderBy === headCell.id ? order : "asc"}
@@ -348,6 +362,8 @@ function SortableSubjectTable({
                                         >
                                             {headCell.label}
                                         </TableSortLabel>
+                                    ) : (
+                                        <span>{headCell.label}</span>
                                     )}
                                 </TableCell>
                             ))}
@@ -387,13 +403,37 @@ function SortableSubjectTable({
                                         )}
                                     </TableCell>
                                     <TableCell>{totalCredits}</TableCell>
+                                    <TableCell align="right">
+                                        <div className="subject-row-actions">
+                                            <Tooltip title="Sửa môn học" arrow>
+                                                <button
+                                                    type="button"
+                                                    className="subject-action-btn"
+                                                    aria-label={`Sửa ${row.subject_id || row.subject_name || "môn học"}`}
+                                                    onClick={(event) => handleEditClick(event, row)}
+                                                >
+                                                    <i className="ti-pencil" aria-hidden="true" />
+                                                </button>
+                                            </Tooltip>
+                                            <Tooltip title="Xóa môn học" arrow>
+                                                <button
+                                                    type="button"
+                                                    className="subject-action-btn danger"
+                                                    aria-label={`Xóa ${row.subject_id || row.subject_name || "môn học"}`}
+                                                    onClick={(event) => handleDeleteClick(event, row)}
+                                                >
+                                                    <i className="ti-close" aria-hidden="true" />
+                                                </button>
+                                            </Tooltip>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             );
                         })}
 
                         {pageRows.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={5} align="center">
+                                <TableCell colSpan={6} align="center">
                                     Không có môn học nào.
                                 </TableCell>
                             </TableRow>
@@ -465,6 +505,35 @@ export default function AllSubjectList() {
     const [quickFilter, setQuickFilter] = useState("");
     const [selectedSubject, setSelectedSubject] = useState(null);
     const [selectedKey, setSelectedKey] = useState(null);
+    const [editSubject, setEditSubject] = useState(null);
+    const [deleteSubject, setDeleteSubject] = useState(null);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [createForm, setCreateForm] = useState({
+        subject_id: "",
+        subject_name: "",
+        subjectEL_name: "",
+        faculty_id: "",
+        subject_type: "",
+        theory_credits: "",
+        practice_credits: "",
+        prerequisite_id: "",
+        equivalent_id: "",
+        old_id: "",
+    });
+    const [editForm, setEditForm] = useState({
+        subject_name: "",
+        subjectEL_name: "",
+        faculty_id: "",
+        subject_type: "",
+        theory_credits: "",
+        practice_credits: "",
+        prerequisite_id: "",
+        equivalent_id: "",
+        old_id: "",
+    });
+    const [isSaving, setIsSaving] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const navigate = useNavigate();
 
@@ -542,6 +611,172 @@ export default function AllSubjectList() {
         }
     };
 
+    const toInputList = (value) => {
+        if (!value) return "";
+        if (Array.isArray(value)) return value.join(", ");
+        return String(value);
+    };
+
+    const handleOpenEdit = (row) => {
+        setEditSubject(row);
+        setEditForm({
+            subject_name: row?.subject_name || "",
+            subjectEL_name: row?.subjectEL_name || "",
+            faculty_id: row?.faculty_id || "",
+            subject_type: row?.subject_type || "",
+            theory_credits: row?.theory_credits ?? "",
+            practice_credits: row?.practice_credits ?? "",
+            prerequisite_id: toInputList(row?.prerequisite_id),
+            equivalent_id: toInputList(row?.equivalent_id),
+            old_id: toInputList(row?.old_id),
+        });
+    };
+
+    const handleOpenCreate = () => {
+        setCreateForm({
+            subject_id: "",
+            subject_name: "",
+            subjectEL_name: "",
+            faculty_id: "",
+            subject_type: "",
+            theory_credits: "",
+            practice_credits: "",
+            prerequisite_id: "",
+            equivalent_id: "",
+            old_id: "",
+        });
+        setIsCreateOpen(true);
+    };
+
+    const handleCloseCreate = () => {
+        if (isCreating) return;
+        setIsCreateOpen(false);
+    };
+
+    const handleCloseEdit = () => {
+        if (isSaving) return;
+        setEditSubject(null);
+    };
+
+    const handleOpenDelete = (row) => {
+        setDeleteSubject(row);
+    };
+
+    const handleCloseDelete = () => {
+        if (isDeleting) return;
+        setDeleteSubject(null);
+    };
+
+    const handleEditChange = (field, value) => {
+        setEditForm((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleCreateChange = (field, value) => {
+        setCreateForm((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleSaveEdit = async (event) => {
+        event.preventDefault();
+        if (!editSubject) return;
+        setIsSaving(true);
+        setError("");
+        try {
+            const token = sessionStorage.getItem("token") || "";
+            const headers = {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            };
+            const res = await fetch(`/api/subjects/${encodeURIComponent(editSubject.subject_id)}`, {
+                method: "PUT",
+                headers,
+                body: JSON.stringify(editForm),
+            });
+            if (!res.ok) {
+                const payload = await res.json().catch(() => ({}));
+                throw new Error(payload.message || `API lỗi (mã ${res.status})`);
+            }
+            const data = await res.json();
+            const updated = data?.subject || data;
+            setRowData((prev) =>
+                prev.map((row) =>
+                    row.subject_id === updated.subject_id ? { ...row, ...updated } : row
+                )
+            );
+            if (selectedSubject?.subject_id === updated.subject_id) {
+                setSelectedSubject(updated);
+            }
+            setEditSubject(null);
+        } catch (err) {
+            setError(err.message || "Không thể cập nhật môn học");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleCreateSubject = async (event) => {
+        event.preventDefault();
+        if (!createForm.subject_id.trim()) {
+            setError("Vui lòng nhập mã môn học");
+            return;
+        }
+        setIsCreating(true);
+        setError("");
+        try {
+            const token = sessionStorage.getItem("token") || "";
+            const headers = {
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            };
+            const res = await fetch("/api/subjects", {
+                method: "POST",
+                headers,
+                body: JSON.stringify(createForm),
+            });
+            if (!res.ok) {
+                const payload = await res.json().catch(() => ({}));
+                throw new Error(payload.message || `API lỗi (mã ${res.status})`);
+            }
+            const data = await res.json();
+            const created = data?.subject || data;
+            setRowData((prev) => [created, ...prev]);
+            setIsCreateOpen(false);
+        } catch (err) {
+            setError(err.message || "Không thể thêm môn học");
+        } finally {
+            setIsCreating(false);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteSubject) return;
+        setIsDeleting(true);
+        setError("");
+        try {
+            const token = sessionStorage.getItem("token") || "";
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const res = await fetch(`/api/subjects/${encodeURIComponent(deleteSubject.subject_id)}`, {
+                method: "DELETE",
+                headers,
+            });
+            if (!res.ok) {
+                const payload = await res.json().catch(() => ({}));
+                throw new Error(payload.message || `API lỗi (mã ${res.status})`);
+            }
+            setRowData((prev) =>
+                prev.filter((row) => row.subject_id !== deleteSubject.subject_id)
+            );
+            if (selectedSubject?.subject_id === deleteSubject.subject_id) {
+                setSelectedSubject(null);
+                setSelectedKey(null);
+            }
+            setDeleteSubject(null);
+        } catch (err) {
+            setError(err.message || "Không thể xóa môn học");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <div className="subject-open-page">
             {/* Sidebar bên trái */}
@@ -598,14 +833,23 @@ export default function AllSubjectList() {
                 <div className="subject-toolbar">
                     <div className="field-group">
                         <label>Tìm kiếm</label>
-                        <div className="combo">
-                            <input
-                                type="text"
-                                placeholder="Nhập mã môn hoặc tên môn..."
-                                value={quickFilter}
-                                onChange={(e) => handleQuickFilter(e.target.value)}
-                            />
-                            <span className="combo-suffix">⌕</span>
+                        <div className="combo-row">
+                            <div className="combo">
+                                <input
+                                    type="text"
+                                    placeholder="Nhập mã môn hoặc tên môn..."
+                                    value={quickFilter}
+                                    onChange={(e) => handleQuickFilter(e.target.value)}
+                                />
+                                <span className="combo-suffix">⌕</span>
+                            </div>
+                            <button
+                                type="button"
+                                className="subject-add-btn"
+                                onClick={handleOpenCreate}
+                            >
+                                + Thêm môn
+                            </button>
                         </div>
                     </div>
                     <div className="toolbar-actions">
@@ -634,19 +878,288 @@ export default function AllSubjectList() {
                             rows={filteredRows}
                             selectedKey={selectedKey}
                             onRowSelect={handleRowSelect}
+                            onEditRow={handleOpenEdit}
+                            onDeleteRow={handleOpenDelete}
                         />
                     </div>
                 </div>
-
-                <footer className="subject-summary">
-                    <span>
-                        Tổng tín chỉ: <strong>{creditTotal}</strong>
-                    </span>
-                    <span>
-                        Số môn học: <strong>{rowData.length}</strong>
-                    </span>
-                </footer>
             </section>
+
+            {editSubject && (
+                <div className="subject-modal-backdrop" onClick={handleCloseEdit}>
+                    <div className="subject-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="subject-modal-header">
+                            <div>
+                                <p className="subject-modal-label">SỬA MÔN HỌC</p>
+                                <h3 className="subject-modal-title">
+                                    {editSubject.subject_id || "Môn học"}
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                className="subject-modal-close"
+                                onClick={handleCloseEdit}
+                                aria-label="Đóng"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <form onSubmit={handleSaveEdit}>
+                            <div className="subject-modal-body">
+                                <div className="subject-modal-grid">
+                                    <div className="subject-form-field">
+                                        <label>Mã môn học</label>
+                                        <input value={editSubject.subject_id || ""} disabled />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Tên môn học</label>
+                                        <input
+                                            value={editForm.subject_name}
+                                            onChange={(e) => handleEditChange("subject_name", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Tên tiếng Anh</label>
+                                        <input
+                                            value={editForm.subjectEL_name}
+                                            onChange={(e) => handleEditChange("subjectEL_name", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Khoa quản lý</label>
+                                        <input
+                                            value={editForm.faculty_id}
+                                            onChange={(e) => handleEditChange("faculty_id", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Loại môn</label>
+                                        <input
+                                            value={editForm.subject_type}
+                                            onChange={(e) => handleEditChange("subject_type", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>TC lý thuyết</label>
+                                        <input
+                                            type="number"
+                                            value={editForm.theory_credits}
+                                            onChange={(e) => handleEditChange("theory_credits", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>TC thực hành</label>
+                                        <input
+                                            type="number"
+                                            value={editForm.practice_credits}
+                                            onChange={(e) => handleEditChange("practice_credits", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Môn tiên quyết</label>
+                                        <input
+                                            value={editForm.prerequisite_id}
+                                            onChange={(e) => handleEditChange("prerequisite_id", e.target.value)}
+                                        />
+                                        <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Môn tương đương</label>
+                                        <input
+                                            value={editForm.equivalent_id}
+                                            onChange={(e) => handleEditChange("equivalent_id", e.target.value)}
+                                        />
+                                        <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Mã cũ</label>
+                                        <input
+                                            value={editForm.old_id}
+                                            onChange={(e) => handleEditChange("old_id", e.target.value)}
+                                        />
+                                        <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="subject-modal-footer">
+                                <button
+                                    type="button"
+                                    className="subject-btn ghost"
+                                    onClick={handleCloseEdit}
+                                    disabled={isSaving}
+                                >
+                                    Hủy
+                                </button>
+                                <button type="submit" className="subject-btn" disabled={isSaving}>
+                                    {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {deleteSubject && (
+                <div className="subject-modal-backdrop" onClick={handleCloseDelete}>
+                    <div className="subject-modal subject-modal--danger" onClick={(e) => e.stopPropagation()}>
+                        <div className="subject-modal-header">
+                            <div>
+                                <p className="subject-modal-label">XÓA MÔN HỌC</p>
+                                <h3 className="subject-modal-title">
+                                    {deleteSubject.subject_id || deleteSubject.subject_name || "Môn học"}
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                className="subject-modal-close"
+                                onClick={handleCloseDelete}
+                                aria-label="Đóng"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="subject-modal-body">
+                            <p>
+                                Bạn có chắc muốn xóa môn học{" "}
+                                <strong>{deleteSubject.subject_name || deleteSubject.subject_id}</strong>?
+                            </p>
+                        </div>
+                        <div className="subject-modal-footer">
+                            <button
+                                type="button"
+                                className="subject-btn ghost"
+                                onClick={handleCloseDelete}
+                                disabled={isDeleting}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                type="button"
+                                className="subject-btn danger"
+                                onClick={handleConfirmDelete}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? "Đang xóa..." : "Xóa môn"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isCreateOpen && (
+                <div className="subject-modal-backdrop" onClick={handleCloseCreate}>
+                    <div className="subject-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="subject-modal-header">
+                            <div>
+                                <p className="subject-modal-label">THÊM MÔN HỌC</p>
+                                <h3 className="subject-modal-title">Môn học mới</h3>
+                            </div>
+                            <button
+                                type="button"
+                                className="subject-modal-close"
+                                onClick={handleCloseCreate}
+                                aria-label="Đóng"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <form onSubmit={handleCreateSubject}>
+                            <div className="subject-modal-body">
+                                <div className="subject-modal-grid">
+                                    <div className="subject-form-field">
+                                        <label>Mã môn học</label>
+                                        <input
+                                            value={createForm.subject_id}
+                                            onChange={(e) => handleCreateChange("subject_id", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Tên môn học</label>
+                                        <input
+                                            value={createForm.subject_name}
+                                            onChange={(e) => handleCreateChange("subject_name", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Tên tiếng Anh</label>
+                                        <input
+                                            value={createForm.subjectEL_name}
+                                            onChange={(e) => handleCreateChange("subjectEL_name", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Khoa quản lý</label>
+                                        <input
+                                            value={createForm.faculty_id}
+                                            onChange={(e) => handleCreateChange("faculty_id", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Loại môn</label>
+                                        <input
+                                            value={createForm.subject_type}
+                                            onChange={(e) => handleCreateChange("subject_type", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>TC lý thuyết</label>
+                                        <input
+                                            type="number"
+                                            value={createForm.theory_credits}
+                                            onChange={(e) => handleCreateChange("theory_credits", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>TC thực hành</label>
+                                        <input
+                                            type="number"
+                                            value={createForm.practice_credits}
+                                            onChange={(e) => handleCreateChange("practice_credits", e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Môn tiên quyết</label>
+                                        <input
+                                            value={createForm.prerequisite_id}
+                                            onChange={(e) => handleCreateChange("prerequisite_id", e.target.value)}
+                                        />
+                                        <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Môn tương đương</label>
+                                        <input
+                                            value={createForm.equivalent_id}
+                                            onChange={(e) => handleCreateChange("equivalent_id", e.target.value)}
+                                        />
+                                        <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
+                                    </div>
+                                    <div className="subject-form-field">
+                                        <label>Mã cũ</label>
+                                        <input
+                                            value={createForm.old_id}
+                                            onChange={(e) => handleCreateChange("old_id", e.target.value)}
+                                        />
+                                        <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="subject-modal-footer">
+                                <button
+                                    type="button"
+                                    className="subject-btn ghost"
+                                    onClick={handleCloseCreate}
+                                    disabled={isCreating}
+                                >
+                                    Hủy
+                                </button>
+                                <button type="submit" className="subject-btn" disabled={isCreating}>
+                                    {isCreating ? "Đang thêm..." : "Thêm môn"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
