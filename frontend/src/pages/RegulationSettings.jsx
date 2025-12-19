@@ -5,8 +5,8 @@ import { authFetch } from "../lib/auth";
 
 const navSections = [
   { title: "Mẫu", subtitle: "Điểm quá trình, phúc khảo, lịch thi", count: 6 },
-  { title: "Sinh viên", subtitle: "", count: 6 },
-  { title: "Môn học", subtitle: "", count: 5 },
+  { title: "Sinh viên", subtitle: "", count: 2 },
+  { title: "Môn học", subtitle: "", count: 2 },
   { title: "Chương trình đào tạo", subtitle: "", count: 5 },
   { title: "Đăng ký học phần", subtitle: "", count: 5 },
   { title: "Học phí", subtitle: "", count: 4 },
@@ -161,7 +161,11 @@ function TemplateAcademicContent() {
   );
 }
 
-function StudentAcademicContent() {
+function StudentAcademicContent({
+  maxStudentMajors,
+  onMaxStudentMajorsChange,
+  settingsError,
+}) {
   return (
     <>
       <div className="editor-head">
@@ -180,20 +184,77 @@ function StudentAcademicContent() {
       <div className="field-grid">
         <label className="input-block">
           <span>Số ngành học tối đa</span>
-          <input type="number" defaultValue={1} min={0} />
+          <input
+            type="number"
+            min={0}
+            value={maxStudentMajors ?? 1}
+            onChange={onMaxStudentMajorsChange}
+          />
+          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
         </label>
       </div>
 
+    
       <div className="field-grid two">
         <div className="input-block">
           <span>Giảm học phí</span>
           <div className="stacked-options">
             <label className="option-row">
+              {/* TODO: Kiểm tra BM6 để thêm ràng buộc cho phép giảm học phí */}
               <input type="checkbox" defaultChecked />
               <span>Áp dụng cho sinh viên thuộc đối tượng ưu tiên</span>
             </label>
           </div>
         </div>
+      </div>
+    </>
+  );
+}
+
+function SubjectPolicyContent({
+  creditCoefficientPractice,
+  creditCoefficientTheory,
+  onCreditCoefficientPracticeChange,
+  onCreditCoefficientTheoryChange,
+  settingsError,
+}) {
+  return (
+    <>
+      <div className="editor-head">
+        <div>
+          <p className="eyebrow">Môn học</p>
+          <h3>Quy định dành cho môn học</h3>
+          <p className="muted">
+            Khung quy định áp dụng trực tiếp cho môn học
+          </p>
+        </div>
+        <div className="chip-row">
+          <span className="pill neutral">Áp dụng: Từ khóa 2024</span>
+        </div>
+      </div>
+
+      <div className="field-grid">
+        {/* TODO: Thêm hàm validator ở backend khi thực hiện update môn học*/}
+        <label className="input-block">
+          <span>Hệ số tín chỉ / tiết cho tín chỉ thực hành</span>
+          <input
+            type="number"
+            min={0}
+            value={creditCoefficientPractice ?? 1}
+            onChange={onCreditCoefficientPracticeChange}
+          />
+          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+        </label>
+        <label className="input-block">
+          <span>Hệ số tín chỉ / tiết cho tín chỉ lý thuyết</span>
+          <input
+            type="number"
+            min={0}
+            value={creditCoefficientTheory ?? 1}
+            onChange={onCreditCoefficientTheoryChange}
+          />
+          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+        </label>
       </div>
     </>
   );
@@ -221,10 +282,66 @@ export default function RegulationSettings() {
   const [uploading, setUploading] = React.useState(false);
   const [attachmentError, setAttachmentError] = React.useState("");
   const fileInputRef = React.useRef(null);
+  const [maxStudentMajors, setMaxStudentMajors] = React.useState(1);
+  const [settingsLoaded, setSettingsLoaded] = React.useState(false);
+  const [settingsSaving, setSettingsSaving] = React.useState(false);
+  const [settingsError, setSettingsError] = React.useState("");
+  const [settingsSuccess, setSettingsSuccess] = React.useState("");
+  const [creditCoefficientPractice, setCreditCoefficientPractice] = React.useState(1);
+  const [creditCoefficientTheory, setCreditCoefficientTheory] = React.useState(1);
 
   const renderEditorContent = () => {
     if (activeNav === "Mẫu") return <TemplateAcademicContent />;
-    if (activeNav === "Sinh viên") return <StudentAcademicContent />;
+    if (activeNav === "Sinh viên") {
+      return (
+        <StudentAcademicContent
+          maxStudentMajors={maxStudentMajors}
+          onMaxStudentMajorsChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              setMaxStudentMajors("");
+              setSettingsSuccess("");
+              return;
+            }
+            const next = Math.max(0, Number(raw));
+            setMaxStudentMajors(Number.isFinite(next) ? next : "");
+            setSettingsSuccess("");
+          }}
+          settingsError={settingsError}
+        />
+      );
+    }
+    if (activeNav === "Môn học") {
+      return (
+        <SubjectPolicyContent
+          creditCoefficientPractice={creditCoefficientPractice}
+          creditCoefficientTheory={creditCoefficientTheory}
+          onCreditCoefficientPracticeChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              setCreditCoefficientPractice("");
+              setSettingsSuccess("");
+              return;
+            }
+            const next = Math.max(0, Number(raw));
+            setCreditCoefficientPractice(Number.isFinite(next) ? next : "");
+            setSettingsSuccess("");
+          }}
+          onCreditCoefficientTheoryChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              setCreditCoefficientTheory("");
+              setSettingsSuccess("");
+              return;
+            }
+            const next = Math.max(0, Number(raw));
+            setCreditCoefficientTheory(Number.isFinite(next) ? next : "");
+            setSettingsSuccess("");
+          }}
+          settingsError={settingsError}
+        />
+      );
+    }
     return <PlaceholderContent title={activeNav} />;
   };
 
@@ -245,6 +362,95 @@ export default function RegulationSettings() {
       }
     }
     loadAttachments();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSaveSettings = async () => {
+    if (!settingsLoaded) return;
+    if (maxStudentMajors === "" || maxStudentMajors === null) {
+      setSettingsError("Vui lòng nhập Số ngành học tối đa.");
+      return;
+    }
+    const nextValue = Number(maxStudentMajors);
+    if (!Number.isFinite(nextValue) || nextValue < 0) {
+      setSettingsError("Số ngành học tối đa không hợp lệ.");
+      return;
+    }
+    if (creditCoefficientPractice === "" || creditCoefficientPractice === null) {
+      setSettingsError("Vui lòng nhập hệ số tín chỉ / tiết cho tín chỉ thực hành.");
+      return;
+    }
+    if (creditCoefficientTheory === "" || creditCoefficientTheory === null) {
+      setSettingsError("Vui lòng nhập hệ số tín chỉ / tiết cho tín chỉ lý thuyết.");
+      return;
+    }
+    const practiceValue = Number(creditCoefficientPractice);
+    const theoryValue = Number(creditCoefficientTheory);
+    if (!Number.isFinite(practiceValue) || practiceValue < 0) {
+      setSettingsError("Hệ số tín chỉ / tiết cho tín chỉ thực hành không hợp lệ.");
+      return;
+    }
+    if (!Number.isFinite(theoryValue) || theoryValue < 0) {
+      setSettingsError("Hệ số tín chỉ / tiết cho tín chỉ lý thuyết không hợp lệ.");
+      return;
+    }
+
+    setSettingsSaving(true);
+    setSettingsError("");
+    setSettingsSuccess("");
+    try {
+      const res = await authFetch("/api/regulations/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          maxStudentMajors: nextValue,
+          creditCoefficientPractice: practiceValue,
+          creditCoefficientTheory: theoryValue,
+        }),
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload?.message || "Không thể lưu quy định");
+      setSettingsSuccess("Đã lưu quy định.");
+    } catch (err) {
+      setSettingsError(err.message || "Không thể lưu quy định");
+    } finally {
+      setSettingsSaving(false);
+    }
+  };
+
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadSettings() {
+      setSettingsError("");
+      try {
+        const res = await authFetch("/api/regulations/settings");
+        const payload = await res.json();
+        if (!res.ok) throw new Error(payload?.message || "Không thể tải quy định");
+        if (!cancelled) {
+          const value = payload?.settings?.maxStudentMajors;
+          setMaxStudentMajors(
+            Number.isFinite(Number(value)) ? Number(value) : 1
+          );
+          const practiceValue = payload?.settings?.creditCoefficientPractice;
+          const theoryValue = payload?.settings?.creditCoefficientTheory;
+          setCreditCoefficientPractice(
+            Number.isFinite(Number(practiceValue)) ? Number(practiceValue) : 1
+          );
+          setCreditCoefficientTheory(
+            Number.isFinite(Number(theoryValue)) ? Number(theoryValue) : 1
+          );
+          setSettingsLoaded(true);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setSettingsError(err.message || "Không thể tải quy định");
+          setSettingsLoaded(true);
+        }
+      }
+    }
+    loadSettings();
     return () => {
       cancelled = true;
     };
@@ -301,13 +507,21 @@ export default function RegulationSettings() {
                 </button>
             </div>
           <h1>Điều chỉnh quy định năm học 2024 - 2025</h1>
-          <p className="lead">
-            Trang trung tâm cho cán bộ cập nhật quy định, lưu bản nháp và gửi phê duyệt. Nội dung bên dưới chỉ là layout mẫu, chưa gắn API.
-          </p>
           <div className="regulation-tags">
             <span className="pill soft">Cập nhật: 10:45 • 22/03</span>
             <span className="pill soft">Người chỉnh: Phạm Thu Hà</span>
           </div>
+        </div>
+        <div className="header-actions">
+          <button
+            type="button"
+            className="btn primary"
+            onClick={handleSaveSettings}
+            disabled={settingsSaving}
+          >
+            {settingsSaving ? "Đang lưu..." : "Lưu quy định"}
+          </button>
+          {settingsSuccess ? <span className="pill success">{settingsSuccess}</span> : null}
         </div>
       </div>
 

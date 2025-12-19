@@ -1,5 +1,6 @@
 // backend/src/models/Students.js
 import mongoose from "mongoose";
+import { getMaxStudentMajors } from "../services/regulationSettings.js";
 
 /* ========== SUB-SCHEMA ========== */
 
@@ -98,7 +99,19 @@ const StudentSchema = new mongoose.Schema(
     birthplace: String,
 
     class_id: String,
-    major_id: String,
+    major_id: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: async function (value) {
+          if (value == null) return true;
+          if (!Array.isArray(value)) return false;
+          const maxMajors = await getMaxStudentMajors();
+          return value.length <= maxMajors;
+        },
+        message: "Số ngành học vượt quá giới hạn cho phép.",
+      },
+    },
     program_id: String,
     program_type: { type: String, enum: ["CQUI", "CNTN"] },
     has_english_certificate: Boolean,

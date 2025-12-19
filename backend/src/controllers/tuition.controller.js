@@ -135,7 +135,7 @@ export const summarizePayments = asyncHandler(async (req, res) => {
         },
         major_id: {
           $ifNull: [
-            { $arrayElemAt: ["$student.major_id", 0] },
+            { $arrayElemAt: [{ $arrayElemAt: ["$student.major_id", 0] }, 0] },
             { $arrayElemAt: ["$registration.major_id", 0] },
           ],
         },

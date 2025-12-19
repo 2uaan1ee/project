@@ -46,6 +46,12 @@ export default function StudentProfile() {
   if (!student) return <div className="student-page">Không tìm thấy sinh viên.</div>;
 
   const { contact = {}, address = {}, identity = {}, family = {} } = student;
+  const majorIds = Array.isArray(student.major_id)
+    ? student.major_id.map((id) => String(id).trim()).filter(Boolean)
+    : student.major_id
+      ? [String(student.major_id).trim()]
+      : [];
+  const majorDisplay = majorIds.join(", ");
 
   return (
     <div className="student-page">
@@ -84,7 +90,7 @@ export default function StudentProfile() {
 
         <div className="profile-hero__block">
           <span className="profile-hero__label">Ngành học</span>
-          <span className="profile-hero__value">{student.major_id || ""}</span>
+          <span className="profile-hero__value">{majorDisplay}</span>
           <span>Giới tính: {student.gender === "Male" ? "Nam" : "Nữ"}</span>
           <span>Đào tạo: {student.program_type || ""}</span>
         </div>

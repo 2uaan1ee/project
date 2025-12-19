@@ -8,6 +8,10 @@ import {
   listAttachments,
   uploadAttachment,
 } from "../controllers/regulationAttachment.controller.js";
+import {
+  getRegulationSettings,
+  updateRegulationSettings,
+} from "../controllers/regulationSettings.controller.js";
 
 const router = express.Router();
 
@@ -85,6 +89,19 @@ router.delete(
   maybeAuth,
   maybeAdmin,
   deleteAttachment
+);
+
+router.get(
+  "/settings",
+  maybeAuth,
+  getRegulationSettings
+);
+
+router.put(
+  "/settings",
+  maybeAuth,
+  maybeAdmin,
+  updateRegulationSettings
 );
 
 export default router;

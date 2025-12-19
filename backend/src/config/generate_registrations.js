@@ -370,7 +370,12 @@ function buildRegistrationForStudent({
     let semesterNumber = studyYear * 2;
     if (semesterNumber > 8) semesterNumber = 8;
 
-    const majorCode = String(student.major_id || "").toUpperCase();
+    const majorList = Array.isArray(student.major_id)
+        ? student.major_id
+        : student.major_id
+            ? [student.major_id]
+            : [];
+    const majorCode = String(majorList[0] || "").toUpperCase();
     const studentFaculty = getFacultyIdForMajor(majorCode);
 
     const items = [];

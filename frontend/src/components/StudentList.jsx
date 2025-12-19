@@ -20,10 +20,19 @@ const MAJOR_LABELS = {
   TMDT: "Thương mại Điện tử",
 };
 
-function formatMajor(majorId) {
-  if (!majorId) return "";
+function normalizeMajorIds(majorId) {
+  if (!majorId) return [];
+  if (Array.isArray(majorId)) {
+    return majorId.map((id) => String(id).trim()).filter(Boolean);
+  }
   const code = String(majorId).trim();
-  return MAJOR_LABELS[code] || code;
+  return code ? [code] : [];
+}
+
+function formatMajor(majorId) {
+  const ids = normalizeMajorIds(majorId);
+  if (!ids.length) return "";
+  return ids.map((code) => MAJOR_LABELS[code] || code).join(", ");
 }
 
 function buildStudentsUrl({ keyword = "", page = 1, limit = 20 }) {
@@ -180,12 +189,13 @@ export default function StudentList() {
               <tbody>
                 {students.map((s) => {
                   const majorName = formatMajor(s.major_id);
+                  const majorTitle = normalizeMajorIds(s.major_id).join(", ");
                   return (
                     <tr key={s._id || s.student_id} onClick={() => nav(`/app/students/${s.student_id}`)}>
                       <td>{s.student_id}</td>
                       <td>{s.name}</td>
                       <td>{s.class_id}</td>
-                      <td title={s.major_id}>{majorName}</td>
+                      <td title={majorTitle}>{majorName}</td>
                       <td>{s.gender === "Male" ? "Nam" : s.gender === "Female" ? "Nữ" : (s.gender || "")}</td>
                     </tr>
                   );
