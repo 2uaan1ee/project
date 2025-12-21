@@ -1,4 +1,4 @@
-﻿// pages/SubjectOpen.jsx
+// pages/SubjectOpen.jsx
 import React, {
     useCallback,
     useEffect,
@@ -70,6 +70,27 @@ function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) return -1;
     if (b[orderBy] > a[orderBy]) return 1;
     return 0;
+}
+
+function buildPageTokens(current, totalPages) {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    const tokens = [];
+    const add = (x) => tokens.push(x);
+
+    add(1);
+
+    const left = Math.max(2, current - 1);
+    const right = Math.min(totalPages - 1, current + 1);
+
+    if (left > 2) add("...");
+
+    for (let p = left; p <= right; p++) add(p);
+
+    if (right < totalPages - 1) add("...");
+
+    add(totalPages);
+    return tokens;
 }
 
 function getComparator(order, orderBy) {
@@ -176,8 +197,7 @@ function SubjectDetailPanel({ subject }) {
     const hasSubject = !!subject;
 
     const totalCredits =
-        (Number(subject?.theory_credits) || 0) +
-        (Number(subject?.practice_credits) || 0);
+        (Number(subject?.theory_credits) || 0) + (Number(subject?.practice_credits) || 0);
 
     const facultyDisplay = hasSubject
         ? getFacultyDisplay(subject.faculty_id)
@@ -187,87 +207,75 @@ function SubjectDetailPanel({ subject }) {
         ? getSubjectTypeDisplay(subject.subject_type)
         : { label: "—", tooltip: "" };
 
+    const v = (val) => (hasSubject ? formatArray(val) : "—"); // value helper (ổn định số dòng)
+
     return (
-        <div className="subject-hero">
-            {/* Cột 1: Mã môn + meta */}
+        <div className="subject-hero" aria-live="polite">
+            {/* Cột 1 */}
             <div className="subject-hero__block">
                 <span className="subject-hero__label">Mã môn học</span>
-                <span className="subject-hero__value">
-                    {hasSubject ? formatArray(subject.subject_id) : "Chưa chọn môn"}
+
+                <span
+                    className="subject-hero__value subject-ellipsis"
+                    title={hasSubject ? formatArray(subject?.subject_id) : ""}
+                >
+                    {hasSubject ? formatArray(subject?.subject_id) : "Chưa chọn môn"}
                 </span>
 
                 <div className="subject-meta">
-                    {hasSubject ? (
-                        <Tooltip title={typeDisplay.tooltip} arrow>
-                            <span className="subject-meta-pill">
-                                Loại môn: {typeDisplay.label}
-                            </span>
-                        </Tooltip>
-                    ) : (
-                        <span className="subject-meta-pill">Loại môn: —</span>
-                    )}
+                    <Tooltip title={typeDisplay.tooltip} arrow>
+                        <span className="subject-meta-pill subject-ellipsis" title={typeDisplay.label}>
+                            Loại môn: {typeDisplay.label}
+                        </span>
+                    </Tooltip>
 
-                    {hasSubject ? (
-                        <Tooltip title={facultyDisplay.tooltip} arrow>
-                            <span className="subject-meta-pill">
-                                Khoa quản lý: {facultyDisplay.label}
-                            </span>
-                        </Tooltip>
-                    ) : (
-                        <span className="subject-meta-pill">Khoa quản lý: —</span>
-                    )}
+                    <Tooltip title={facultyDisplay.tooltip} arrow>
+                        <span className="subject-meta-pill subject-ellipsis" title={facultyDisplay.label}>
+                            Khoa quản lý: {facultyDisplay.label}
+                        </span>
+                    </Tooltip>
 
-                    <span className="subject-meta-pill">
-                        Số tín chỉ: {hasSubject ? totalCredits : "—"}
-                    </span>
+                    <span className="subject-meta-pill">Số tín chỉ: {hasSubject ? totalCredits : "—"}</span>
                 </div>
             </div>
 
-            {/* Cột 2: Tên môn */}
+            {/* Cột 2 */}
             <div className="subject-hero__block">
                 <span className="subject-hero__label">Tên môn học</span>
-                <span className="subject-hero__value">
-                    {hasSubject
-                        ? formatArray(subject.subject_name)
-                        : "Hãy chọn một môn trong bảng bên dưới"}
+
+                <span
+                    className="subject-hero__value subject-ellipsis"
+                    title={hasSubject ? formatArray(subject?.subject_name) : ""}
+                >
+                    {hasSubject ? formatArray(subject?.subject_name) : "Hãy chọn một môn trong bảng bên dưới"}
                 </span>
 
-                {hasSubject && (
-                    <>
-                        <span>
-                            Tên tiếng Anh: {formatArray(subject.subjectEL_name)}
-                        </span>
-                        <span>Mã cũ: {formatArray(subject.old_id)}</span>
-                    </>
-                )}
+                <span className="subject-hero__line subject-ellipsis" title={v(subject?.subjectEL_name)}>
+                    Tên tiếng Anh: {v(subject?.subjectEL_name)}
+                </span>
+                <span className="subject-hero__line subject-ellipsis" title={v(subject?.old_id)}>
+                    Mã cũ: {v(subject?.old_id)}
+                </span>
             </div>
 
-            {/* Cột 3: Thông tin thêm */}
+            {/* Cột 3 */}
             <div className="subject-hero__block">
                 <span className="subject-hero__label">Thông tin thêm</span>
-                <span>
-                    TC lý thuyết:{" "}
-                    {hasSubject ? formatArray(subject.theory_credits) : "—"}
-                </span>
-                <span>
-                    TC thực hành:{" "}
-                    {hasSubject ? formatArray(subject.practice_credits) : "—"}
-                </span>
 
-                {hasSubject && (
-                    <>
-                        <span>
-                            Môn tiên quyết: {formatArray(subject.prerequisite_id)}
-                        </span>
-                        <span>
-                            Môn tương đương: {formatArray(subject.equivalent_id)}
-                        </span>
-                    </>
-                )}
+                <span className="subject-hero__line">TC lý thuyết: {v(subject?.theory_credits)}</span>
+                <span className="subject-hero__line">TC thực hành: {v(subject?.practice_credits)}</span>
+
+                <span className="subject-hero__line subject-ellipsis" title={v(subject?.prerequisite_id)}>
+                    Môn tiên quyết: {v(subject?.prerequisite_id)}
+                </span>
+                <span className="subject-hero__line subject-ellipsis" title={v(subject?.equivalent_id)}>
+                    Môn tương đương: {v(subject?.equivalent_id)}
+                </span>
             </div>
         </div>
     );
 }
+
 
 /* =========================
    SORTABLE TABLE (SINGLE SELECT)
@@ -277,11 +285,11 @@ function SortableSubjectTable({
     rows,
     selectedKey,
     onRowSelect,
-    initialVisible = 4,
+    rowsPerPage = 10,
 }) {
     const [order, setOrder] = useState("asc");
     const [orderBy, setOrderBy] = useState("subject_id");
-    const [visibleCount, setVisibleCount] = useState(initialVisible);
+    const [page, setPage] = useState(1);
 
     const handleRequestSort = (property) => {
         if (property === "checkbox") return;
@@ -295,27 +303,31 @@ function SortableSubjectTable({
         [rows, order, orderBy]
     );
 
-    const rowsToShow = useMemo(
-        () => sortedRows.slice(0, visibleCount),
-        [sortedRows, visibleCount]
+    const totalPages = useMemo(
+        () => Math.max(1, Math.ceil(sortedRows.length / rowsPerPage)),
+        [sortedRows.length, rowsPerPage]
     );
 
-    const handleRowClick = (row, key) => {
-        onRowSelect?.(row, key);
-    };
-
-    const handleLoadMore = () => {
-        setVisibleCount((prev) => Math.min(prev + 4, rows.length));
-    };
-
-    const handleShowLess = () => {
-        setVisibleCount(initialVisible);
-    };
-
-    // khi rows đổi (reload API), reset số hàng hiển thị
     useEffect(() => {
-        setVisibleCount(initialVisible);
-    }, [rows, initialVisible]);
+        // đổi filter/sort -> quay về trang 1 cho UX dễ hiểu
+        setPage(1);
+    }, [rows, order, orderBy]);
+
+    useEffect(() => {
+        if (page > totalPages) setPage(totalPages);
+    }, [page, totalPages]);
+
+    const pageRows = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        return sortedRows.slice(start, start + rowsPerPage);
+    }, [sortedRows, page, rowsPerPage]);
+
+    const pageTokens = useMemo(
+        () => buildPageTokens(page, totalPages),
+        [page, totalPages]
+    );
+
+    const handleRowClick = (row, key) => onRowSelect?.(row, key);
 
     return (
         <>
@@ -328,10 +340,7 @@ function SortableSubjectTable({
                                     key={headCell.id}
                                     padding={headCell.id === "checkbox" ? "checkbox" : "normal"}
                                 >
-                                    {headCell.id === "checkbox" ? (
-                                        // cột tick, không cho select all, chỉ để trống
-                                        null
-                                    ) : (
+                                    {headCell.id === "checkbox" ? null : (
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
                                             direction={orderBy === headCell.id ? order : "asc"}
@@ -346,12 +355,12 @@ function SortableSubjectTable({
                     </TableHead>
 
                     <TableBody>
-                        {rowsToShow.map((row, index) => {
+                        {pageRows.map((row, index) => {
                             const rowKey = getRowKey(row, index);
                             const isSelected = selectedKey === rowKey;
+
                             const totalCredits =
-                                (Number(row.theory_credits) || 0) +
-                                (Number(row.practice_credits) || 0);
+                                (Number(row.theory_credits) || 0) + (Number(row.practice_credits) || 0);
 
                             const facultyDisplay = getFacultyDisplay(row.faculty_id);
 
@@ -382,7 +391,7 @@ function SortableSubjectTable({
                             );
                         })}
 
-                        {rowsToShow.length === 0 && (
+                        {pageRows.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={5} align="center">
                                     Không có môn học nào.
@@ -393,31 +402,57 @@ function SortableSubjectTable({
                 </Table>
             </TableContainer>
 
-            {rows.length > initialVisible && (
-                <div className="table-loadmore-bar">
-                    {visibleCount < rows.length && (
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={handleLoadMore}
+            {/* Pagination */}
+            {sortedRows.length > 0 && (
+                <div className="table-pagination-bar">
+                    <span className="table-pagination-info">
+                        Đang hiển thị <strong>{pageRows.length}</strong> /{" "}
+                        <strong>{sortedRows.length}</strong> — Trang{" "}
+                        <strong>{page}</strong> / <strong>{totalPages}</strong>
+                    </span>
+
+                    <div className="table-pagination-actions">
+                        <button
+                            type="button"
+                            className="page-btn"
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            disabled={page === 1}
                         >
-                            LOAD MORE
-                        </Button>
-                    )}
-                    {visibleCount > initialVisible && (
-                        <Button
-                            variant="text"
-                            size="small"
-                            onClick={handleShowLess}
+                            ◀
+                        </button>
+
+                        {pageTokens.map((t, idx) =>
+                            t === "..." ? (
+                                <span key={`dots-${idx}`} className="page-dots">
+                                    ...
+                                </span>
+                            ) : (
+                                <button
+                                    key={t}
+                                    type="button"
+                                    className={`page-btn ${t === page ? "active" : ""}`}
+                                    onClick={() => setPage(t)}
+                                >
+                                    {t}
+                                </button>
+                            )
+                        )}
+
+                        <button
+                            type="button"
+                            className="page-btn"
+                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
                         >
-                            SHOW LESS
-                        </Button>
-                    )}
+                            ▶
+                        </button>
+                    </div>
                 </div>
             )}
         </>
     );
 }
+
 
 /* =========================
    SUBJECT OPEN PAGE
@@ -437,14 +472,11 @@ export default function SubjectOpen() {
         setIsLoading(true);
         setError("");
         try {
-            const token = sessionStorage.getItem("token");
-            const res = await fetch("/api/subject-open", {
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
+            const res = await fetch("/api/subjects/open");
             if (!res.ok) throw new Error(`API lỗi (mã ${res.status})`);
             const data = await res.json();
-            const subjects = data.success && data.data ? data.data.flatMap(list => list.subjects) : [];
-            setRowData(subjects);
+            const rows = Array.isArray(data) ? data : [];
+            setRowData(rows);
         } catch (err) {
             setError(err.message || "Không thể tải danh sách môn học");
             setRowData([]);
@@ -595,7 +627,6 @@ export default function SubjectOpen() {
                             rows={filteredRows}
                             selectedKey={selectedKey}
                             onRowSelect={handleRowSelect}
-                            initialVisible={4}
                         />
                     </div>
                 </div>

@@ -1,0 +1,114 @@
+:root {
+    --footer-bg: #ffffff;
+    --footer-border: #dfe5ee;
+    --footer-text: #123047;
+    --footer-muted: #6b7a90;
+    --footer-primary: #126baf;
+    --footer-primary-light: #e7f2ff;
+    --footer-radius: 14px;
+}
+
+.app-footer {
+    margin-top: 18px;
+    padding: 0 18px 18px;
+}
+
+.app-footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    background: var(--footer-bg);
+    border: 1px solid var(--footer-border);
+    border-radius: var(--footer-radius);
+    padding: 14px 16px;
+}
+
+.app-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-footer__logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+
+.app-footer__title {
+    font-weight: 800;
+    color: var(--footer-text);
+    font-size: 14px;
+    line-height: 1.1;
+}
+
+.app-footer__sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--footer-muted);
+}
+
+.app-footer__nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.app-footer__link {
+    border: 1px solid var(--footer-border);
+    background: #fff;
+    color: var(--footer-text);
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.app-footer__link:hover {
+    border-color: var(--footer-primary);
+    color: var(--footer-primary);
+}
+
+.app-footer__link.is-active {
+    background: var(--footer-primary-light);
+    border-color: var(--footer-primary-light);
+    color: var(--footer-primary);
+}
+
+.app-footer__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.app-footer__meta {
+    color: var(--footer-muted);
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.app-footer__meta:hover {
+    color: var(--footer-primary);
+}
+
+.app-footer__dot {
+    color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .app-footer__inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .app-footer__right {
+        justify-content: center;
+    }
+}

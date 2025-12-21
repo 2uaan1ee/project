@@ -11,6 +11,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         // không cần rewrite vì BE đã mount /api/*
+      },
+      '/uploads': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
       }
     }
   }

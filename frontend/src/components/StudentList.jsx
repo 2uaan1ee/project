@@ -1,8 +1,8 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+﻿// frontend/src/components/StudentList.jsx
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/students.css";
 
-// Support both absolute (http://...) and relative (/api) API bases
 const API_BASE = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
 
 // 👉 Mapping mã ngành -> tên tiếng Việt
@@ -16,100 +16,136 @@ const MAJOR_LABELS = {
   KTPM: "Kỹ thuật Phần mềm",
   TTDPT: "Truyền thông Đa phương tiện",
   KTMT: "Kỹ thuật Máy tính",
-
-  // thêm cho đủ bộ UIT (nếu data có)
   CNTT: "Công nghệ Thông tin",
   HTTT: "Hệ thống Thông tin",
   TMDT: "Thương mại Điện tử",
 };
 
-function formatMajor(majorId) {
-  if (!majorId) return "";
+function normalizeMajorIds(majorId) {
+  if (!majorId) return [];
+  if (Array.isArray(majorId)) {
+    return majorId.map((id) => String(id).trim()).filter(Boolean);
+  }
   const code = String(majorId).trim();
-  return MAJOR_LABELS[code] || code; // fallback: hiện mã nếu chưa mapping
+  return code ? [code] : [];
 }
 
-function buildStudentsUrl(keyword = "") {
-  const qs = keyword.trim()
-    ? `?search=${encodeURIComponent(keyword.trim())}`
-    : "";
-  if (API_BASE.startsWith("http")) return `${API_BASE}/students${qs}`;
+function formatMajor(majorId) {
+  const ids = normalizeMajorIds(majorId);
+  if (!ids.length) return "";
+  return ids.map((code) => MAJOR_LABELS[code] || code).join(", ");
+}
+
+function buildStudentsUrl({ keyword = "", page = 1, limit = 20 }) {
+  const params = new URLSearchParams();
+  params.set("page", String(page));
+  params.set("limit", String(limit));
+  if (keyword.trim()) params.set("search", keyword.trim());
+
+  if (API_BASE.startsWith("http")) return `${API_BASE}/students?${params.toString()}`;
   const prefix = API_BASE.startsWith("/") ? "" : "/";
-  return `${prefix}${API_BASE}/students${qs}`;
+  return `${prefix}${API_BASE}/students?${params.toString()}`;
+}
+
+function buildPageTokens(current, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  // 1 ... (c-1) c (c+1) ... last
+  const tokens = [];
+  const add = (x) => tokens.push(x);
+
+  add(1);
+
+  const left = Math.max(2, current - 1);
+  const right = Math.min(totalPages - 1, current + 1);
+
+  if (left > 2) add("...");
+
+  for (let p = left; p <= right; p++) add(p);
+
+  if (right < totalPages - 1) add("...");
+
+  add(totalPages);
+
+  return tokens;
 }
 
 export default function StudentList() {
   const nav = useNavigate();
+
+  const LIMIT = 20;
+
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [visibleCount, setVisibleCount] = useState(20); // hiển thị 20 dòng
 
-  const fetchStudents = async (keyword = "") => {
+  const abortRef = useRef(null);
+
+  // debounce search + reset page về 1
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const fetchStudents = async ({ keyword, page }) => {
+    abortRef.current?.abort?.();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setLoading(true);
     setError("");
+
     try {
-      const url = buildStudentsUrl(keyword);
-      const res = await fetch(url);
+      const url = buildStudentsUrl({ keyword, page, limit: LIMIT });
+      const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`Failed to load students (${res.status})`);
+
       const data = await res.json();
-      setStudents(data || []);
+      setStudents(data?.items || []);
+      setTotal(Number(data?.total) || 0);
     } catch (err) {
+      if (err?.name === "AbortError") return;
       console.error("[student-list] fetch error", err);
       setError("Website hiện tại đang quá tải...");
+      setStudents([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   };
 
-  // load lần đầu
+  // fetch khi page hoặc debouncedSearch đổi
   useEffect(() => {
-    fetchStudents();
-  }, []);
+    fetchStudents({ keyword: debouncedSearch, page });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, page]);
 
-  // debounce search
+  const totalPages = useMemo(() => {
+    if (total <= 0) return 1;
+    return Math.max(1, Math.ceil(total / LIMIT));
+  }, [total]);
+
+  // nếu đang ở page vượt totalPages (ví dụ search ra ít hơn), kéo về trang cuối
   useEffect(() => {
-    const t = setTimeout(() => fetchStudents(search), 350);
-    return () => clearTimeout(t);
-  }, [search]);
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
-  // khi danh sách students thay đổi (do search), reset số dòng hiển thị
-  useEffect(() => {
-    setVisibleCount(20);
-  }, [students]);
-
-  // sắp xếp theo MSSV tăng dần
-  const rows = useMemo(() => {
-    const arr = students ? [...students] : [];
-    arr.sort((a, b) =>
-      String(a.student_id || "").localeCompare(String(b.student_id || ""))
-    );
-    return arr;
-  }, [students]);
-
-  // chỉ hiển thị tối đa visibleCount
-  const rowsToShow = useMemo(
-    () => rows.slice(0, visibleCount),
-    [rows, visibleCount]
-  );
-
-  const handleShowMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 20, rows.length));
-  };
-
-  const handleShowLess = () => {
-    setVisibleCount(20);
-  };
+  const pageTokens = useMemo(() => buildPageTokens(page, totalPages), [page, totalPages]);
 
   return (
     <div className="student-page">
       <div className="profile-toolbar" style={{ marginBottom: 16 }}>
-        <button
-          className="profile-back"
-          type="button"
-          onClick={() => nav("/app/dashboard")}
-        >
+        <button className="profile-back" type="button" onClick={() => nav("/app/dashboard")}>
           ← Quay về trang chủ
         </button>
       </div>
@@ -120,21 +156,13 @@ export default function StudentList() {
             <p className="status-chip" style={{ margin: 0 }}>
               Danh sách sinh viên
             </p>
-            <p
-              style={{
-                margin: "6px 0 0",
-                color: "#475569",
-                fontSize: 13,
-              }}
-            >
-              Sắp xếp theo MSSV (tăng dần). Nhấp vào một dòng để xem hồ sơ chi
-              tiết.
+            <p style={{ margin: "6px 0 0", color: "#475569", fontSize: 13 }}>
+              Phân trang theo MSSV (tăng dần). Nhấp vào một dòng để xem hồ sơ chi tiết.
             </p>
           </div>
+
           <div className="student-search">
-            <span role="img" aria-label="search">
-              🔍
-            </span>
+            <span role="img" aria-label="search">🔍</span>
             <input
               type="text"
               placeholder="Tìm theo MSSV, Họ tên hoặc lớp..."
@@ -144,16 +172,8 @@ export default function StudentList() {
           </div>
         </div>
 
-        {loading ? (
-          <div style={{ padding: 18, fontSize: 14 }}>
-            Đang tải danh sách...
-          </div>
-        ) : error ? (
-          <div
-            style={{ padding: 18, fontSize: 14, color: "#b91c1c" }}
-          >
-            {error}
-          </div>
+        {error ? (
+          <div style={{ padding: 18, fontSize: 14, color: "#b91c1c" }}>{error}</div>
         ) : (
           <>
             <table className="student-table">
@@ -166,69 +186,86 @@ export default function StudentList() {
                   <th>Giới tính</th>
                 </tr>
               </thead>
+
               <tbody>
-                {rowsToShow.map((s) => {
+                {students.map((s) => {
                   const majorName = formatMajor(s.major_id);
+                  const majorTitle = normalizeMajorIds(s.major_id).join(", ");
                   return (
-                    <tr
-                      key={s._id || s.student_id}
-                      onClick={() => nav(`/app/students/${s.student_id}`)}
-                    >
+                    <tr key={s._id || s.student_id} onClick={() => nav(`/app/students/${s.student_id}`)}>
                       <td>{s.student_id}</td>
                       <td>{s.name}</td>
                       <td>{s.class_id}</td>
-                      {/* 👇 Hiển thị tên ngành đẹp + hover thấy mã ngành */}
-                      <td title={s.major_id}>{majorName}</td>
-                      <td>{s.gender === "Male" ? "Nam" : "Nữ"}</td>
+                      <td title={majorTitle}>{majorName}</td>
+                      <td>{s.gender === "Male" ? "Nam" : s.gender === "Female" ? "Nữ" : (s.gender || "")}</td>
                     </tr>
                   );
                 })}
-                {!rowsToShow.length && (
+
+                {!students.length && !loading && (
                   <tr>
-                    <td
-                      colSpan={5}
-                      style={{
-                        padding: 16,
-                        color: "#64748b",
-                        textAlign: "center",
-                      }}
-                    >
+                    <td colSpan={5} style={{ padding: 16, color: "#64748b", textAlign: "center" }}>
                       Không có dữ liệu.
+                    </td>
+                  </tr>
+                )}
+
+                {loading && (
+                  <tr>
+                    <td colSpan={5} style={{ padding: 16, color: "#475569", textAlign: "center" }}>
+                      Đang tải...
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
 
-            {/* Thanh điều khiển show more / show less */}
-            {rows.length > 0 && (
-              <div className="student-loadmore-bar">
-                <span className="student-loadmore-info" style={{ marginLeft: 16 }}>
-                  Đang hiển thị <strong>{rowsToShow.length}</strong> /{" "}
-                  <strong>{rows.length}</strong> sinh viên
-                </span>
-                <div className="student-loadmore-actions" style={{ marginRight: 16 }}>
-                  {visibleCount < rows.length && (
+            {/* Pagination bar */}
+            <div className="student-loadmore-bar" style={{ justifyContent: "space-between" }}>
+              <span className="student-loadmore-info" style={{ marginLeft: 16 }}>
+                Tổng: <strong>{total}</strong> sinh viên — Trang <strong>{page}</strong> /{" "}
+                <strong>{totalPages}</strong>
+              </span>
+
+              <div className="student-loadmore-actions" style={{ marginRight: 16, display: "flex", gap: 8 }}>
+                <button
+                  type="button"
+                  className="student-loadmore secondary"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={loading || page === 1}
+                >
+                  ◀
+                </button>
+
+                {pageTokens.map((t, idx) =>
+                  t === "..." ? (
+                    <span key={`dots-${idx}`} style={{ padding: "6px 6px", color: "#64748b" }}>
+                      ...
+                    </span>
+                  ) : (
                     <button
+                      key={t}
                       type="button"
-                      className="student-loadmore"
-                      onClick={handleShowMore}
+                      className={`student-loadmore ${t === page ? "" : "secondary"}`}
+                      onClick={() => setPage(t)}
+                      disabled={loading}
+                      style={t === page ? { fontWeight: 700 } : undefined}
                     >
-                      Xem thêm
+                      {t}
                     </button>
-                  )}
-                  {visibleCount > 20 && (
-                    <button
-                      type="button"
-                      className="student-loadmore secondary"
-                      onClick={handleShowLess}
-                    >
-                      Thu gọn
-                    </button>
-                  )}
-                </div>
+                  )
+                )}
+
+                <button
+                  type="button"
+                  className="student-loadmore secondary"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={loading || page === totalPages}
+                >
+                  ▶
+                </button>
               </div>
-            )}
+            </div>
           </>
         )}
       </div>

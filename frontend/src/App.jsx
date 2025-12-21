@@ -15,8 +15,14 @@ import OAuthCallback from "./pages/OAuthCallback";
 import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
 import SubjectOpen from "./pages/SubjectOpen.jsx";
+import SubjectList from "./pages/SubjectList.jsx";
+import AllSubjectList from "./pages/AllSubjectList.jsx";
+import SubjectOpenList from "./pages/SubjectOpenList.jsx";
 import TrainingProgram from "./pages/TrainingProgram.jsx";
+import TuitionPayments from "./pages/TuitionPayments.jsx";
 import AdminTrainingProgram from "./pages/AdminTrainingProgram.jsx";
+import AdminSubjectOpen from "./pages/AdminSubjectOpen.jsx";
+import RegulationSettings from "./pages/RegulationSettings.jsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -47,13 +53,13 @@ export default function App() {
         const data = await res.json();
         if (!cancelled && data?.token) {
           setToken(data.token);
-          
+
           // Decode JWT to get user info
           try {
             const base64Url = data.token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const payload = JSON.parse(window.atob(base64));
-            
+
             if (payload.role) sessionStorage.setItem("user_role", payload.role);
             if (payload.email) sessionStorage.setItem("user_email", payload.email);
           } catch (decodeErr) {
@@ -114,9 +120,15 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="subject-open" element={<SubjectOpen />} />
+            <Route path="subject-open" element={<SubjectOpenList />} />
+            <Route path="subjects" element={<SubjectOpen />} />
+            <Route path="subject-list" element={<SubjectList />} />
+            <Route path="all-subjects" element={<AllSubjectList />} />
             <Route path="training-program" element={<TrainingProgram />} />
             <Route path="admin/training-program" element={<AdminTrainingProgram />} />
+            <Route path="admin/subject-open" element={<AdminSubjectOpen />} />
+            <Route path="regulations" element={<RegulationSettings />} />
+            <Route path="tuition" element={<TuitionPayments />} />
             <Route path="students" element={<StudentList />} />
             <Route path="students/:student_id" element={<StudentProfile />} />
           </Route>

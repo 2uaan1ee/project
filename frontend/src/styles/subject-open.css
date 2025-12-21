@@ -18,7 +18,6 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
 }
 
 /* =========================
@@ -384,6 +383,17 @@ body {
   position: relative;
 }
 
+.combo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.combo-row .combo {
+  flex: 1;
+  min-width: 0;
+}
+
 .combo input {
   width: 100%;
   padding: 12px 42px 12px 12px;
@@ -391,6 +401,18 @@ body {
   border: 1px solid var(--border);
   background: #fff;
   font-size: 14px;
+}
+
+.subject-add-btn {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 8px 16px rgba(18, 107, 175, 0.2);
 }
 
 .combo input:focus {
@@ -435,6 +457,85 @@ body {
   border-color: var(--primary-light);
   color: var(--primary);
 }
+
+/* ==== FIX: panel xanh không làm trang nhảy ==== */
+.subject-hero {
+  /* cố định chiều cao để không đẩy bảng xuống khi chọn môn */
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+
+  /* nếu bạn đang dùng flex rồi thì giữ, còn không thì grid rất ổn */
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 18px;
+
+  overflow: hidden;
+  /* không cho panel phình ra */
+}
+
+.subject-hero__block {
+  min-width: 0;
+  /* để ellipsis hoạt động trong grid/flex */
+}
+
+.subject-hero__value,
+.subject-hero__line,
+.subject-meta-pill.subject-ellipsis {
+  display: block;
+}
+
+.subject-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==== Pagination bar ==== */
+.table-pagination-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+}
+
+.table-pagination-info {
+  color: #475569;
+  font-size: 13px;
+}
+
+.table-pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-btn {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+  font-weight: 700;
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.page-dots {
+  padding: 0 4px;
+  color: #64748b;
+}
+
 
 /* =========================
    TABLE CONTAINER (MUI)
@@ -496,6 +597,167 @@ body {
 
 .subject-grid .MuiCheckbox-root {
   padding: 0 8px;
+}
+
+/* Row actions */
+.subject-row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.subject-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.subject-action-btn i {
+  font-size: 14px;
+}
+
+.subject-action-btn:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+.subject-action-btn.danger:hover {
+  color: #b42318;
+  background: #fff1f0;
+  border-color: #f8b4b4;
+}
+
+/* Modal */
+.subject-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 999;
+}
+
+.subject-modal {
+  width: min(720px, 94vw);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.subject-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  background: #f7f9fc;
+}
+
+.subject-modal-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.subject-modal-title {
+  margin: 4px 0 0;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.subject-modal-close {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.subject-modal-body {
+  padding: 16px 18px;
+  color: var(--text);
+}
+
+.subject-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.subject-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.subject-form-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.subject-form-field input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.subject-form-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(18, 107, 175, 0.08);
+}
+
+.subject-form-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.subject-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border);
+  background: #f7f9fc;
+}
+
+.subject-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.subject-btn.ghost {
+  background: #fff;
+  color: var(--primary);
+}
+
+.subject-btn.danger {
+  background: #dc2626;
+  border-color: #dc2626;
 }
 
 /* "LOAD MORE" button wrapper (from MUI Button) */
@@ -562,5 +824,10 @@ body {
 
   .subject-open-content {
     padding: 14px 12px 8px;
+  }
+
+  .combo-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

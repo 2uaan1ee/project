@@ -191,11 +191,13 @@ export default function Dashboard() {
         <h3 style={{ textAlign: "center", marginBottom: 6 }}>Trang chủ</h3>
 
         <ol>
-          <li style={{ cursor: "pointer", color: "#2563eb" }}>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/subject-list")}
+          >
             <span className="step-number">1</span>
-            Danh bạ phòng ban
+            Danh sách môn học
           </li>
-
           <li
             style={{ cursor: "pointer", color: "#2563eb" }}
             onClick={() => nav("/app/training-program")}
@@ -204,18 +206,35 @@ export default function Dashboard() {
             Chương trình đào tạo
           </li>
 
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/subject-open")}
+          >
+            <span className="step-number">3</span>
+            Môn học mở
+          </li>
+
           {userRole === "admin" && (
-            <li
-              style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
-              onClick={() => nav("/app/admin/training-program")}
-            >
-              <span className="step-number">🔑</span>
-              Quản lý CT đào tạo (Admin)
-            </li>
+            <>
+              <li
+                style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
+                onClick={() => nav("/app/admin/training-program")}
+              >
+                <span className="step-number">🔑</span>
+                Quản lý CT đào tạo (Admin)
+              </li>
+              <li
+                style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
+                onClick={() => nav("/app/admin/subject-open")}
+              >
+                <span className="step-number">📚</span>
+                Quản lý môn học mở (Admin)
+              </li>
+            </>
           )}
 
           <li>
-            <span className="step-number">3</span>
+            <span className="step-number">4</span>
             Lịch trình giảng dạy
           </li>
 
@@ -223,18 +242,40 @@ export default function Dashboard() {
             style={{ cursor: "pointer", color: "#2563eb" }}
             onClick={() => nav("/app/students")}
           >
-            <span className="step-number">4</span>
+            <span className="step-number">5</span>
             Danh sách sinh viên
           </li>
 
           <li>
-            <span className="step-number">5</span>
+            <span className="step-number">6</span>
             Bảng điểm
           </li>
 
           <li>
-            <span className="step-number">6</span>
+            <span className="step-number">7</span>
             Tin tức
+          </li>
+
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/tuition")}
+          >
+            <span className="step-number">8</span>
+            Tình trạng học phí
+          </li>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/regulations")}
+          >
+            <span className="step-number">9</span>
+            Thay đổi quy định
+          </li>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/all-subjects")}
+          >
+            <span className="step-number">10</span>
+            Điều chỉnh môn học
           </li>
         </ol>
 

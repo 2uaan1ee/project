@@ -21,10 +21,10 @@ export default function Navbar() {
         <img
           src="/img/logo_uit.svg"
           className="logo nav-clickable"
-          onClick={() => window.location.reload()}
+          onClick={() => nav("/app/dashboard")}
           alt="logo"
         />
-        <h1 className="title nav-clickable" onClick={() => window.location.reload()}>
+        <h1 className="title nav-clickable" onClick={() => nav("/app/dashboard")}>
           Trường Đại học Công nghệ Thông tin
         </h1>
       </div>
