@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useState } from "react";
+﻿// frontend/src/components/StudentProfile.jsx
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { authFetch } from "../lib/auth";
 import "../styles/students.css";
