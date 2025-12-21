@@ -121,6 +121,8 @@ export const summarizePayments = asyncHandler(async (req, res) => {
     },
     {
       $addFields: {
+        student_major_raw: { $arrayElemAt: ["$student.major_id", 0] },
+        registration_major_raw: { $arrayElemAt: ["$registration.major_id", 0] },
         student_name: {
           $ifNull: [
             { $arrayElemAt: ["$student.name", 0] },
@@ -135,8 +137,20 @@ export const summarizePayments = asyncHandler(async (req, res) => {
         },
         major_id: {
           $ifNull: [
-            { $arrayElemAt: [{ $arrayElemAt: ["$student.major_id", 0] }, 0] },
-            { $arrayElemAt: ["$registration.major_id", 0] },
+            {
+              $cond: [
+                { $isArray: "$student_major_raw" },
+                { $arrayElemAt: ["$student_major_raw", 0] },
+                "$student_major_raw",
+              ],
+            },
+            {
+              $cond: [
+                { $isArray: "$registration_major_raw" },
+                { $arrayElemAt: ["$registration_major_raw", 0] },
+                "$registration_major_raw",
+              ],
+            },
           ],
         },
         faculty: {
@@ -147,7 +161,7 @@ export const summarizePayments = asyncHandler(async (req, res) => {
         },
       },
     },
-    { $project: { student: 0, registration: 0 } },
+    { $project: { student: 0, registration: 0, student_major_raw: 0, registration_major_raw: 0 } },
     {
       $addFields: {
         remaining_balance: {
