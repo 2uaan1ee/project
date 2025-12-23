@@ -1,19 +1,17 @@
 // src/App.jsx
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import { AgGridReact } from "ag-grid-react";
-import React, { useEffect, useState, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect, useState, lazy, Suspense, useCallback } from "react";
+
 import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
+
 import Login from "./pages/Login";
 import Forgot from "./pages/Forgot";
 import OAuthCallback from "./pages/OAuthCallback";
+
 import StudentList from "./components/StudentList.jsx";
 import StudentProfile from "./components/StudentProfile.jsx";
+
 import SubjectOpen from "./pages/SubjectOpen.jsx";
 import SubjectList from "./pages/SubjectList.jsx";
 import AllSubjectList from "./pages/AllSubjectList.jsx";
@@ -24,6 +22,9 @@ import AdminTrainingProgram from "./pages/AdminTrainingProgram.jsx";
 import AdminSubjectOpen from "./pages/AdminSubjectOpen.jsx";
 import RegulationSettings from "./pages/RegulationSettings.jsx";
 
+import StudentListTuition from "./pages/StudentListTuition.jsx";
+import StudentTuitionReceipts from "./pages/StudentTuitionReceipts.jsx"; // ✅ thêm
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 
@@ -32,59 +33,77 @@ function Protected({ authed, ready, children }) {
   return authed ? children : <Navigate to="/auth/login" replace />;
 }
 
+function decodeAndStoreUserInfo(token) {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(window.atob(base64));
+
+    if (payload.role) sessionStorage.setItem("user_role", payload.role);
+    if (payload.email) sessionStorage.setItem("user_email", payload.email);
+  } catch (e) {
+    console.warn("Failed to decode token:", e);
+  }
+}
+
 export default function App() {
   const [token, setToken] = useState(() => sessionStorage.getItem("token") || "");
   const [authReady, setAuthReady] = useState(false);
 
-  useEffect(() => {
-    token ? sessionStorage.setItem("token", token) : sessionStorage.removeItem("token");
-  }, [token]);
+  /**
+   * ✅ onAuthed: điểm duy nhất để set token
+   * - set state
+   * - sync sessionStorage
+   * - decode role/email
+   */
+  const onAuthed = useCallback((newToken) => {
+    const t = String(newToken || "");
+    if (!t) {
+      setToken("");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user_role");
+      sessionStorage.removeItem("user_email");
+      return;
+    }
+    setToken(t);
+    sessionStorage.setItem("token", t);
+    decodeAndStoreUserInfo(t);
+  }, []);
 
-  // Attempt silent refresh on first load if refresh cookie exists
+  // ✅ Attempt silent refresh on first load (if refresh cookie exists)
   useEffect(() => {
     let cancelled = false;
+
     const tryRefresh = async () => {
       try {
         const res = await fetch("/api/auth/refresh", {
-          method: "POST",
-          credentials: "include", // send refresh_token cookie
+          method: "POST", // nếu BE là GET thì đổi ở đây
+          credentials: "include",
         });
         if (!res.ok) return;
+
         const data = await res.json();
         if (!cancelled && data?.token) {
-          setToken(data.token);
-
-          // Decode JWT to get user info
-          try {
-            const base64Url = data.token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const payload = JSON.parse(window.atob(base64));
-
-            if (payload.role) sessionStorage.setItem("user_role", payload.role);
-            if (payload.email) sessionStorage.setItem("user_email", payload.email);
-          } catch (decodeErr) {
-            console.warn("Failed to decode token:", decodeErr);
-          }
+          onAuthed(data.token);
         }
       } catch {
-        /* ignore: stay logged out */
+        // ignore
       } finally {
         if (!cancelled) setAuthReady(true);
       }
     };
+
     tryRefresh();
+
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [onAuthed]);
 
-  // If refresh endpoint fails (no cookie), still allow the app to render using existing sessionStorage token
+  // ✅ Nếu refresh fail nhưng sessionStorage đã có token (F5), vẫn cho app chạy
   useEffect(() => {
     if (authReady) return;
-    // Fallback to mark ready when there is an existing token but refresh returned early
-    if (sessionStorage.getItem("token")) {
-      setAuthReady(true);
-    }
+    if (sessionStorage.getItem("token")) setAuthReady(true);
   }, [authReady]);
 
   return (
@@ -103,11 +122,11 @@ export default function App() {
           />
 
           <Route path="/auth/*" element={<AuthLayout />}>
-            <Route path="login" element={<Login onAuthed={setToken} />} />
+            <Route path="login" element={<Login onAuthed={onAuthed} />} />
             <Route path="forgot" element={<Forgot />} />
           </Route>
 
-          <Route path="/oauth/callback" element={<OAuthCallback onAuthed={setToken} />} />
+          <Route path="/oauth/callback" element={<OAuthCallback onAuthed={onAuthed} />} />
 
           <Route
             path="/app/*"
@@ -120,17 +139,25 @@ export default function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
+
             <Route path="subject-open" element={<SubjectOpenList />} />
             <Route path="subjects" element={<SubjectOpen />} />
             <Route path="subject-list" element={<SubjectList />} />
             <Route path="all-subjects" element={<AllSubjectList />} />
+
             <Route path="training-program" element={<TrainingProgram />} />
             <Route path="admin/training-program" element={<AdminTrainingProgram />} />
             <Route path="admin/subject-open" element={<AdminSubjectOpen />} />
+
             <Route path="regulations" element={<RegulationSettings />} />
             <Route path="tuition" element={<TuitionPayments />} />
+
             <Route path="students" element={<StudentList />} />
             <Route path="students/:student_id" element={<StudentProfile />} />
+
+            {/* ✅ Tuition list + detail */}
+            <Route path="tuition-list" element={<StudentListTuition />} />
+            <Route path="tuition-list/:studentId" element={<StudentTuitionReceipts />} />
           </Route>
 
           <Route path="*" element={<div style={{ padding: 24 }}>404 - Not Found</div>} />
