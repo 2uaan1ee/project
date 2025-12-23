@@ -42,10 +42,14 @@ export default function Login({ onAuthed }) {
 
     try {
       const payload = { email: email.trim().toLowerCase(), password };
+
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+
+        // ✅ QUAN TRỌNG: để nhận cookie refresh_token từ server
+        credentials: "include",
       });
 
       const contentType = res.headers.get("content-type") || "";
@@ -57,15 +61,17 @@ export default function Login({ onAuthed }) {
       const token = data?.token || data?.access;
       if (!token) throw new Error("Không nhận được token từ máy chủ");
 
+      // ✅ Lưu token vào sessionStorage luôn cho chắc
+      sessionStorage.setItem("token", token);
+
       // Decode JWT to get user info
       try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const payload = JSON.parse(window.atob(base64));
-      
-      // Store user role and email in sessionStorage
-      if (payload.role) sessionStorage.setItem("user_role", payload.role);
-      if (payload.email) sessionStorage.setItem("user_email", payload.email);
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(window.atob(base64));
+
+        if (payload.role) sessionStorage.setItem("user_role", payload.role);
+        if (payload.email) sessionStorage.setItem("user_email", payload.email);
       } catch (decodeErr) {
         console.warn("Failed to decode token:", decodeErr);
       }
@@ -133,7 +139,7 @@ export default function Login({ onAuthed }) {
             type="button"
             className="btn btn--google"
             onClick={() => {
-              const hd = "gm.uit.edu.vn"; // có thể đổi thành "uit.edu.vn"
+              const hd = "gm.uit.edu.vn";
               const qs = new URLSearchParams();
               if (email) qs.set("login_hint", email);
               qs.set("hd", hd);

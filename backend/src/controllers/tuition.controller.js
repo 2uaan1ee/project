@@ -1,4 +1,6 @@
+// backend/src/controllers/tuition.controller.js
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 import TuitionPayment from "../models/tuitionPayment.model.js";
 import Student from "../models/Students.js";
 
@@ -11,6 +13,74 @@ const parseSemester = (value) => {
   return Number.isFinite(n) ? n : null;
 };
 
+/**
+ * ✅ Helper: tìm collection tuition maps mới nhất theo prefix
+ * nếu TUITION_MAPS_COLLECTION chưa set trong .env
+ */
+async function resolveTuitionMapsCollectionName() {
+  const envName = process.env.TUITION_MAPS_COLLECTION;
+  if (envName && String(envName).trim()) return String(envName).trim();
+
+  const db = mongoose.connection.db;
+  const cols = await db
+    .listCollections({ name: { $regex: /^student_tuition_maps_agg_/ } })
+    .toArray();
+
+  if (!cols.length) return null;
+
+  cols.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  return cols[cols.length - 1].name;
+}
+
+/**
+ * ✅ NEW: list tuition maps for StudentListTuition.jsx
+ * GET /api/tuition-payments/maps?page=1&limit=20&search=abc
+ */
+export const listTuitionMaps = asyncHandler(async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page || "1", 10));
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || "20", 10)));
+  const search = String(req.query.search || "").trim();
+
+  const colName = await resolveTuitionMapsCollectionName();
+  if (!colName) {
+    return res.status(500).json({
+      message:
+        "Không tìm thấy collection student_tuition_maps_agg_. Hãy set TUITION_MAPS_COLLECTION trong .env",
+    });
+  }
+
+  const db = mongoose.connection.db;
+  const col = db.collection(colName);
+
+  const filter = {};
+  if (search) {
+    filter.$or = [
+      { student_id: { $regex: search, $options: "i" } },
+      { name: { $regex: search, $options: "i" } },
+      { class_id: { $regex: search, $options: "i" } },
+      { major_id: { $regex: search, $options: "i" } },
+      { registration_no: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [items, total] = await Promise.all([
+    col
+      .find(filter)
+      .sort({ student_id: 1, academic_year: -1, semester: -1, registration_round: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray(),
+    col.countDocuments(filter),
+  ]);
+
+  res.json({ items, total, page, limit, collection: colName });
+});
+
+// =======================
+// CŨ: filters
+// =======================
 export const listPaymentFilters = asyncHandler(async (_req, res) => {
   const data = await TuitionPayment.aggregate([
     {
@@ -51,6 +121,9 @@ export const listPaymentFilters = asyncHandler(async (_req, res) => {
   res.json(normalized);
 });
 
+// =======================
+// CŨ: summarize payments (gộp theo student_id)
+// =======================
 export const summarizePayments = asyncHandler(async (req, res) => {
   const { academic_year, semester } = req.query;
   const semesterNumber = parseSemester(semester);
@@ -174,6 +247,94 @@ export const summarizePayments = asyncHandler(async (req, res) => {
   ];
 
   const summary = await TuitionPayment.aggregate(pipeline);
-
   res.json(summary);
+});
+
+// =======================
+// ✅ NEW: receipts grouped by registration_no (1 post = 1 registration)
+// GET /api/tuition-payments/student/:studentId?academic_year=...&semester=...
+// =======================
+export const listStudentReceiptsGrouped = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+  if (!studentId) return res.status(400).json({ message: "Thiếu studentId" });
+
+  const { academic_year, semester } = req.query;
+  const semesterNumber = parseSemester(semester);
+
+  const match = { student_id: String(studentId) };
+  if (academic_year) match.academic_year = String(academic_year);
+  if (semester != null && semester !== "" && semesterNumber !== null) match.semester = semesterNumber;
+
+  const pipeline = [
+    { $match: match },
+
+    // sort để payments trong group đúng thứ tự
+    { $sort: { paid_at: 1, payment_sequence: 1, _id: 1 } },
+
+    {
+      $group: {
+        _id: {
+          registration_no: { $ifNull: ["$registration_no", "$receipt_number"] },
+          academic_year: "$academic_year",
+          semester: "$semester",
+        },
+
+        student_id: { $first: "$student_id" },
+        registration_no: { $first: "$registration_no" },
+        academic_year: { $first: "$academic_year" },
+        semester: { $first: "$semester" },
+        semester_label: { $first: "$semester_label" },
+
+        tuition_total: { $max: "$tuition_total" },
+        total_paid: { $sum: "$amount_paid" },
+        last_remaining: { $last: "$remaining_balance" },
+        last_paid_at: { $last: "$paid_at" },
+
+        payments: {
+          $push: {
+            _id: "$_id",
+            receipt_number: "$receipt_number",
+            payment_sequence: "$payment_sequence",
+            paid_at: "$paid_at",
+            amount_paid: "$amount_paid",
+            remaining_balance: "$remaining_balance",
+          },
+        },
+      },
+    },
+
+    {
+      $addFields: {
+        remaining_balance: {
+          $ifNull: ["$last_remaining", { $subtract: ["$tuition_total", "$total_paid"] }],
+        },
+        registration_key: {
+          $ifNull: ["$registration_no", { $toString: "$_id.registration_no" }],
+        },
+      },
+    },
+
+    // sort group theo latest desc như feed
+    { $sort: { last_paid_at: -1, registration_key: 1 } },
+
+    {
+      $project: {
+        _id: 0,
+        student_id: 1,
+        registration_no: 1,
+        registration_key: 1,
+        academic_year: 1,
+        semester: 1,
+        semester_label: 1,
+        tuition_total: 1,
+        total_paid: 1,
+        remaining_balance: 1,
+        last_paid_at: 1,
+        payments: 1,
+      },
+    },
+  ];
+
+  const items = await TuitionPayment.aggregate(pipeline);
+  res.json({ items });
 });

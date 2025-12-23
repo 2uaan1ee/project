@@ -1,0 +1,189 @@
+/* frontend/src/styles/tuition_receipts.css */
+
+/* nền nhạt: bg.png + overlay trắng */
+.tuition-bg {
+    background:
+        linear-gradient(rgba(255, 255, 255, .86), rgba(255, 255, 255, .86)),
+        url("/img/bg.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* feed scroll như fb */
+.khsc-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 70vh;
+    overflow: auto;
+    padding-right: 6px;
+}
+
+/* post style */
+.khsc-post {
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+
+.khsc-post-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid #eef2f7;
+    background: #fbfdff;
+}
+
+.khsc-org {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.khsc-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.khsc-org-name {
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.khsc-org-sub {
+    color: #64748b;
+    font-size: 12.5px;
+    margin-top: 2px;
+}
+
+.khsc-tag {
+    font-weight: 800;
+    color: #0f172a;
+    background: #e0f2fe;
+    border: 1px solid #bae6fd;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.khsc-paper {
+    position: relative;
+    padding: 14px;
+}
+
+.khsc-watermark {
+    opacity: 0.06;
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    width: 120px;
+    pointer-events: none;
+}
+
+.khsc-title {
+    text-align: center;
+    font-weight: 900;
+    letter-spacing: .4px;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.khsc-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.khsc-row {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 10px;
+    font-size: 13.5px;
+    align-items: baseline;
+}
+
+.khsc-k {
+    color: #334155;
+    font-weight: 700;
+}
+
+.khsc-v {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.khsc-note {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #e5e7eb;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.khsc-payments {
+    border-top: 1px solid #eef2f7;
+    padding: 12px 14px 14px;
+    background: #fff;
+}
+
+.khsc-payments-title {
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.khsc-payline {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px dashed #e5e7eb;
+}
+
+.khsc-payline:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.khsc-payline-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #334155;
+    font-size: 13px;
+}
+
+.khsc-payline-seq {
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.khsc-payline-date,
+.khsc-payline-receipt {
+    color: #64748b;
+    font-size: 12.5px;
+}
+
+.khsc-payline-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 160px;
+}
+
+.khsc-payline-amt {
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.khsc-payline-rem {
+    color: #64748b;
+    font-size: 12.5px;
+}

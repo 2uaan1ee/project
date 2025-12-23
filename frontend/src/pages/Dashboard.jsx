@@ -251,9 +251,12 @@ export default function Dashboard() {
             Bảng điểm
           </li>
 
-          <li>
+          <li
+            style={{ cursor: "pointer", color: "#2563eb" }}
+            onClick={() => nav("/app/tuition-list")}
+          >
             <span className="step-number">7</span>
-            Tin tức
+            Danh sách học phí
           </li>
 
           <li

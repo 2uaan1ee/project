@@ -1,9 +1,10 @@
+// backend/src/middleware/auth.js
 import jwt from "jsonwebtoken";
 
-const ACCESS_SECRET  = process.env.JWT_ACCESS_SECRET  || process.env.JWT_SECRET || "access-secret";
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || "access-secret";
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "refresh-secret";
 
-const ACCESS_EXPIRES  = process.env.JWT_ACCESS_EXPIRES  || "15m";
+const ACCESS_EXPIRES = process.env.JWT_ACCESS_EXPIRES || "15m";
 const REFRESH_EXPIRES = process.env.JWT_REFRESH_EXPIRES || "7d";
 
 // ====== Sign tokens ======
