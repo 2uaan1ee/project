@@ -1,4 +1,4 @@
-﻿// frontend/src/components/StudentList.jsx
+﻿// frontend/src/pages/StudentList.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/students.css";
@@ -36,11 +36,22 @@ function formatMajor(majorId) {
   return ids.map((code) => MAJOR_LABELS[code] || code).join(", ");
 }
 
-function buildStudentsUrl({ keyword = "", page = 1, limit = 20 }) {
+function buildStudentsUrl({
+  keyword = "",
+  page = 1,
+  limit = 20,
+  grad = "all",       // all|true|false
+  sort = "student_id",// student_id|name|class_id
+  order = "asc",      // asc|desc
+}) {
   const params = new URLSearchParams();
   params.set("page", String(page));
   params.set("limit", String(limit));
   if (keyword.trim()) params.set("search", keyword.trim());
+
+  params.set("grad", grad);
+  params.set("sort", sort);
+  params.set("order", order);
 
   if (API_BASE.startsWith("http")) return `${API_BASE}/students?${params.toString()}`;
   const prefix = API_BASE.startsWith("/") ? "" : "/";
@@ -51,7 +62,6 @@ function buildPageTokens(current, totalPages) {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
-  // 1 ... (c-1) c (c+1) ... last
   const tokens = [];
   const add = (x) => tokens.push(x);
 
@@ -86,6 +96,11 @@ export default function StudentList() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // ✅ NEW: filter + sort
+  const [gradFilter, setGradFilter] = useState("all"); // all|true|false
+  const [sortBy, setSortBy] = useState("student_id"); // student_id|name|class_id
+  const [sortOrder, setSortOrder] = useState("asc");  // asc|desc
+
   const abortRef = useRef(null);
 
   // debounce search + reset page về 1
@@ -97,7 +112,12 @@ export default function StudentList() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const fetchStudents = async ({ keyword, page }) => {
+  // đổi filter/sort -> reset page
+  useEffect(() => {
+    setPage(1);
+  }, [gradFilter, sortBy, sortOrder]);
+
+  const fetchStudents = async ({ keyword, page, grad, sort, order }) => {
     abortRef.current?.abort?.();
     const controller = new AbortController();
     abortRef.current = controller;
@@ -106,7 +126,15 @@ export default function StudentList() {
     setError("");
 
     try {
-      const url = buildStudentsUrl({ keyword, page, limit: LIMIT });
+      const url = buildStudentsUrl({
+        keyword,
+        page,
+        limit: LIMIT,
+        grad,
+        sort,
+        order,
+      });
+
       const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`Failed to load students (${res.status})`);
 
@@ -124,18 +152,24 @@ export default function StudentList() {
     }
   };
 
-  // fetch khi page hoặc debouncedSearch đổi
+  // fetch khi page/search/filter/sort đổi
   useEffect(() => {
-    fetchStudents({ keyword: debouncedSearch, page });
+    fetchStudents({
+      keyword: debouncedSearch,
+      page,
+      grad: gradFilter,
+      sort: sortBy,
+      order: sortOrder,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, page]);
+  }, [debouncedSearch, page, gradFilter, sortBy, sortOrder]);
 
   const totalPages = useMemo(() => {
     if (total <= 0) return 1;
     return Math.max(1, Math.ceil(total / LIMIT));
   }, [total]);
 
-  // nếu đang ở page vượt totalPages (ví dụ search ra ít hơn), kéo về trang cuối
+  // nếu đang ở page vượt totalPages, kéo về trang cuối
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
@@ -151,7 +185,7 @@ export default function StudentList() {
       </div>
 
       <div className="student-card">
-        <div className="student-list__header">
+        <div className="student-list__header" style={{ alignItems: "flex-start" }}>
           <div>
             <p className="status-chip" style={{ margin: 0 }}>
               Danh sách sinh viên
@@ -161,14 +195,55 @@ export default function StudentList() {
             </p>
           </div>
 
-          <div className="student-search">
-            <span role="img" aria-label="search">🔍</span>
-            <input
-              type="text"
-              placeholder="Tìm theo MSSV, Họ tên hoặc lớp..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            {/* Search */}
+            <div className="student-search">
+              <span role="img" aria-label="search">🔍</span>
+              <input
+                type="text"
+                placeholder="Tìm theo MSSV, Họ tên hoặc lớp..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            {/* Filter tốt nghiệp */}
+            <div className="student-search" style={{ minWidth: 220 }}>
+              <span role="img" aria-label="grad">🎓</span>
+              <select
+                value={gradFilter}
+                onChange={(e) => setGradFilter(e.target.value)}
+                style={{ border: "none", outline: "none", background: "transparent", width: "100%" }}
+              >
+                <option value="all">Tất cả</option>
+                <option value="true">Đã tốt nghiệp</option>
+                <option value="false">Chưa tốt nghiệp</option>
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div className="student-search" style={{ minWidth: 220 }}>
+              <span role="img" aria-label="sort">↕️</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                style={{ border: "none", outline: "none", background: "transparent", width: "100%" }}
+              >
+                <option value="student_id">Sort: MSSV</option>
+                <option value="name">Sort: Họ tên</option>
+                <option value="class_id">Sort: Lớp</option>
+              </select>
+            </div>
+
+            <button
+              type="button"
+              className="student-loadmore secondary"
+              onClick={() => setSortOrder((o) => (o === "asc" ? "desc" : "asc"))}
+              disabled={loading}
+              title="Đổi tăng/giảm"
+            >
+              {sortOrder === "asc" ? "↑ Tăng" : "↓ Giảm"}
+            </button>
           </div>
         </div>
 
@@ -184,6 +259,7 @@ export default function StudentList() {
                   <th>Lớp</th>
                   <th>Ngành</th>
                   <th>Giới tính</th>
+                  <th>Tốt nghiệp</th>
                 </tr>
               </thead>
 
@@ -198,13 +274,14 @@ export default function StudentList() {
                       <td>{s.class_id}</td>
                       <td title={majorTitle}>{majorName}</td>
                       <td>{s.gender === "Male" ? "Nam" : s.gender === "Female" ? "Nữ" : (s.gender || "")}</td>
+                      <td>{s.isGraduate ? "✅" : ""}</td>
                     </tr>
                   );
                 })}
 
                 {!students.length && !loading && (
                   <tr>
-                    <td colSpan={5} style={{ padding: 16, color: "#64748b", textAlign: "center" }}>
+                    <td colSpan={6} style={{ padding: 16, color: "#64748b", textAlign: "center" }}>
                       Không có dữ liệu.
                     </td>
                   </tr>
@@ -212,7 +289,7 @@ export default function StudentList() {
 
                 {loading && (
                   <tr>
-                    <td colSpan={5} style={{ padding: 16, color: "#475569", textAlign: "center" }}>
+                    <td colSpan={6} style={{ padding: 16, color: "#475569", textAlign: "center" }}>
                       Đang tải...
                     </td>
                   </tr>

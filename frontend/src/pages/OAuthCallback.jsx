@@ -10,7 +10,7 @@ export default function OAuthCallback({ onAuthed }) {
     const token = qs.get("token");
     const name = qs.get("name");
     const email = qs.get("email");
-    const avatar = qs.get("avatar");
+    const avatar = qs.get("avatar") || "";
 
     if (!token) {
       nav("/auth/login?oauth=failed", { replace: true });
@@ -21,7 +21,7 @@ export default function OAuthCallback({ onAuthed }) {
     sessionStorage.setItem("token", token);
     if (name) sessionStorage.setItem("user_name", name);
     if (email) sessionStorage.setItem("user_email", email);
-    if (avatar) sessionStorage.setItem("user_avatar", decodeURIComponent(avatar));
+    if (avatar) sessionStorage.setItem("user_avatar", avatar);
 
     // Decode JWT to get user role
     try {

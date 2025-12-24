@@ -2,7 +2,7 @@
 import asyncHandler from "express-async-handler";
 import mongoose from "mongoose";
 import TuitionPayment from "../models/tuitionPayment.model.js";
-import Student from "../models/Students.js";
+import Student from "../models/StudentV3.js";
 
 const studentCollection =
   Student.collection?.name || Student.collection?.collectionName || "students";
@@ -36,6 +36,7 @@ async function resolveTuitionMapsCollectionName() {
  * ✅ NEW: list tuition maps for StudentListTuition.jsx
  * GET /api/tuition-payments/maps?page=1&limit=20&search=abc
  */
+// backend/src/controllers/tuition.controller.js
 export const listTuitionMaps = asyncHandler(async (req, res) => {
   const page = Math.max(1, parseInt(req.query.page || "1", 10));
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || "20", 10)));
@@ -65,18 +66,49 @@ export const listTuitionMaps = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
+  // ✅ chỉ join trên page hiện tại -> nhẹ
+  const pipeline = [
+    { $match: filter },
+    { $sort: { student_id: 1, academic_year: -1, semester: -1, registration_round: -1 } },
+    { $skip: skip },
+    { $limit: limit },
+
+    // ✅ join sang students_v3.0 (hoặc students collection model của bạn)
+    {
+      $lookup: {
+        from: studentCollection, // lấy từ Student model bạn import ở đầu file
+        let: { sid: "$student_id" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$student_id", "$$sid"] } } },
+          { $project: { _id: 0, student_id: 1, isGraduate: 1, name: 1, full_name: 1, class_id: 1 } },
+          { $limit: 1 },
+        ],
+        as: "_stu",
+      },
+    },
+    {
+      $addFields: {
+        _stu0: { $arrayElemAt: ["$_stu", 0] },
+
+        // ✅ field bạn cần cho FE filter
+        isGraduate: { $ifNull: [{ $arrayElemAt: ["$_stu.isGraduate", 0] }, false] },
+
+        // ✅ optional: fill name/class nếu maps thiếu
+        name: { $ifNull: ["$name", { $ifNull: ["$_stu0.name", "$_stu0.full_name"] }] },
+        class_id: { $ifNull: ["$class_id", "$_stu0.class_id"] },
+      },
+    },
+    { $project: { _stu: 0, _stu0: 0 } },
+  ];
+
   const [items, total] = await Promise.all([
-    col
-      .find(filter)
-      .sort({ student_id: 1, academic_year: -1, semester: -1, registration_round: -1 })
-      .skip(skip)
-      .limit(limit)
-      .toArray(),
+    col.aggregate(pipeline, { allowDiskUse: true }).toArray(),
     col.countDocuments(filter),
   ]);
 
   res.json({ items, total, page, limit, collection: colName });
 });
+
 
 // =======================
 // CŨ: filters

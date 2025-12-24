@@ -110,7 +110,10 @@ router.get("/google/callback", (req, res, next) => {
       setRefreshCookie(res, refreshToken);
 
       // GET AVATAR FROM PROFILE (Google Photo)
-      const avatar = profile?.photos?.[0]?.value || "";
+      const avatar =
+        profile?.photos?.[0]?.value ||
+        profile?._json?.picture ||
+        "";
       const name = user.name || "";
       const email = user.email || "";
 

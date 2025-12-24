@@ -9,8 +9,8 @@ import Login from "./pages/Login";
 import Forgot from "./pages/Forgot";
 import OAuthCallback from "./pages/OAuthCallback";
 
-import StudentList from "./components/StudentList.jsx";
-import StudentProfile from "./components/StudentProfile.jsx";
+import StudentList from "./pages/StudentList.jsx";
+import StudentProfile from "./pages/StudentProfile.jsx";
 
 import SubjectOpen from "./pages/SubjectOpen.jsx";
 import SubjectList from "./pages/SubjectList.jsx";

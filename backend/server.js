@@ -16,14 +16,16 @@ import regulationRoutes from "./src/routes/regulations.routes.js";
 import subjectRoutes from "./src/routes/subjects.routes.js";
 import trainingProgramRoutes from "./src/routes/trainingProgram.routes.js";
 import subjectOpenRoutes from "./src/routes/subjectOpen.routes.js";
-
+import avatarRoutes from "./src/routes/avatar.routes.js";
+import compression from "compression";
 dotenv.config();
 
 const app = express();
 const uploadsDir = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
 
 // Middlewares
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
+
 app.use(cookieParser());
 app.use(
   cors({
@@ -31,7 +33,7 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(compression());
 // Passport
 app.use(passport.initialize());
 initGoogleAuth();
@@ -60,6 +62,8 @@ app.use("/api/subject-open", (req, _res, next) => {
   console.log(`[SUBJECT-OPEN] ${req.method} ${req.originalUrl}`);
   next();
 }, subjectOpenRoutes);
+
+app.use("/api", avatarRoutes);
 
 /**
  * ✅ NEW: API cho tuition maps
@@ -107,3 +111,4 @@ connectDB()
     console.error("❌ DB connection failed:", err);
     process.exit(1);
   });
+

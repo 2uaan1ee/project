@@ -163,7 +163,7 @@ export default function StudentTuitionReceipts() {
                                     Phiếu thu học phí (KHSC)
                                 </p>
                                 <p style={{ margin: "6px 0 0", color: "#475569", fontSize: 13 }}>
-                                    Mỗi “bài post” là 1 phiếu đăng ký học phần (registration_no). Bên trong có nhiều lần đóng.
+                                    Mỗi thẻ là 1 phiếu thu học phí đăng ký học phần. Bên trong (có thể) có nhiều lần đóng.
                                 </p>
                             </div>
 
@@ -229,9 +229,7 @@ export default function StudentTuitionReceipts() {
                                             </div>
 
                                             <div className="khsc-note">
-                                                <b>QD6:</b> Phiếu thu được lập dựa trên phiếu đăng ký học phần của sinh viên trong một học kỳ.
-                                                Sinh viên có thể đóng học phí nhiều lần cho một phiếu đăng ký nhưng phải hoàn thành việc đóng
-                                                học phí trước thời hạn quy định.
+                                                <b>Lưu ý:</b> Khi sinh viên đóng tiền, phiếu thu sẽ được cập nhật tự động lên hệ thống. Nếu có bất cứ lỗi nào, hãy liên hệ phòng Đào tạo để được hỗ trợ.
                                             </div>
                                         </div>
 

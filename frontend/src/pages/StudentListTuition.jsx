@@ -77,6 +77,9 @@ export default function StudentListTuition() {
     const [sortKey, setSortKey] = useState("student_id");
     const [sortDir, setSortDir] = useState("asc"); // asc | desc
 
+    // ✅ NEW: filter tốt nghiệp giống StudentList
+    const [gradFilter, setGradFilter] = useState("all"); // all|true|false
+
     const abortRef = useRef(null);
 
     // debounce search + reset page về 1
@@ -87,6 +90,11 @@ export default function StudentListTuition() {
         }, 350);
         return () => clearTimeout(t);
     }, [search]);
+
+    // đổi filter -> reset page
+    useEffect(() => {
+        setPage(1);
+    }, [gradFilter]);
 
     const fetchMaps = async ({ keyword, page }) => {
         abortRef.current?.abort?.();
@@ -139,8 +147,16 @@ export default function StudentListTuition() {
 
     const pageTokens = useMemo(() => buildPageTokens(page, totalPages), [page, totalPages]);
 
+    // ✅ filter tốt nghiệp ở FE
+    const filteredRows = useMemo(() => {
+        if (gradFilter === "all") return rows;
+
+        const want = gradFilter === "true";
+        return rows.filter((r) => Boolean(r?.isGraduate) === want);
+    }, [rows, gradFilter]);
+
     const sortedRows = useMemo(() => {
-        const copy = [...rows];
+        const copy = [...filteredRows];
 
         const getVal = (r) => {
             if (sortKey === "name") return String(r.name || "");
@@ -149,6 +165,7 @@ export default function StudentListTuition() {
             if (sortKey === "before") return Number(r?.tuition?.amount_total || 0);
             if (sortKey === "after") return Number(r?.tuition?.amount_payable || 0);
             if (sortKey === "discount") return Number(r?.priority?.discount_rate || 0);
+            if (sortKey === "graduate") return Number(Boolean(r?.isGraduate)); // ✅ sort theo tốt nghiệp
             return String(r.student_id || "");
         };
 
@@ -163,7 +180,7 @@ export default function StudentListTuition() {
         });
 
         return copy;
-    }, [rows, sortKey, sortDir]);
+    }, [filteredRows, sortKey, sortDir]);
 
     const onSort = (key) => {
         if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -174,13 +191,8 @@ export default function StudentListTuition() {
     };
 
     const th = (label, key) => (
-        <th
-            onClick={() => onSort(key)}
-            style={{ cursor: "pointer", userSelect: "none" }}
-            title="Click để sort"
-        >
-            {label}{" "}
-            {sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : ""}
+        <th onClick={() => onSort(key)} style={{ cursor: "pointer", userSelect: "none" }} title="Click để sort">
+            {label} {sortKey === key ? (sortDir === "asc" ? "▲" : "▼") : ""}
         </th>
     );
 
@@ -193,24 +205,41 @@ export default function StudentListTuition() {
             </div>
 
             <div className="student-card">
-                <div className="student-list__header">
+                <div className="student-list__header" style={{ alignItems: "flex-start" }}>
                     <div>
                         <p className="status-chip" style={{ margin: 0 }}>
                             Danh sách học phí theo sinh viên
                         </p>
                         <p style={{ margin: "6px 0 0", color: "#475569", fontSize: 13 }}>
-                            Dữ liệu lấy từ student_tuition_maps_agg_. Có phân trang + tìm kiếm. (Click tiêu đề cột để sort)
+                            Click tiêu đề cột để sort
                         </p>
                     </div>
 
-                    <div className="student-search">
-                        <span role="img" aria-label="search">🔍</span>
-                        <input
-                            type="text"
-                            placeholder="Tìm theo MSSV, Họ tên, lớp, ngành..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+                    {/* ✅ Search + filter tốt nghiệp cùng hàng */}
+                    <div className="student-controls">
+                        <div className="student-search student-search--grow">
+                            <span role="img" aria-label="search">
+                                🔍
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Tìm theo MSSV, Họ tên, lớp, ngành..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="student-search student-search--select">
+                            <span role="img" aria-label="grad">
+                                🎓
+                            </span>
+                            <select value={gradFilter} onChange={(e) => setGradFilter(e.target.value)}>
+                                <option value="all">Tất cả</option>
+                                <option value="true">Đã tốt nghiệp</option>
+                                <option value="false">Chưa tốt nghiệp</option>
+                            </select>
+                            <span className="student-select-caret">▾</span>
+                        </div>
                     </div>
                 </div>
 
@@ -228,6 +257,7 @@ export default function StudentListTuition() {
                                     {th("Học phí trước giảm", "before")}
                                     {th("Học phí sau giảm", "after")}
                                     {th("% giảm", "discount")}
+                                    {th("Tốt nghiệp", "graduate")}
                                 </tr>
                             </thead>
 
@@ -253,13 +283,14 @@ export default function StudentListTuition() {
                                             <td>{toVnd(before)}</td>
                                             <td>{toVnd(after)}</td>
                                             <td>{pct(disc)}</td>
+                                            <td>{r.isGraduate ? "✅" : ""}</td>
                                         </tr>
                                     );
                                 })}
 
                                 {!sortedRows.length && !loading && (
                                     <tr>
-                                        <td colSpan={7} style={{ padding: 16, color: "#64748b", textAlign: "center" }}>
+                                        <td colSpan={8} style={{ padding: 16, color: "#64748b", textAlign: "center" }}>
                                             Không có dữ liệu.
                                         </td>
                                     </tr>
@@ -267,7 +298,7 @@ export default function StudentListTuition() {
 
                                 {loading && (
                                     <tr>
-                                        <td colSpan={7} style={{ padding: 16, color: "#475569", textAlign: "center" }}>
+                                        <td colSpan={8} style={{ padding: 16, color: "#475569", textAlign: "center" }}>
                                             Đang tải...
                                         </td>
                                     </tr>
@@ -277,8 +308,13 @@ export default function StudentListTuition() {
 
                         <div className="student-loadmore-bar" style={{ justifyContent: "space-between" }}>
                             <span className="student-loadmore-info" style={{ marginLeft: 16 }}>
-                                Tổng: <strong>{total}</strong> — Trang <strong>{page}</strong> /{" "}
-                                <strong>{totalPages}</strong>
+                                Tổng: <strong>{total}</strong> — Trang <strong>{page}</strong> / <strong>{totalPages}</strong>
+                                {gradFilter !== "all" ? (
+                                    <>
+                                        {" "}
+                                        — Đang lọc: <strong>{gradFilter === "true" ? "Đã tốt nghiệp" : "Chưa tốt nghiệp"}</strong>
+                                    </>
+                                ) : null}
                             </span>
 
                             <div className="student-loadmore-actions" style={{ marginRight: 16, display: "flex", gap: 8 }}>

@@ -523,7 +523,7 @@ export default function SubjectOpen() {
                 </ol>
                 <div className="step-footer">
                     <button type="button">Like &amp; Share</button>
-                    <span className="star-count">458 ⭐</span>
+                    <span className="star-count">⭐</span>
                 </div>
             </aside>
 

@@ -57,6 +57,11 @@ h3 {
   font-size: 14px;
 }
 
+.student-search select {
+  font: inherit;
+  color: inherit;
+}
+
 .student-table {
   width: 100%;
   border-collapse: collapse;
@@ -266,6 +271,132 @@ h3 {
 .section--family .family-subtitle:first-of-type {
   margin-top: 4px;
 }
+
+/* ===== StudentList controls (1 row) ===== */
+.student-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: nowrap;
+  /* ✅ ép 1 hàng */
+}
+
+/* ô search nở ra */
+.student-search--grow {
+  flex: 1;
+  min-width: 360px;
+}
+
+/* select đẹp hơn */
+.student-search--select {
+  position: relative;
+  min-width: 220px;
+}
+
+.student-search--select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  font: inherit;
+  color: inherit;
+
+  padding-right: 28px;
+  /* chừa chỗ caret */
+  cursor: pointer;
+}
+
+.student-select-caret {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* màn hình nhỏ mới xuống hàng */
+@media (max-width: 900px) {
+  .student-controls {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .student-search--grow {
+    min-width: 100%;
+  }
+}
+
+
+/* --- Student list controls: keep 1 row --- */
+.student-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: nowrap;
+  /* ✅ ép 1 hàng */
+}
+
+/* Search should expand */
+.student-search--grow {
+  flex: 1;
+  min-width: 320px;
+}
+
+/* Select box look nicer */
+.student-search--select {
+  position: relative;
+  min-width: 220px;
+}
+
+.student-search--select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  font: inherit;
+  color: inherit;
+
+  padding-right: 26px;
+  /* chừa chỗ caret */
+  cursor: pointer;
+}
+
+.student-select-caret {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* Responsive: nếu màn hình nhỏ quá thì mới cho xuống hàng */
+@media (max-width: 860px) {
+  .student-controls {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .student-search--grow {
+    min-width: 100%;
+  }
+}
+
 
 /* Responsive: trên màn nhỏ các grid tự co lại 1–2 cột */
 @media (max-width: 1024px) {
