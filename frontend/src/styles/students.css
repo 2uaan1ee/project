@@ -69,10 +69,11 @@ h3 {
 
 .student-table thead th {
   text-align: left;
-  padding: 12px 16px;
+  padding: 14px 18px;
   background: #f1f5f9;
   color: #475569;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -87,9 +88,9 @@ h3 {
 }
 
 .student-table td {
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-bottom: 1px solid #f1f5f9;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .status-chip {
@@ -593,5 +594,177 @@ h3 {
 
   .field--wide {
     grid-column: span 1;
+  }
+}
+
+/* Modal styles for course registration details */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 10;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modal-body {
+  padding: 28px;
+}
+
+.registration-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-section {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 22px;
+  border: 1px solid #e5e7eb;
+}
+
+.detail-section-full {
+  margin-left: -28px;
+  margin-right: -28px;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+
+.detail-section h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 16px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.subjects-table-wrapper {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+.subjects-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.subjects-table thead th {
+  text-align: left;
+  padding: 12px 14px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-weight: 600;
+  border-bottom: 2px solid #c7d2fe;
+  white-space: nowrap;
+}
+
+.subjects-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #334155;
+}
+
+.subjects-table tbody tr:hover {
+  background: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .modal-content {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subjects-table {
+    font-size: 12px;
+  }
+
+  .subjects-table thead th,
+  .subjects-table tbody td {
+    padding: 8px 10px;
   }
 }
