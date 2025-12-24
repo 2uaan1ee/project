@@ -1,5 +1,6 @@
 // pages/AdminSubjectOpen.jsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -40,6 +41,7 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const AdminSubjectOpen = () => {
+  const navigate = useNavigate();
   const [lists, setLists] = useState([]);
   const [selectedList, setSelectedList] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -265,13 +267,21 @@ const AdminSubjectOpen = () => {
     <div style={{ padding: "20px" }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4">Quản lý Môn học Mở</Typography>
-        <Button
-          variant="contained"
-          startIcon={<UploadIcon />}
-          onClick={() => setOpenImportDialog(true)}
-        >
-          Import từ Excel
-        </Button>
+        <Box display="flex" gap={1}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate("/app/dashboard")}
+          >
+            ← Quay về trang chủ
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<UploadIcon />}
+            onClick={() => setOpenImportDialog(true)}
+          >
+            Import từ Excel
+          </Button>
+        </Box>
       </Box>
 
       {error && (
@@ -514,7 +524,7 @@ const AdminSubjectOpen = () => {
                     </Typography>
                   )}
                   <Typography variant="body2" color="text.secondary" mt={1}>
-                    Còn thiếu {item.totalMissing || item.missingSubjects.length} môn 
+                    Còn thiếu {item.totalMissing || item.missingSubjects.length} môn
                     {item.requiredCount && ` / ${item.requiredCount} môn bắt buộc`}
                   </Typography>
                   <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
@@ -522,10 +532,10 @@ const AdminSubjectOpen = () => {
                       <Chip key={i} label={subjectId} size="small" color="error" variant="outlined" />
                     ))}
                     {item.totalMissing > item.missingSubjects.length && (
-                      <Chip 
-                        label={`+${item.totalMissing - item.missingSubjects.length} môn nữa`} 
-                        size="small" 
-                        color="warning" 
+                      <Chip
+                        label={`+${item.totalMissing - item.missingSubjects.length} môn nữa`}
+                        size="small"
+                        color="warning"
                       />
                     )}
                   </Box>

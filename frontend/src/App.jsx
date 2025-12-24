@@ -24,6 +24,7 @@ import RegulationSettings from "./pages/RegulationSettings.jsx";
 
 import StudentListTuition from "./pages/StudentListTuition.jsx";
 import StudentTuitionReceipts from "./pages/StudentTuitionReceipts.jsx"; // ✅ thêm
+import CourseRegistrations from "./pages/CourseRegistrations.jsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -158,6 +159,9 @@ export default function App() {
             {/* ✅ Tuition list + detail */}
             <Route path="tuition-list" element={<StudentListTuition />} />
             <Route path="tuition-list/:studentId" element={<StudentTuitionReceipts />} />
+
+            {/* ✅ Course Registrations - Admin only */}
+            <Route path="admin/course-registrations" element={<CourseRegistrations />} />
           </Route>
 
           <Route path="*" element={<div style={{ padding: 24 }}>404 - Not Found</div>} />

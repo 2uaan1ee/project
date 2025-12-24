@@ -214,25 +214,6 @@ export default function Dashboard() {
             Môn học mở
           </li>
 
-          {userRole === "admin" && (
-            <>
-              <li
-                style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
-                onClick={() => nav("/app/admin/training-program")}
-              >
-                <span className="step-number">🔑</span>
-                Quản lý CT đào tạo (Admin)
-              </li>
-              <li
-                style={{ cursor: "pointer", color: "#dc2626", fontWeight: "bold" }}
-                onClick={() => nav("/app/admin/subject-open")}
-              >
-                <span className="step-number">📚</span>
-                Quản lý môn học mở (Admin)
-              </li>
-            </>
-          )}
-
           <li>
             <span className="step-number">4</span>
             Lịch trình giảng dạy
@@ -281,6 +262,54 @@ export default function Dashboard() {
             Điều chỉnh môn học
           </li>
         </ol>
+
+        {/* Admin Section */}
+        {userRole === "admin" && (
+          <>
+            <hr style={{ margin: "20px 0", border: "none", borderTop: "2px solid #fca5a5", opacity: 0.5 }} />
+            <h3 style={{ textAlign: "center", marginBottom: 12, color: "#dc2626", fontSize: "16px" }}>
+              🔐 Quản trị viên
+            </h3>
+            <ol style={{ counterReset: "admin-counter" }}>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "#dc2626",
+                  fontWeight: "600",
+                  listStyle: "none"
+                }}
+                onClick={() => nav("/app/admin/training-program")}
+              >
+                <span className="step-number" style={{ background: "#dc2626" }}>🔑</span>
+                Quản lý CT đào tạo
+              </li>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "#dc2626",
+                  fontWeight: "600",
+                  listStyle: "none"
+                }}
+                onClick={() => nav("/app/admin/subject-open")}
+              >
+                <span className="step-number" style={{ background: "#dc2626" }}>📚</span>
+                Quản lý môn học mở
+              </li>
+              <li
+                style={{
+                  cursor: "pointer",
+                  color: "#dc2626",
+                  fontWeight: "600",
+                  listStyle: "none"
+                }}
+                onClick={() => nav("/app/admin/course-registrations")}
+              >
+                <span className="step-number" style={{ background: "#dc2626" }}>📝</span>
+                Quản lý Phiếu Đăng ký
+              </li>
+            </ol>
+          </>
+        )}
 
         <div className="step-footer">
           <button type="button">Like & Share</button>
@@ -380,6 +409,6 @@ export default function Dashboard() {
         onClose={() => setOpenModal(false)}
         unit={selected}
       />
-    </div>
+    </div >
   );
 }

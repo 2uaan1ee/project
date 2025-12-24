@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 // ✅ collection: course_registrations
 const CourseRegistrationSchema = new mongoose.Schema({}, { strict: false, collection: "course_registrations" });
 
-module.exports = mongoose.model("CourseRegistration", CourseRegistrationSchema);
+export default mongoose.model("CourseRegistration", CourseRegistrationSchema);

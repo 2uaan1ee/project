@@ -16,6 +16,7 @@ import regulationRoutes from "./src/routes/regulations.routes.js";
 import subjectRoutes from "./src/routes/subjects.routes.js";
 import trainingProgramRoutes from "./src/routes/trainingProgram.routes.js";
 import subjectOpenRoutes from "./src/routes/subjectOpen.routes.js";
+import courseRegistrationsRoutes from "./src/routes/courseRegistrations.routes.js";
 
 dotenv.config();
 
@@ -91,6 +92,11 @@ app.use("/api/regulations", (req, _res, next) => {
   console.log(`[REGULATIONS] ${req.method} ${req.originalUrl}`);
   next();
 }, regulationRoutes);
+
+app.use("/api/course-registrations", (req, _res, next) => {
+  console.log(`[COURSE-REGISTRATIONS] ${req.method} ${req.originalUrl}`);
+  next();
+}, courseRegistrationsRoutes);
 
 app.use("/uploads", express.static(uploadsDir));
 

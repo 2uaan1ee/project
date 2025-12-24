@@ -1,5 +1,6 @@
 // pages/SubjectOpenList.jsx - Trang xem môn học mở cho User
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -17,11 +18,13 @@ import {
   Select,
   MenuItem,
   Chip,
+  Button,
 } from "@mui/material";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const SubjectOpenList = () => {
+  const navigate = useNavigate();
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,7 +36,7 @@ const SubjectOpenList = () => {
     try {
       setLoading(true);
       const token = sessionStorage.getItem("token");
-      
+
       let url = `${API_URL}/api/subject-open`;
       const params = new URLSearchParams();
       if (selectedYear) params.append("academicYear", selectedYear);
@@ -69,9 +72,17 @@ const SubjectOpenList = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <Typography variant="h4" gutterBottom>
-        Danh sách Môn học Mở
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h4" gutterBottom>
+          Danh sách Môn học Mở
+        </Typography>
+        <Button
+          variant="outlined"
+          onClick={() => navigate("/app/dashboard")}
+        >
+          ← Quay về trang chủ
+        </Button>
+      </Box>
 
       {/* Filters */}
       <Box display="flex" gap={2} mb={3}>
@@ -145,7 +156,7 @@ const SubjectOpenList = () => {
                   <TableRow>
                     <TableCell>STT</TableCell>
                     <TableCell>Mã môn</TableCell>
-                      <TableCell>Mã lớp</TableCell>
+                    <TableCell>Mã lớp</TableCell>
                     <TableCell>Tên môn học</TableCell>
                     <TableCell align="center">Tín chỉ LT</TableCell>
                     <TableCell align="center">Tín chỉ TH</TableCell>
