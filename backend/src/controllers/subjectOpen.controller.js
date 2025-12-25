@@ -21,7 +21,7 @@ async function validateSubjectsExist(subjectIds) {
 // Helper function để validate môn học mở với training program
 async function validateWithTrainingProgram(academicYear, semester, subjectIds) {
   console.log(`[Validation] Checking training programs for semester: ${semester}`);
-  
+
   // HK3 là học kỳ hè - không cần validate với CTĐT
   if (semester === "HK3") {
     console.log(`[Validation] ℹ️ HK3 is summer semester - skipping training program validation`);
@@ -32,21 +32,21 @@ async function validateWithTrainingProgram(academicYear, semester, subjectIds) {
       isSummerSemester: true,
     };
   }
-  
+
   // Map semester:
   // HK1 (học kỳ 1 các năm) -> các học kỳ lẻ: 1, 3, 5, 7
   // HK2 (học kỳ 2 các năm) -> các học kỳ chẵn: 2, 4, 6, 8
-  const semestersToCheck = semester === "HK1" 
+  const semestersToCheck = semester === "HK1"
     ? ["Học kỳ 1", "Học kỳ 3", "Học kỳ 5", "Học kỳ 7"]
     : ["Học kỳ 2", "Học kỳ 4", "Học kỳ 6", "Học kỳ 8"];
-  
+
   console.log(`[Validation] Mapping ${semester} to semesters:`, semestersToCheck);
-  
+
   // Lấy tất cả training programs của các học kỳ tương ứng
-  const trainingPrograms = await TrainingProgram.find({ 
-    semester: { $in: semestersToCheck } 
+  const trainingPrograms = await TrainingProgram.find({
+    semester: { $in: semestersToCheck }
   });
-  
+
   console.log(`[Validation] Found ${trainingPrograms.length} training programs across ${semestersToCheck.join(", ")}`);
 
   if (trainingPrograms.length === 0) {
@@ -85,7 +85,7 @@ async function validateWithTrainingProgram(academicYear, semester, subjectIds) {
     const program = programsByMajor[key];
     const requiredSubjects = Array.from(program.subjects);
     totalRequiredSubjects += requiredSubjects.length;
-    
+
     const missingSubjects = requiredSubjects.filter(
       (subjectId) => !subjectIds.includes(subjectId)
     );
@@ -110,7 +110,7 @@ async function validateWithTrainingProgram(academicYear, semester, subjectIds) {
     const totalMissing = missingByMajor.reduce((sum, m) => sum + m.missingCount, 0);
     const uniqueMajors = Object.keys(programsByMajor).length;
     console.log(`[Validation] ❌ FAILED: ${missingByMajor.length}/${uniqueMajors} majors have missing subjects`);
-    
+
     return {
       valid: false,
       message: `Danh sách môn học mở chưa đủ theo chương trình đào tạo ${semester} (${missingByMajor.length}/${uniqueMajors} ngành thiếu môn)`,
@@ -247,7 +247,7 @@ export async function importSubjectOpenFromExcel(req, res) {
     try {
       workbook = xlsx.read(req.file.buffer, { type: "buffer" });
       const sheetName = workbook.SheetNames[0];
-      
+
       if (!sheetName) {
         return res.status(400).json({
           success: false,
@@ -332,7 +332,7 @@ export async function importSubjectOpenFromExcel(req, res) {
         success: false,
         message: "Không tìm thấy hàng header trong 10 dòng đầu. Vui lòng đảm bảo file tkb_he dùng header chuẩn.",
         expectedHeaders: [
-          "STT","MÃ MH","MÃ LỚP","TÊN MÔN HỌC","MÃ GIẢNG VIÊN","TÊN GIẢNG VIÊN","SĨ SỐ","TỐ TC","THỰC HÀNH","HTGD","THỨ","TIẾT","CÁCH TUẦN","PHÒNG HỌC","KHOÁ HỌC","HỌC KỲ","NĂM HỌC","HỆ ĐT","KHOA QL","NBD","NKT","GHICHU","Đã ĐK"
+          "STT", "MÃ MH", "MÃ LỚP", "TÊN MÔN HỌC", "MÃ GIẢNG VIÊN", "TÊN GIẢNG VIÊN", "SĨ SỐ", "TỐ TC", "THỰC HÀNH", "HTGD", "THỨ", "TIẾT", "CÁCH TUẦN", "PHÒNG HỌC", "KHOÁ HỌC", "HỌC KỲ", "NĂM HỌC", "HỆ ĐT", "KHOA QL", "NBD", "NKT", "GHICHU", "Đã ĐK"
         ],
       });
     }
@@ -650,7 +650,8 @@ export async function createOrUpdateSubjectOpen(req, res) {
 export async function addSubjectToList(req, res) {
   try {
     const { id } = req.params; // ID của SubjectOpen
-    const { subject_id, stt } = req.body;
+    let { subject_id } = req.body;
+    const { stt } = req.body;
 
     if (!subject_id) {
       return res.status(400).json({
@@ -659,12 +660,15 @@ export async function addSubjectToList(req, res) {
       });
     }
 
+    // Chuẩn hóa mã môn học (uppercase + trim)
+    subject_id = String(subject_id).trim().toUpperCase();
+
     // Validate subject tồn tại
     const subject = await Subject.findOne({ subject_id });
     if (!subject) {
       return res.status(400).json({
         success: false,
-        message: "Môn học không tồn tại trong hệ thống",
+        message: `Môn học '${subject_id}' không tồn tại trong hệ thống`,
       });
     }
 

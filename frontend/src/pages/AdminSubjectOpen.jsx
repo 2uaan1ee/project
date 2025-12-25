@@ -40,6 +40,137 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+// Separate component for Adding Subject to avoid re-rendering entire list on input change
+const AddSubjectDialog = ({ open, onClose, onAdd }) => {
+  const [subjectId, setSubjectId] = useState("");
+  const [subjectLookup, setSubjectLookup] = useState({
+    loading: false,
+    found: null,
+    notFound: false,
+  });
+
+  // Reset logic when dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      setSubjectId("");
+      setSubjectLookup({ loading: false, found: null, notFound: false });
+    }
+  }, [open]);
+
+  // Lookup subject by ID
+  const lookupSubject = async (sid) => {
+    if (!sid || sid.trim().length < 2) {
+      setSubjectLookup({ loading: false, found: null, notFound: false });
+      return;
+    }
+
+    try {
+      setSubjectLookup({ loading: true, found: null, notFound: false });
+      const token = sessionStorage.getItem("token");
+      const response = await axios.get(
+        `${API_URL}/api/subjects?search=${encodeURIComponent(sid.trim())}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const subjects = response.data.subjects || [];
+      const exactMatch = subjects.find(
+        (s) => s.subject_id.toLowerCase() === sid.trim().toLowerCase()
+      );
+
+      if (exactMatch) {
+        setSubjectLookup({ loading: false, found: exactMatch, notFound: false });
+      } else {
+        setSubjectLookup({ loading: false, found: null, notFound: true });
+      }
+    } catch (err) {
+      console.error("Error looking up subject:", err);
+      setSubjectLookup({ loading: false, found: null, notFound: false });
+    }
+  };
+
+  // Debounce lookup
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (subjectId) {
+        lookupSubject(subjectId);
+      } else {
+        setSubjectLookup({ loading: false, found: null, notFound: false });
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [subjectId]);
+
+  const handleConfirm = () => {
+    const finalId = subjectLookup.found ? subjectLookup.found.subject_id : subjectId;
+    onAdd(finalId);
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Thêm môn học</DialogTitle>
+      <DialogContent>
+        <Box display="flex" flexDirection="column" gap={2} mt={2}>
+          <TextField
+            label="Mã môn học"
+            value={subjectId}
+            onChange={(e) => setSubjectId(e.target.value)}
+            fullWidth
+            placeholder="Ví dụ: CS101"
+            helperText="STT sẽ tự động được gán theo thứ tự cuối cùng trong danh sách"
+            autoFocus
+          />
+
+          {/* Subject lookup feedback */}
+          {subjectLookup.loading && (
+            <Alert severity="info" icon={false}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Typography variant="body2">Đang tìm kiếm...</Typography>
+              </Box>
+            </Alert>
+          )}
+
+          {subjectLookup.found && (
+            <Alert severity="success">
+              <Typography variant="body2" fontWeight="bold">
+                {subjectLookup.found.subject_name}
+              </Typography>
+              <Box display="flex" gap={2} mt={1}>
+                <Typography variant="caption" color="text.secondary">
+                  Tín chỉ LT: {subjectLookup.found.theory_credits || 0}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Tín chỉ TH: {subjectLookup.found.practice_credits || 0}
+                </Typography>
+              </Box>
+            </Alert>
+          )}
+
+          {subjectLookup.notFound && (
+            <Alert severity="warning">
+              <Typography variant="body2">
+                Không tìm thấy môn học với mã "{subjectId}"
+              </Typography>
+            </Alert>
+          )}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Hủy</Button>
+        <Button
+          onClick={handleConfirm}
+          variant="contained"
+          disabled={!subjectLookup.found}
+        >
+          Thêm
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const AdminSubjectOpen = () => {
   const navigate = useNavigate();
   const [lists, setLists] = useState([]);
@@ -58,11 +189,6 @@ const AdminSubjectOpen = () => {
     academicYear: "2025-2026",
     semester: "HK2",
     file: null,
-  });
-
-  const [addSubjectForm, setAddSubjectForm] = useState({
-    subject_id: "",
-    stt: "",
   });
 
   const [validationResult, setValidationResult] = useState(null);
@@ -139,18 +265,27 @@ const AdminSubjectOpen = () => {
   };
 
   // Thêm môn học manual
-  const handleAddSubject = async () => {
+  const handleAddSubject = async (subjectId) => {
     try {
-      if (!selectedList || !addSubjectForm.subject_id) {
+      if (!selectedList || !subjectId) {
         setError("Vui lòng chọn danh sách và nhập mã môn học");
         return;
       }
+
+      // Tự động tính STT = STT cuối cùng + 1
+      const lastStt = selectedList.subjects.length > 0
+        ? Math.max(...selectedList.subjects.map(s => s.stt || 0))
+        : 0;
+      const nextStt = lastStt + 1;
 
       setLoading(true);
       const token = sessionStorage.getItem("token");
       const response = await axios.post(
         `${API_URL}/api/subject-open/${selectedList._id}/subjects`,
-        addSubjectForm,
+        {
+          subject_id: subjectId,
+          stt: nextStt,
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -168,7 +303,6 @@ const AdminSubjectOpen = () => {
       }
 
       setOpenAddSubjectDialog(false);
-      setAddSubjectForm({ subject_id: "", stt: "" });
       fetchLists();
     } catch (err) {
       setError(err.response?.data?.message || "Lỗi khi thêm môn học");
@@ -446,39 +580,11 @@ const AdminSubjectOpen = () => {
       </Dialog>
 
       {/* Dialog Thêm môn học */}
-      <Dialog
+      <AddSubjectDialog
         open={openAddSubjectDialog}
         onClose={() => setOpenAddSubjectDialog(false)}
-      >
-        <DialogTitle>Thêm môn học</DialogTitle>
-        <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={2}>
-            <TextField
-              label="Mã môn học"
-              value={addSubjectForm.subject_id}
-              onChange={(e) =>
-                setAddSubjectForm({ ...addSubjectForm, subject_id: e.target.value })
-              }
-              fullWidth
-            />
-            <TextField
-              label="Số thứ tự"
-              type="number"
-              value={addSubjectForm.stt}
-              onChange={(e) =>
-                setAddSubjectForm({ ...addSubjectForm, stt: e.target.value })
-              }
-              fullWidth
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenAddSubjectDialog(false)}>Hủy</Button>
-          <Button onClick={handleAddSubject} variant="contained">
-            Thêm
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onAdd={handleAddSubject}
+      />
 
       {/* Dialog Validation Result */}
       <Dialog
