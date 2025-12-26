@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tuition.css";
+import "../styles/subject-open.css";
 import { authFetch } from "../lib/auth.js";
 import tuitionPrintTemplate from "../templates/tuitionPrintTemplate.js";
 
@@ -293,11 +294,17 @@ export default function TuitionPayments() {
   return (
     <div className="tuition-page">
       <div className="tuition-header">
+        <div className="subject-back-toolbar">
+          <button
+            className="subject-back"
+            type="button"
+            onClick={() => navigate("/app/dashboard")}
+          >
+            ← Quay về trang chủ
+          </button>
+        </div>
         <div className="tuition-header-top">
           <h1>Danh sách sinh viên chưa hoàn thành học phí</h1>
-          <button type="button" className="tuition-back" onClick={() => navigate(-1)}>
-            ← Quay lại
-          </button>
         </div>
         <p>Chọn năm học và học kỳ để xem chi tiết.</p>
       </div>
