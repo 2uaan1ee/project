@@ -2,11 +2,66 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tuition.css";
 import { authFetch } from "../lib/auth.js";
+import tuitionPrintTemplate from "../templates/tuitionPrintTemplate.js";
 
+// TODO: Thêm việc kiểm tra giảm giá cho đối tượng ưu tiên.
 const formatCurrency = (value) => {
   const numeric = Number(value);
   return new Intl.NumberFormat("vi-VN").format(Number.isFinite(numeric) ? numeric : 0);
 };
+
+const escapeHtml = (value) =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+const buildPrintTable = (items) => {
+  const header = `    <table>
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>MSSV</th>
+          <th>Họ và tên</th>
+          <th>Lớp</th>
+          <th>Số tiền phải đóng</th>
+          <th>Số tiền đã đóng</th>
+          <th>Còn lại</th>
+        </tr>
+      </thead>
+      <tbody>`;
+  const rows = (items || []).map((item, index) => {
+    const studentId = escapeHtml(item.student_id || "");
+    const studentName = escapeHtml(item.student_name || "—");
+    const classId = escapeHtml(item.class_id || "-");
+    const tuitionTotal = escapeHtml(formatCurrency(item.tuition_total));
+    const totalPaid = escapeHtml(formatCurrency(item.total_paid));
+    const remainingBalance = escapeHtml(formatCurrency(item.remaining_balance));
+    return `        <tr>
+          <td>${index + 1}</td>
+          <td>${studentId}</td>
+          <td>${studentName}</td>
+          <td>${classId}</td>
+          <td class="num">${tuitionTotal}</td>
+          <td class="num">${totalPaid}</td>
+          <td class="num">${remainingBalance}</td>
+        </tr>`;
+  });
+  const body = rows.length
+    ? rows.join("\n")
+    : '        <tr><td class="empty" colspan="7">Không có dữ liệu</td></tr>';
+  return `${header}
+${body}
+      </tbody>
+    </table>`;
+};
+
+const compilePrintTemplate = (template, data) =>
+  template.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, key) =>
+    Object.prototype.hasOwnProperty.call(data, key) ? String(data[key]) : ""
+  );
 
 export default function TuitionPayments() {
   const navigate = useNavigate();
@@ -142,6 +197,25 @@ export default function TuitionPayments() {
     return cloned;
   }, [filteredRows, sortField, sortDir]);
 
+  const semesterLabel = useMemo(() => {
+    const match = semesterOptions.find((s) => String(s.semester) === String(semester));
+    if (match?.label) return match.label;
+    if (semester !== "") return `HK${semester}`;
+    return "";
+  }, [semesterOptions, semester]);
+
+  const printSummary = useMemo(() => {
+    return sortedRows.reduce(
+      (acc, item) => {
+        acc.totalDue += Number(item.tuition_total) || 0;
+        acc.totalPaid += Number(item.total_paid) || 0;
+        acc.totalRemaining += Number(item.remaining_balance) || 0;
+        return acc;
+      },
+      { totalDue: 0, totalPaid: 0, totalRemaining: 0 }
+    );
+  }, [sortedRows]);
+
   const toggleSort = (field) => {
     if (sortField !== field) {
       setSortField(field);
@@ -180,11 +254,40 @@ export default function TuitionPayments() {
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    const semesterLabel = semesterOptions.find((s) => String(s.semester) === String(semester))?.label || `HK${semester}`;
     a.href = url;
-    a.download = `hocphi_${academicYear || "nam-hoc"}_${semesterLabel}.csv`;
+    a.download = `hocphi_${academicYear || "nam-hoc"}_${semesterLabel || "hoc-ky"}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handlePrint = () => {
+    if (!sortedRows.length) return;
+    const classLabel = normalizedClassFilter || "Tất cả";
+    const templateData = {
+      title: "Danh sách sinh viên chưa hoàn thành học phí",
+      academicYear: escapeHtml(academicYear || "-"),
+      semesterLabel: escapeHtml(semesterLabel || "-"),
+      classLabel: escapeHtml(classLabel),
+      generatedAt: escapeHtml(new Date().toLocaleString("vi-VN")),
+      totalStudents: escapeHtml(String(sortedRows.length)),
+      totalDue: escapeHtml(formatCurrency(printSummary.totalDue)),
+      totalPaid: escapeHtml(formatCurrency(printSummary.totalPaid)),
+      totalRemaining: escapeHtml(formatCurrency(printSummary.totalRemaining)),
+      table: buildPrintTable(sortedRows),
+    };
+    const html = compilePrintTemplate(tuitionPrintTemplate, templateData);
+    const printWindow = window.open("", "_blank", "width=1024,height=720");
+    if (!printWindow) {
+      window.alert("Trình duyệt đang chặn cửa sổ in. Vui lòng bật pop-up để tiếp tục.");
+      return;
+    }
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
   };
 
   return (
@@ -250,6 +353,9 @@ export default function TuitionPayments() {
         </label>
 
         <div className="tuition-actions">
+          <button type="button" className="tuition-print-btn" onClick={handlePrint} disabled={!sortedRows.length}>
+            In danh sách
+          </button>
           <button type="button" className="export-btn" onClick={handleExport} disabled={!sortedRows.length}>
             Xuất Excel
           </button>

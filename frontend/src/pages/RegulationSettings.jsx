@@ -4,12 +4,10 @@ import "../styles/regulations.css";
 import { authFetch } from "../lib/auth";
 
 const navSections = [
-  { title: "Mẫu", subtitle: "Điểm quá trình, phúc khảo, lịch thi", count: 6 },
   { title: "Sinh viên", subtitle: "", count: 2 },
   { title: "Môn học", subtitle: "", count: 2 },
-  { title: "Chương trình đào tạo", subtitle: "", count: 5 },
-  { title: "Đăng ký học phần", subtitle: "", count: 5 },
-  { title: "Học phí", subtitle: "", count: 4 },
+  { title: "Đăng ký học phần", subtitle: "", count: 2 },
+  { title: "Học phí", subtitle: "", count: 1 },
 ];
 
 const templateQuickRules = [
@@ -26,20 +24,6 @@ const templateReminders = [
   "Đính kèm biểu mẫu phúc khảo mới nhất.",
 ];
 
-const studentQuickRules = [
-  { label: "Điểm chuyên cần tối thiểu", value: ">= 80%" },
-  { label: "Hạn nộp bổ sung", value: "Trong 24h sau mỗi buổi học" },
-  { label: "Số lần xem lại bài", value: "Tối đa 1 lần/bài" },
-  { label: "Định dạng bài nộp", value: "PDF, tối đa 15MB" },
-];
-
-const studentReminders = [
-  "Thông báo rõ thời gian áp dụng cho tất cả lớp thuộc học phần.",
-  "Gửi hướng dẫn phúc khảo lên LMS cho sinh viên tự truy cập.",
-  "Cập nhật danh sách cố vấn học tập để nhận thông báo.",
-  "Xác thực thông tin liên lạc của sinh viên trước kỳ thi.",
-];
-
 function TemplateAcademicContent() {
   return (
     <>
@@ -50,9 +34,6 @@ function TemplateAcademicContent() {
           <p className="muted">
             Điều chỉnh tỷ lệ điểm, điều kiện dự thi và hướng dẫn phúc khảo. Khi hoàn thiện, hệ thống sẽ đẩy thông báo cho sinh viên, giảng viên và cố vấn học tập.
           </p>
-        </div>
-        <div className="chip-row">
-          <span className="pill neutral">Áp dụng: Học kỳ 1 / 2025</span>
         </div>
       </div>
 
@@ -176,9 +157,6 @@ function StudentAcademicContent({
             Khung quy định áp dụng trực tiếp cho sinh viên
           </p>
         </div>
-        <div className="chip-row">
-          <span className="pill neutral">Áp dụng: Từ khóa 2024</span>
-        </div>
       </div>
 
       <div className="field-grid">
@@ -195,18 +173,6 @@ function StudentAcademicContent({
       </div>
 
     
-      <div className="field-grid two">
-        <div className="input-block">
-          <span>Giảm học phí</span>
-          <div className="stacked-options">
-            <label className="option-row">
-              {/* TODO: Kiểm tra BM6 để thêm ràng buộc cho phép giảm học phí */}
-              <input type="checkbox" defaultChecked />
-              <span>Áp dụng cho sinh viên thuộc đối tượng ưu tiên</span>
-            </label>
-          </div>
-        </div>
-      </div>
     </>
   );
 }
@@ -228,13 +194,9 @@ function SubjectPolicyContent({
             Khung quy định áp dụng trực tiếp cho môn học
           </p>
         </div>
-        <div className="chip-row">
-          <span className="pill neutral">Áp dụng: Từ khóa 2024</span>
-        </div>
       </div>
 
       <div className="field-grid">
-        {/* TODO: Thêm hàm validator ở backend khi thực hiện update môn học*/}
         <label className="input-block">
           <span>Hệ số tín chỉ / tiết cho tín chỉ thực hành</span>
           <input
@@ -260,6 +222,87 @@ function SubjectPolicyContent({
   );
 }
 
+function CourseRegistrationPolicyContent({
+  practiceCreditCost,
+  theoryCreditCost,
+  onPracticeCreditCostChange,
+  onTheoryCreditCostChange,
+  settingsError,
+}) {
+  return (
+    <>
+      <div className="editor-head">
+        <div>
+          <p className="eyebrow">Đăng ký học phần</p>
+          <h3>Quy định dành cho đăng ký học phần</h3>
+          <p className="muted">
+            Khung quy định áp dụng trực tiếp cho đăng ký học phần
+          </p>
+        </div>
+      </div>
+
+      <div className="field-grid">
+        {/* TODO: Thêm hàm validator ở backend khi tính học phí sau đăng ký học phần BM5*/}
+        <label className="input-block">
+          <span>Chi phí 1 tín chỉ lý thuyết</span>
+          <input
+            type="number"
+            min={0}
+            value={theoryCreditCost ?? 1}
+            onChange={onTheoryCreditCostChange}
+          />
+          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+        </label>
+        <label className="input-block">
+          <span>Chi phí 1 tín chỉ thực hành</span>
+          <input
+            type="number"
+            min={0}
+            value={practiceCreditCost ?? 1}
+            onChange={onPracticeCreditCostChange}
+          />
+          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+        </label>
+      </div>
+    </>
+  );
+}
+
+function TuitionPolicyContent({
+  allowPriorityDiscount,
+  onAllowPriorityDiscountChange,
+}) {
+  return (
+    <>
+      <div className="editor-head">
+        <div>
+          <p className="eyebrow">Học phí</p>
+          <h3>Quy định liên quan học phí</h3>
+          <p className="muted">
+            Điều chỉnh chính sách ưu tiên và ghi nhận học phí
+          </p>
+        </div>
+      </div>
+
+      <div className="field-grid two">
+        <div className="input-block">
+          <span>Giảm học phí</span>
+          <div className="stacked-options">
+            <label className="option-row">
+              {/* TODO: Kiểm tra BM6 để thêm ràng buộc cho phép giảm học phí */}
+              <input
+                type="checkbox"
+                checked={allowPriorityDiscount}
+                onChange={onAllowPriorityDiscountChange}
+              />
+              <span>Áp dụng cho sinh viên thuộc đối tượng ưu tiên</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
 function PlaceholderContent({ title }) {
   return (
     <div className="editor-head">
@@ -287,8 +330,28 @@ export default function RegulationSettings() {
   const [settingsSaving, setSettingsSaving] = React.useState(false);
   const [settingsError, setSettingsError] = React.useState("");
   const [settingsSuccess, setSettingsSuccess] = React.useState("");
+  const [settingsUpdatedAt, setSettingsUpdatedAt] = React.useState(null);
   const [creditCoefficientPractice, setCreditCoefficientPractice] = React.useState(1);
   const [creditCoefficientTheory, setCreditCoefficientTheory] = React.useState(1);
+  const [practiceCreditCost, setPracticeCreditCost] = React.useState(1);
+  const [theoryCreditCost, setTheoryCreditCost] = React.useState(1);
+  const [allowPriorityDiscount, setAllowPriorityDiscount] = React.useState(true);
+
+  const formatSavedAt = React.useCallback((value) => {
+    if (!value) return "Chưa lưu";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Không rõ";
+    const timePart = new Intl.DateTimeFormat("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(date);
+    const datePart = new Intl.DateTimeFormat("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+    }).format(date);
+    return `${timePart} • ${datePart}`;
+  }, []);
 
   const renderEditorContent = () => {
     if (activeNav === "Mẫu") return <TemplateAcademicContent />;
@@ -342,6 +405,48 @@ export default function RegulationSettings() {
         />
       );
     }
+    if (activeNav === "Đăng ký học phần") {
+      return (
+        <CourseRegistrationPolicyContent
+          practiceCreditCost={practiceCreditCost}
+          theoryCreditCost={theoryCreditCost}
+          onPracticeCreditCostChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              setPracticeCreditCost("");
+              setSettingsSuccess("");
+              return;
+            }
+            const next = Math.max(0, Number(raw));
+            setPracticeCreditCost(Number.isFinite(next) ? next : "");
+            setSettingsSuccess("");
+          }}
+          onTheoryCreditCostChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              setTheoryCreditCost("");
+              setSettingsSuccess("");
+              return;
+            }
+            const next = Math.max(0, Number(raw));
+            setTheoryCreditCost(Number.isFinite(next) ? next : "");
+            setSettingsSuccess("");
+          }}
+          settingsError={settingsError}
+        />
+      );
+    }
+    if (activeNav === "Học phí") {
+      return (
+        <TuitionPolicyContent
+          allowPriorityDiscount={allowPriorityDiscount}
+          onAllowPriorityDiscountChange={(e) => {
+            setAllowPriorityDiscount(e.target.checked);
+            setSettingsSuccess("");
+          }}
+        />
+      );
+    }
     return <PlaceholderContent title={activeNav} />;
   };
 
@@ -386,6 +491,14 @@ export default function RegulationSettings() {
       setSettingsError("Vui lòng nhập hệ số tín chỉ / tiết cho tín chỉ lý thuyết.");
       return;
     }
+    if (practiceCreditCost === "" || practiceCreditCost === null) {
+      setSettingsError("Vui lòng nhập chi phí 1 tín chỉ thực hành.");
+      return;
+    }
+    if (theoryCreditCost === "" || theoryCreditCost === null) {
+      setSettingsError("Vui lòng nhập chi phí 1 tín chỉ lý thuyết.");
+      return;
+    }
     const practiceValue = Number(creditCoefficientPractice);
     const theoryValue = Number(creditCoefficientTheory);
     if (!Number.isFinite(practiceValue) || practiceValue < 0) {
@@ -394,6 +507,16 @@ export default function RegulationSettings() {
     }
     if (!Number.isFinite(theoryValue) || theoryValue < 0) {
       setSettingsError("Hệ số tín chỉ / tiết cho tín chỉ lý thuyết không hợp lệ.");
+      return;
+    }
+    const practiceCostValue = Number(practiceCreditCost);
+    const theoryCostValue = Number(theoryCreditCost);
+    if (!Number.isFinite(practiceCostValue) || practiceCostValue < 0) {
+      setSettingsError("Chi phí 1 tín chỉ thực hành không hợp lệ.");
+      return;
+    }
+    if (!Number.isFinite(theoryCostValue) || theoryCostValue < 0) {
+      setSettingsError("Chi phí 1 tín chỉ lý thuyết không hợp lệ.");
       return;
     }
 
@@ -408,11 +531,15 @@ export default function RegulationSettings() {
           maxStudentMajors: nextValue,
           creditCoefficientPractice: practiceValue,
           creditCoefficientTheory: theoryValue,
+          practiceCreditCost: practiceCostValue,
+          theoryCreditCost: theoryCostValue,
+          allowPriorityDiscount,
         }),
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload?.message || "Không thể lưu quy định");
       setSettingsSuccess("Đã lưu quy định.");
+      setSettingsUpdatedAt(payload?.settings?.updatedAt ?? null);
     } catch (err) {
       setSettingsError(err.message || "Không thể lưu quy định");
     } finally {
@@ -435,12 +562,23 @@ export default function RegulationSettings() {
           );
           const practiceValue = payload?.settings?.creditCoefficientPractice;
           const theoryValue = payload?.settings?.creditCoefficientTheory;
+          const practiceCostValue = payload?.settings?.practiceCreditCost;
+          const theoryCostValue = payload?.settings?.theoryCreditCost;
+          const allowPriorityDiscountValue = payload?.settings?.allowPriorityDiscount;
           setCreditCoefficientPractice(
             Number.isFinite(Number(practiceValue)) ? Number(practiceValue) : 1
           );
           setCreditCoefficientTheory(
             Number.isFinite(Number(theoryValue)) ? Number(theoryValue) : 1
           );
+          setPracticeCreditCost(
+            Number.isFinite(Number(practiceCostValue)) ? Number(practiceCostValue) : 1
+          );
+          setTheoryCreditCost(
+            Number.isFinite(Number(theoryCostValue)) ? Number(theoryCostValue) : 1
+          );
+          setAllowPriorityDiscount(allowPriorityDiscountValue !== false);
+          setSettingsUpdatedAt(payload?.settings?.updatedAt ?? null);
           setSettingsLoaded(true);
         }
       } catch (err) {
@@ -486,6 +624,21 @@ export default function RegulationSettings() {
     }
   };
 
+  const handleDeleteAttachment = async (attachmentId) => {
+    if (!attachmentId) return;
+    setAttachmentError("");
+    try {
+      const res = await authFetch(`/api/regulations/attachments/${attachmentId}`, {
+        method: "DELETE",
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload?.message || "Không thể xoá file");
+      setAttachments((prev) => prev.filter((item) => item._id !== attachmentId));
+    } catch (err) {
+      setAttachmentError(err.message || "Không thể xoá file");
+    }
+  };
+
   const formatSize = (size) => {
     if (!size && size !== 0) return "";
     if (size < 1024) return `${size} B`;
@@ -508,7 +661,7 @@ export default function RegulationSettings() {
             </div>
           <h1>Điều chỉnh quy định năm học 2024 - 2025</h1>
           <div className="regulation-tags">
-            <span className="pill soft">Cập nhật: 10:45 • 22/03</span>
+            <span className="pill soft">Cập nhật: {formatSavedAt(settingsUpdatedAt)}</span>
             <span className="pill soft">Người chỉnh: Phạm Thu Hà</span>
           </div>
         </div>
@@ -551,10 +704,6 @@ export default function RegulationSettings() {
             ))}
           </div>
 
-          <div className="nav-foot">
-            <p>Gợi ý: chia nhỏ theo Học vụ, Tài chính, Công tác sinh viên để dễ phê duyệt.</p>
-            <button type="button" className="btn ghost">Xem lịch sử chỉnh sửa</button>
-          </div>
         </aside>
 
         <section className="reg-card regulation-editor">
@@ -611,6 +760,17 @@ export default function RegulationSettings() {
                   ) : (
                     <span className="btn ghost small disabled">Không có link</span>
                   )}
+                  {item._id ? (
+                    <button
+                      type="button"
+                      className="attachment-delete"
+                      onClick={() => handleDeleteAttachment(item._id)}
+                      aria-label="Xoá tài liệu"
+                      title="Xoá tài liệu"
+                    >
+                      ×
+                    </button>
+                  ) : null}
                 </div>
               ))
             )}
