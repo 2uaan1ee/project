@@ -4,18 +4,9 @@
   gap: 16px;
 }
 
-.tuition-header {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.tuition-header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+.tuition-subtitle {
+  margin: 0;
+  color: var(--muted);
 }
 
 .status-banner {
@@ -83,6 +74,25 @@
   background: #fff;
 }
 
+.tuition-page .subject-toolbar select,
+.tuition-page .subject-toolbar input {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  background: #fff;
+  width: 100%;
+}
+
+.tuition-page .subject-toolbar {
+  gap: 8px;
+}
+
+.tuition-page .subject-toolbar .field-group {
+  width: auto;
+  flex: 1 1 0;
+}
+
 .tuition-class-filter {
   display: flex;
   gap: 8px;
@@ -121,6 +131,33 @@
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tuition-print-btn {
+  border: 1px solid #0ea5e9;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #f8fafc;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(14, 165, 233, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.15s ease;
+}
+
+.tuition-print-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
+  filter: brightness(1.02);
+}
+
+.tuition-print-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .export-btn {
@@ -173,9 +210,8 @@
 
 .tuition-sheet {
   background: #fff;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -198,22 +234,22 @@
 .tuition-table-wrapper {
   width: 100%;
   overflow-x: auto;
+  padding: 6px 10px 10px;
 }
 
 .tuition-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 0.94rem;
+  font-size: 14px;
 }
 
 .tuition-table thead th {
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-  color: #0f172a;
+  background: #f0f4f8;
+  color: var(--muted);
   font-weight: 700;
   text-align: left;
-  padding: 10px;
-  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
 }
 
 .sort-btn {
@@ -232,29 +268,29 @@
 
 .sort-btn span {
   font-size: 0.9rem;
-  color: #475467;
+  color: var(--muted);
 }
 
 .sort-icon {
   font-size: 0.82rem;
   letter-spacing: -1px;
-  color: #475467;
+  color: var(--muted);
   min-width: 14px;
   text-align: right;
 }
 
 .tuition-table tbody td {
-  padding: 10px;
-  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  border-bottom: 1px solid #edf1f7;
   background: #fff;
 }
 
 .tuition-table tbody tr:nth-child(even) td {
-  background: #f8fafc;
+  background: #fbfdff;
 }
 
 .tuition-table tbody tr:hover td {
-  background: #f1f5f9;
+  background: #e9f3ff;
 }
 
 .cell-strong {
@@ -278,7 +314,7 @@
 .tuition-empty {
   padding: 20px;
   text-align: center;
-  color: #475467;
-  border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: #fbfdff;
 }

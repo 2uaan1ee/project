@@ -230,8 +230,18 @@ export const summarizePayments = asyncHandler(async (req, res) => {
         registration_major_raw: { $arrayElemAt: ["$registration.major_id", 0] },
         student_name: {
           $ifNull: [
-            { $arrayElemAt: ["$student.name", 0] },
-            { $arrayElemAt: ["$registration.name", 0] },
+            { $arrayElemAt: ["$student.full_name", 0] },
+            {
+              $ifNull: [
+                { $arrayElemAt: ["$student.name", 0] },
+                {
+                  $ifNull: [
+                    { $arrayElemAt: ["$registration.full_name", 0] },
+                    { $arrayElemAt: ["$registration.name", 0] },
+                  ],
+                },
+              ],
+            },
           ],
         },
         class_id: {

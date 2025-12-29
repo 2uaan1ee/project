@@ -1,6 +1,6 @@
 import express from "express";
 import Subject from "../models/subject.model.js";
-import { verifyJwt } from "../middleware/auth.js";
+import { requireAdmin, verifyJwt } from "../middleware/auth.js";
 import { getRegulationSettingsSnapshot } from "../services/regulationSettings.js";
 
 const router = express.Router();
@@ -33,7 +33,7 @@ router.get("/open", async (req, res) => {
     }
 });
 
-router.post("/", verifyJwt, async (req, res) => {
+router.post("/", verifyJwt, requireAdmin, async (req, res) => {
     try {
         const { subject_id } = req.body || {};
         const normalizedId = String(subject_id || "").trim().toUpperCase();
@@ -86,7 +86,7 @@ router.post("/", verifyJwt, async (req, res) => {
     }
 });
 
-router.put("/:subject_id", verifyJwt, async (req, res) => {
+router.put("/:subject_id", verifyJwt, requireAdmin, async (req, res) => {
     try {
         const { subject_id } = req.params;
         const existingSubject = await Subject.findOne({ subject_id }).lean();
@@ -150,7 +150,7 @@ router.put("/:subject_id", verifyJwt, async (req, res) => {
     }
 });
 
-router.delete("/:subject_id", verifyJwt, async (req, res) => {
+router.delete("/:subject_id", verifyJwt, requireAdmin, async (req, res) => {
     try {
         const { subject_id } = req.params;
         const subject = await Subject.findOneAndDelete({ subject_id }).lean();

@@ -1,0 +1,248 @@
+/* frontend/src/styles/students_admin.css */
+
+/* =========================================
+   1. CORE LAYOUT & TYPOGRAPHY
+   ========================================= */
+h3 {
+  font-size: 20px !important; /* Về lại size cũ */
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px;
+}
+
+.student-page {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 16px;
+  color: #0f172a;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.profile-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.profile-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* =========================================
+   2. HERO SECTION (ORIGINAL - GIỮ NGUYÊN BẢN GỐC)
+   ========================================= */
+/* Đây là CSS gốc của bạn, đảm bảo giống hệt ảnh */
+.profile-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0)),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0)),
+    linear-gradient(120deg, #1d4ed8 0%, #38bdf8 50%, #0ea5e9 100%);
+  color: #f8fafc;
+  border-radius: 16px;
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.profile-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/img/pattern.svg"), url("/img/logo_uit_transparent.png");
+  background-size: 420px, 140px;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center right 30px, center right 40px;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.profile-hero__block {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-hero__label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.profile-hero__value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.profile-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.meta-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Đảm bảo text trong Hero không bị ảnh hưởng bởi input style */
+.profile-hero span {
+  display: inline-block;
+}
+
+/* =========================================
+   3. EDITABLE SECTIONS (PHẦN DƯỚI - CHỈNH SỬA ĐƯỢC)
+   ========================================= */
+.section {
+  margin-top: 18px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+/* Input xem (Readonly) - Giống cũ */
+.field input[readonly] {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 14px;
+  width: 100%;
+  color: #0f172a;
+}
+
+/* Input SỬA (Admin Mode) - Professional Style */
+.field-input-edit {
+  padding: 10px 12px;
+  border-radius: 8px !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Focus effect cho input đang sửa */
+.field-input-edit:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  outline: none;
+}
+
+/* Select box custom arrow */
+select.field-input-edit {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+/* =========================================
+   4. BUTTONS & UTILS
+   ========================================= */
+.print-btn {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #0f172a;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.print-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+/* Nút Save/Cancel */
+button[style*="#16a34a"] {
+  background: #10b981 !important; /* Xanh lá đẹp hơn */
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+  border: none !important;
+}
+
+button[style*="#0284c7"] {
+  background: #2563eb !important; /* Xanh dương đẹp hơn */
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+  border: none !important;
+}
+
+/* Grid Layout Tweaks (Giữ nguyên logic chia cột cũ) */
+.field--wide { grid-column: 1 / -1; }
+.section--contact .field-grid { grid-template-columns: repeat(2, 1fr); }
+.section--address .field-grid { grid-template-columns: repeat(2, 1fr); }
+.section--identity .field-grid { grid-template-columns: repeat(3, 1fr); }
+.section--family .field-grid { grid-template-columns: repeat(3, 1fr); }
+
+.family-subtitle {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+  .section--contact .field-grid,
+  .section--address .field-grid,
+  .section--identity .field-grid,
+  .section--family .field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .profile-toolbar, .navbar { display: none !important; }
+  .section { box-shadow: none; border: 1px solid #e5e7eb; }
+  .profile-hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

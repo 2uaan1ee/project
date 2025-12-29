@@ -6,6 +6,9 @@ const RegulationSettingsSchema = new mongoose.Schema(
     max_student_majors: { type: Number, default: 1, min: 0 },
     credit_coefficient_practice: { type: Number, default: 1, min: 0 },
     credit_coefficient_theory: { type: Number, default: 1, min: 0 },
+    practice_credit_cost: { type: Number, default: 1, min: 0 },
+    theory_credit_cost: { type: Number, default: 1, min: 0 },
+    allow_priority_discount: { type: Boolean, default: true },
   },
   {
     timestamps: true,

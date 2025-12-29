@@ -33,6 +33,12 @@ body {
   box-sizing: border-box;
 }
 
+.subject-open-page--single {
+  grid-template-columns: 1fr;
+  gap: 0;
+  width: 100%;
+}
+
 /* =========================
    LEFT SIDEBAR / STEPS
    ========================= */
@@ -623,6 +629,11 @@ body {
 
 .subject-action-btn i {
   font-size: 14px;
+}
+
+.subject-action-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .subject-action-btn:hover {
