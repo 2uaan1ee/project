@@ -412,7 +412,20 @@ function SortableSubjectTable({
                                                     aria-label={`Sửa ${row.subject_id || row.subject_name || "môn học"}`}
                                                     onClick={(event) => handleEditClick(event, row)}
                                                 >
-                                                    <i className="ti-pencil" aria-hidden="true" />
+                                                    <svg
+                                                        className="subject-action-icon"
+                                                        viewBox="0 0 24 24"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path
+                                                            d="M16.862 3.487a1.5 1.5 0 0 1 2.12 0l1.53 1.53a1.5 1.5 0 0 1 0 2.12L8.25 19.4l-4.5 1.125L4.875 16l11.987-12.513Z"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="1.6"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        />
+                                                    </svg>
                                                 </button>
                                             </Tooltip>
                                             <Tooltip title="Xóa môn học" arrow>
@@ -422,7 +435,19 @@ function SortableSubjectTable({
                                                     aria-label={`Xóa ${row.subject_id || row.subject_name || "môn học"}`}
                                                     onClick={(event) => handleDeleteClick(event, row)}
                                                 >
-                                                    <i className="ti-close" aria-hidden="true" />
+                                                    <svg
+                                                        className="subject-action-icon"
+                                                        viewBox="0 0 24 24"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path
+                                                            d="M6 6l12 12M18 6l-12 12"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="1.6"
+                                                            strokeLinecap="round"
+                                                        />
+                                                    </svg>
                                                 </button>
                                             </Tooltip>
                                         </div>
@@ -778,28 +803,7 @@ export default function AllSubjectList() {
     };
 
     return (
-        <div className="subject-open-page">
-            {/* Sidebar bên trái */}
-            <aside className="subject-open-steps">
-                <div className="step-brand">
-                    <img src="/img/logo_uit.svg" alt="Logo UIT" />
-                </div>
-                <ol>
-                    <li>
-                        <span className="step-number">1</span>Chọn file Excel
-                    </li>
-                    <li>
-                        <span className="step-number">2</span>Xếp lớp
-                    </li>
-                    <li>
-                        <span className="step-number">3</span>Xuất TKB &amp; script
-                    </li>
-                </ol>
-                <div className="step-footer">
-                    <button type="button">Like &amp; Share</button>
-                    <span className="star-count">458 ⭐</span>
-                </div>
-            </aside>
+        <div className="subject-open-page subject-open-page--single">
 
             {/* Nội dung chính */}
             <section className="subject-open-content">
@@ -814,7 +818,6 @@ export default function AllSubjectList() {
                                 ← Quay về trang chủ
                             </button>
                         </div>
-                        <p className="breadcrumb">TẤT CẢ MÔN HỌC</p>
                         <h2>Danh sách tất cả môn học</h2>
                     </div>
                     <div className="header-actions">
@@ -853,12 +856,6 @@ export default function AllSubjectList() {
                         </div>
                     </div>
                     <div className="toolbar-actions">
-                        <span className="pill soft">
-                            Tổng số môn: {totalSubjects}
-                        </span>
-                        <span className="pill primary">
-                            Đang chọn: {selectedCount}
-                        </span>
                     </div>
                 </div>
 
