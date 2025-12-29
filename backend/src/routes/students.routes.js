@@ -1,6 +1,7 @@
 import { Router } from "express";
 import asyncHandler from "express-async-handler";
 import StudentV3 from "../models/StudentV3.js";
+import { requireAdmin, authenticateToken } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -199,6 +200,43 @@ router.get(
 
     if (!doc) return res.status(404).json({ message: "Student not found" });
     return res.json(normalizeStudentV3(doc));
+  })
+);
+
+// PUT /api/students/:student_id (Chỉ Admin)
+router.put(
+  "/:student_id",
+  authenticateToken,
+  requireAdmin, // Middleware chặn user thường
+  asyncHandler(async (req, res) => {
+    const { student_id } = req.params;
+    const updates = req.body;
+
+    // 1. Bảo mật: Loại bỏ các trường cấm sửa (Primary Key)
+    delete updates._id;
+    delete updates.student_id; // Không cho sửa MSSV để tránh lỗi logic hệ thống
+    // Chặn sửa thông tin trường
+    delete updates.school_symbol;       // Ký hiệu trường
+    delete updates.school_code;         // Mã trường
+    delete updates.registration_school; // Trường đăng ký (tên field trong DB)
+    delete updates.school_registered;   // (Nếu frontend gửi object này lên)
+
+    // 2. Thực hiện Update
+    // Dùng $set để ghi đè các trường được gửi lên
+    const updatedDoc = await StudentV3.findOneAndUpdate(
+      { student_id: student_id },
+      { $set: updates },
+      { new: true,
+        runValidators: true
+       } // Trả về document mới sau khi update
+    ).lean();
+
+    if (!updatedDoc) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // 3. Trả về dữ liệu đã chuẩn hóa (để Frontend cập nhật state ngay lập tức)
+    return res.json(normalizeStudentV3(updatedDoc));
   })
 );
 
