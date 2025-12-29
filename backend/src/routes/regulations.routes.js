@@ -15,13 +15,6 @@ import {
 
 const router = express.Router();
 
-// Tạm thời skip auth để upload file vì chưa phân quyền
-// TODO: Thêm phân quyền
-const skipAuth = true;
-const maybeAuth = skipAuth ? (_req, _res, next) => next() : authenticateToken;
-const maybeAdmin = skipAuth ? (_req, _res, next) => next() : requireAdmin;
-
-
 const UPLOAD_ROOT = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
 const REGULATION_DIR = path.join(UPLOAD_ROOT, "regulations");
 
@@ -59,14 +52,14 @@ const upload = multer({
 
 router.get(
   "/attachments",
-  maybeAuth,
+  authenticateToken,
   listAttachments
 );
 
 router.post(
   "/attachments",
-  maybeAuth,
-  maybeAdmin,
+  authenticateToken,
+  requireAdmin,
   (req, res, next) => {
     upload.single("file")(req, res, (err) => {
       if (err instanceof multer.MulterError) {
@@ -86,21 +79,21 @@ router.post(
 
 router.delete(
   "/attachments/:id",
-  maybeAuth,
-  maybeAdmin,
+  authenticateToken,
+  requireAdmin,
   deleteAttachment
 );
 
 router.get(
   "/settings",
-  maybeAuth,
+  authenticateToken,
   getRegulationSettings
 );
 
 router.put(
   "/settings",
-  maybeAuth,
-  maybeAdmin,
+  authenticateToken,
+  requireAdmin,
   updateRegulationSettings
 );
 

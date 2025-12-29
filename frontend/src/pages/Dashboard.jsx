@@ -193,10 +193,10 @@ export default function Dashboard() {
         <ol>
           <li
             style={{ cursor: "pointer", color: "#2563eb" }}
-            onClick={() => nav("/app/subject-list")}
+            onClick={() => nav("/app/all-subjects")}
           >
             <span className="step-number">1</span>
-            Danh sách môn học
+            Điều chỉnh môn học
           </li>
           <li
             style={{ cursor: "pointer", color: "#2563eb" }}
@@ -254,13 +254,6 @@ export default function Dashboard() {
             <span className="step-number">9</span>
             Thay đổi quy định
           </li>
-          <li
-            style={{ cursor: "pointer", color: "#2563eb" }}
-            onClick={() => nav("/app/all-subjects")}
-          >
-            <span className="step-number">10</span>
-            Điều chỉnh môn học
-          </li>
         </ol>
 
         {/* Admin Section */}
@@ -311,10 +304,6 @@ export default function Dashboard() {
           </>
         )}
 
-        <div className="step-footer">
-          <button type="button">Like & Share</button>
-          <span className="star-count">458 ⭐</span>
-        </div>
       </aside>
 
       {/* Nội dung chính */}

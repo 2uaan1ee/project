@@ -24,7 +24,7 @@ const templateReminders = [
   "Đính kèm biểu mẫu phúc khảo mới nhất.",
 ];
 
-function TemplateAcademicContent() {
+function TemplateAcademicContent({ canEdit }) {
   return (
     <>
       <div className="editor-head">
@@ -40,19 +40,19 @@ function TemplateAcademicContent() {
       <div className="field-grid">
         <label className="input-block">
           <span>Trọng số điểm quá trình</span>
-          <input type="text" defaultValue="40%" placeholder="Nhập tỷ lệ %" />
+          <input type="text" defaultValue="40%" placeholder="Nhập tỷ lệ %" disabled={!canEdit} />
         </label>
         <label className="input-block">
           <span>Trọng số điểm cuối kỳ</span>
-          <input type="text" defaultValue="60%" placeholder="Nhập tỷ lệ %" />
+          <input type="text" defaultValue="60%" placeholder="Nhập tỷ lệ %" disabled={!canEdit} />
         </label>
         <label className="input-block">
           <span>Số lần kiểm tra tối thiểu</span>
-          <input type="number" defaultValue={3} min={0} />
+          <input type="number" defaultValue={3} min={0} disabled={!canEdit} />
         </label>
         <label className="input-block">
           <span>Điều kiện dự thi</span>
-          <input type="text" defaultValue="Điểm quá trình >= 4.0" placeholder="Mô tả điều kiện" />
+          <input type="text" defaultValue="Điểm quá trình >= 4.0" placeholder="Mô tả điều kiện" disabled={!canEdit} />
         </label>
       </div>
 
@@ -62,6 +62,7 @@ function TemplateAcademicContent() {
           <textarea
             rows={3}
             defaultValue="Sinh viên nộp đơn trong 03 ngày sau khi công bố điểm. Mỗi học phần tối đa 2 lần phúc khảo và kết quả phúc khảo là kết quả cuối cùng."
+            disabled={!canEdit}
           />
         </label>
       </div>
@@ -70,8 +71,8 @@ function TemplateAcademicContent() {
         <div className="input-block">
           <span>Thời hạn mở phúc khảo</span>
           <div className="inline-inputs">
-            <input type="date" />
-            <input type="date" />
+            <input type="date" disabled={!canEdit} />
+            <input type="date" disabled={!canEdit} />
           </div>
           <small>Chọn ngày bắt đầu và kết thúc dự kiến.</small>
         </div>
@@ -80,19 +81,19 @@ function TemplateAcademicContent() {
           <span>Hình thức thông báo</span>
           <div className="stacked-options">
             <label className="option-row">
-              <input type="checkbox" defaultChecked />
+              <input type="checkbox" defaultChecked disabled={!canEdit} />
               <span>Gửi email cho toàn bộ sinh viên thuộc học phần</span>
             </label>
             <label className="option-row">
-              <input type="checkbox" defaultChecked />
+              <input type="checkbox" defaultChecked disabled={!canEdit} />
               <span>Hiển thị banner trong cổng thông tin sinh viên</span>
             </label>
             <label className="option-row">
-              <input type="checkbox" />
+              <input type="checkbox" disabled={!canEdit} />
               <span>Thông báo cho giảng viên phụ trách</span>
             </label>
             <label className="option-row">
-              <input type="checkbox" />
+              <input type="checkbox" disabled={!canEdit} />
               <span>Gửi bản cứng tới phòng Công tác sinh viên</span>
             </label>
           </div>
@@ -108,7 +109,7 @@ function TemplateAcademicContent() {
               <p className="eyebrow">Ràng buộc gợi ý</p>
               <h4>Thông số nhanh</h4>
             </div>
-            <button type="button" className="link-btn">Chỉnh sửa</button>
+            <button type="button" className="link-btn" disabled={!canEdit}>Chỉnh sửa</button>
           </div>
           <div className="pill-grid">
             {templateQuickRules.map((rule) => (
@@ -130,12 +131,12 @@ function TemplateAcademicContent() {
           <ul className="reminder-list">
             {templateReminders.map((item) => (
               <li key={item}>
-                <input type="checkbox" />
+                <input type="checkbox" disabled={!canEdit} />
                 <span>{item}</span>
               </li>
             ))}
           </ul>
-          <button type="button" className="btn subtle">Thêm ghi chú</button>
+          <button type="button" className="btn subtle" disabled={!canEdit}>Thêm ghi chú</button>
         </div>
       </div>
     </>
@@ -146,6 +147,7 @@ function StudentAcademicContent({
   maxStudentMajors,
   onMaxStudentMajorsChange,
   settingsError,
+  canEdit,
 }) {
   return (
     <>
@@ -167,6 +169,7 @@ function StudentAcademicContent({
             min={0}
             value={maxStudentMajors ?? 1}
             onChange={onMaxStudentMajorsChange}
+            disabled={!canEdit}
           />
           {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
         </label>
@@ -183,6 +186,7 @@ function SubjectPolicyContent({
   onCreditCoefficientPracticeChange,
   onCreditCoefficientTheoryChange,
   settingsError,
+  canEdit,
 }) {
   return (
     <>
@@ -204,6 +208,7 @@ function SubjectPolicyContent({
             min={0}
             value={creditCoefficientPractice ?? 1}
             onChange={onCreditCoefficientPracticeChange}
+            disabled={!canEdit}
           />
           {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
         </label>
@@ -214,6 +219,7 @@ function SubjectPolicyContent({
             min={0}
             value={creditCoefficientTheory ?? 1}
             onChange={onCreditCoefficientTheoryChange}
+            disabled={!canEdit}
           />
           {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
         </label>
@@ -228,6 +234,7 @@ function CourseRegistrationPolicyContent({
   onPracticeCreditCostChange,
   onTheoryCreditCostChange,
   settingsError,
+  canEdit,
 }) {
   return (
     <>
@@ -250,6 +257,7 @@ function CourseRegistrationPolicyContent({
             min={0}
             value={theoryCreditCost ?? 1}
             onChange={onTheoryCreditCostChange}
+            disabled={!canEdit}
           />
           {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
         </label>
@@ -260,6 +268,7 @@ function CourseRegistrationPolicyContent({
             min={0}
             value={practiceCreditCost ?? 1}
             onChange={onPracticeCreditCostChange}
+            disabled={!canEdit}
           />
           {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
         </label>
@@ -271,6 +280,7 @@ function CourseRegistrationPolicyContent({
 function TuitionPolicyContent({
   allowPriorityDiscount,
   onAllowPriorityDiscountChange,
+  canEdit,
 }) {
   return (
     <>
@@ -294,6 +304,7 @@ function TuitionPolicyContent({
                 type="checkbox"
                 checked={allowPriorityDiscount}
                 onChange={onAllowPriorityDiscountChange}
+                disabled={!canEdit}
               />
               <span>Áp dụng cho sinh viên thuộc đối tượng ưu tiên</span>
             </label>
@@ -336,6 +347,8 @@ export default function RegulationSettings() {
   const [practiceCreditCost, setPracticeCreditCost] = React.useState(1);
   const [theoryCreditCost, setTheoryCreditCost] = React.useState(1);
   const [allowPriorityDiscount, setAllowPriorityDiscount] = React.useState(true);
+  const userRole = sessionStorage.getItem("user_role") || "user";
+  const canEdit = userRole === "admin";
 
   const formatSavedAt = React.useCallback((value) => {
     if (!value) return "Chưa lưu";
@@ -354,7 +367,7 @@ export default function RegulationSettings() {
   }, []);
 
   const renderEditorContent = () => {
-    if (activeNav === "Mẫu") return <TemplateAcademicContent />;
+    if (activeNav === "Mẫu") return <TemplateAcademicContent canEdit={canEdit} />;
     if (activeNav === "Sinh viên") {
       return (
         <StudentAcademicContent
@@ -371,6 +384,7 @@ export default function RegulationSettings() {
             setSettingsSuccess("");
           }}
           settingsError={settingsError}
+          canEdit={canEdit}
         />
       );
     }
@@ -402,6 +416,7 @@ export default function RegulationSettings() {
             setSettingsSuccess("");
           }}
           settingsError={settingsError}
+          canEdit={canEdit}
         />
       );
     }
@@ -433,6 +448,7 @@ export default function RegulationSettings() {
             setSettingsSuccess("");
           }}
           settingsError={settingsError}
+          canEdit={canEdit}
         />
       );
     }
@@ -444,6 +460,7 @@ export default function RegulationSettings() {
             setAllowPriorityDiscount(e.target.checked);
             setSettingsSuccess("");
           }}
+          canEdit={canEdit}
         />
       );
     }
@@ -473,6 +490,10 @@ export default function RegulationSettings() {
   }, []);
 
   const handleSaveSettings = async () => {
+    if (!canEdit) {
+      setSettingsError("Chỉ admin mới được phép chỉnh sửa và lưu quy định.");
+      return;
+    }
     if (!settingsLoaded) return;
     if (maxStudentMajors === "" || maxStudentMajors === null) {
       setSettingsError("Vui lòng nhập Số ngành học tối đa.");
@@ -659,7 +680,7 @@ export default function RegulationSettings() {
                     ← Quay về trang chủ
                 </button>
             </div>
-          <h1>Điều chỉnh quy định năm học 2024 - 2025</h1>
+          <h1>Thay đổi quy định</h1>
           <div className="regulation-tags">
             <span className="pill soft">Cập nhật: {formatSavedAt(settingsUpdatedAt)}</span>
             <span className="pill soft">Người chỉnh: Phạm Thu Hà</span>
@@ -670,11 +691,12 @@ export default function RegulationSettings() {
             type="button"
             className="btn primary"
             onClick={handleSaveSettings}
-            disabled={settingsSaving}
+            disabled={settingsSaving || !canEdit}
           >
             {settingsSaving ? "Đang lưu..." : "Lưu quy định"}
           </button>
           {settingsSuccess ? <span className="pill success">{settingsSuccess}</span> : null}
+          {!canEdit ? <span className="pill muted">Chỉ admin được chỉnh sửa</span> : null}
         </div>
       </div>
 
@@ -717,7 +739,7 @@ export default function RegulationSettings() {
                 <p className="eyebrow">Hồ sơ đính kèm</p>
                 <h4>Tài liệu hỗ trợ</h4>
               </div>
-              <button type="button" className="link-btn" onClick={handleTriggerUpload} disabled={uploading}>
+              <button type="button" className="link-btn" onClick={handleTriggerUpload} disabled={uploading || !canEdit}>
                 {uploading ? "Đang tải..." : "+ Thêm file"}
               </button>
             </div>
@@ -726,6 +748,7 @@ export default function RegulationSettings() {
               type="file"
               style={{ display: "none" }}
               onChange={handleFileChange}
+              disabled={!canEdit}
             />
             {attachmentError && (
               <div className="attachment-error">
@@ -767,6 +790,7 @@ export default function RegulationSettings() {
                       onClick={() => handleDeleteAttachment(item._id)}
                       aria-label="Xoá tài liệu"
                       title="Xoá tài liệu"
+                      disabled={!canEdit}
                     >
                       ×
                     </button>

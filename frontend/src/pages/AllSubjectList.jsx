@@ -130,6 +130,13 @@ function formatArray(value) {
     return str === "" ? "—" : str;
 }
 
+function toCsvValue(value) {
+    if (value == null) return "";
+    const str = Array.isArray(value) ? value.join(", ") : String(value);
+    const escaped = str.replace(/"/g, '""');
+    return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
+}
+
 /* mapping -> { label, tooltip }  ========================= */
 
 function getFacultyDisplay(value) {
@@ -290,6 +297,7 @@ function SortableSubjectTable({
     onRowSelect,
     onEditRow,
     onDeleteRow,
+    canEdit = true,
     rowsPerPage = 10,
 }) {
     const [order, setOrder] = useState("asc");
@@ -335,10 +343,12 @@ function SortableSubjectTable({
     const handleRowClick = (row, key) => onRowSelect?.(row, key);
     const handleEditClick = (event, row) => {
         event.stopPropagation();
+        if (!canEdit) return;
         onEditRow?.(row);
     };
     const handleDeleteClick = (event, row) => {
         event.stopPropagation();
+        if (!canEdit) return;
         onDeleteRow?.(row);
     };
 
@@ -405,12 +415,13 @@ function SortableSubjectTable({
                                     <TableCell>{totalCredits}</TableCell>
                                     <TableCell align="right">
                                         <div className="subject-row-actions">
-                                            <Tooltip title="Sửa môn học" arrow>
+                                            <Tooltip title={canEdit ? "Sửa môn học" : "Chỉ admin được chỉnh sửa"} arrow>
                                                 <button
                                                     type="button"
                                                     className="subject-action-btn"
                                                     aria-label={`Sửa ${row.subject_id || row.subject_name || "môn học"}`}
                                                     onClick={(event) => handleEditClick(event, row)}
+                                                    disabled={!canEdit}
                                                 >
                                                     <svg
                                                         className="subject-action-icon"
@@ -428,12 +439,13 @@ function SortableSubjectTable({
                                                     </svg>
                                                 </button>
                                             </Tooltip>
-                                            <Tooltip title="Xóa môn học" arrow>
+                                            <Tooltip title={canEdit ? "Xóa môn học" : "Chỉ admin được xóa"} arrow>
                                                 <button
                                                     type="button"
                                                     className="subject-action-btn danger"
                                                     aria-label={`Xóa ${row.subject_id || row.subject_name || "môn học"}`}
                                                     onClick={(event) => handleDeleteClick(event, row)}
+                                                    disabled={!canEdit}
                                                 >
                                                     <svg
                                                         className="subject-action-icon"
@@ -561,6 +573,8 @@ export default function AllSubjectList() {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const navigate = useNavigate();
+    const userRole = sessionStorage.getItem("user_role") || "user";
+    const canEdit = userRole === "admin";
 
     const loadSubjects = useCallback(async () => {
         setIsLoading(true);
@@ -643,6 +657,10 @@ export default function AllSubjectList() {
     };
 
     const handleOpenEdit = (row) => {
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép chỉnh sửa môn học.");
+            return;
+        }
         setEditSubject(row);
         setEditForm({
             subject_name: row?.subject_name || "",
@@ -658,6 +676,10 @@ export default function AllSubjectList() {
     };
 
     const handleOpenCreate = () => {
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép thêm môn học.");
+            return;
+        }
         setCreateForm({
             subject_id: "",
             subject_name: "",
@@ -684,6 +706,10 @@ export default function AllSubjectList() {
     };
 
     const handleOpenDelete = (row) => {
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép xóa môn học.");
+            return;
+        }
         setDeleteSubject(row);
     };
 
@@ -700,8 +726,52 @@ export default function AllSubjectList() {
         setCreateForm((prev) => ({ ...prev, [field]: value }));
     };
 
+    const handleExport = () => {
+        if (!filteredRows.length) return;
+        const headers = [
+            "Mã môn",
+            "Tên môn học",
+            "Tên tiếng Anh",
+            "Khoa quản lý",
+            "Loại môn",
+            "TC lý thuyết",
+            "TC thực hành",
+            "Tổng số tiết",
+            "Môn tiên quyết",
+            "Môn tương đương",
+            "Mã cũ",
+        ];
+        const lines = filteredRows.map((row) =>
+            [
+                row.subject_id,
+                row.subject_name,
+                row.subjectEL_name,
+                row.faculty_id,
+                row.subject_type,
+                row.theory_credits,
+                row.practice_credits,
+                row.total_periods,
+                row.prerequisite_id,
+                row.equivalent_id,
+                row.old_id,
+            ].map(toCsvValue).join(",")
+        );
+        const csvContent = [headers.join(","), ...lines].join("\n");
+        const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "all-subjects.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     const handleSaveEdit = async (event) => {
         event.preventDefault();
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép chỉnh sửa môn học.");
+            return;
+        }
         if (!editSubject) return;
         setIsSaving(true);
         setError("");
@@ -740,6 +810,10 @@ export default function AllSubjectList() {
 
     const handleCreateSubject = async (event) => {
         event.preventDefault();
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép thêm môn học.");
+            return;
+        }
         if (!createForm.subject_id.trim()) {
             setError("Vui lòng nhập mã môn học");
             return;
@@ -773,6 +847,10 @@ export default function AllSubjectList() {
     };
 
     const handleConfirmDelete = async () => {
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép xóa môn học.");
+            return;
+        }
         if (!deleteSubject) return;
         setIsDeleting(true);
         setError("");
@@ -828,7 +906,10 @@ export default function AllSubjectList() {
                         >
                             {isLoading ? "Đang tải..." : "Làm mới"}
                         </button>
-                        <button>Xuất Excel</button>
+                        <button type="button" onClick={handleExport} disabled={!filteredRows.length}>
+                            Xuất Excel
+                        </button>
+                        {!canEdit ? <span className="pill muted">Chỉ admin được chỉnh sửa</span> : null}
                     </div>
                 </header>
 
@@ -850,6 +931,7 @@ export default function AllSubjectList() {
                                 type="button"
                                 className="subject-add-btn"
                                 onClick={handleOpenCreate}
+                                disabled={!canEdit}
                             >
                                 + Thêm môn
                             </button>
@@ -877,6 +959,7 @@ export default function AllSubjectList() {
                             onRowSelect={handleRowSelect}
                             onEditRow={handleOpenEdit}
                             onDeleteRow={handleOpenDelete}
+                            canEdit={canEdit}
                         />
                     </div>
                 </div>
@@ -913,6 +996,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={editForm.subject_name}
                                             onChange={(e) => handleEditChange("subject_name", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -920,6 +1004,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={editForm.subjectEL_name}
                                             onChange={(e) => handleEditChange("subjectEL_name", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -927,6 +1012,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={editForm.faculty_id}
                                             onChange={(e) => handleEditChange("faculty_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -934,6 +1020,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={editForm.subject_type}
                                             onChange={(e) => handleEditChange("subject_type", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -942,6 +1029,7 @@ export default function AllSubjectList() {
                                             type="number"
                                             value={editForm.theory_credits}
                                             onChange={(e) => handleEditChange("theory_credits", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -950,6 +1038,7 @@ export default function AllSubjectList() {
                                             type="number"
                                             value={editForm.practice_credits}
                                             onChange={(e) => handleEditChange("practice_credits", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -957,6 +1046,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={editForm.prerequisite_id}
                                             onChange={(e) => handleEditChange("prerequisite_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                         <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
                                     </div>
@@ -965,6 +1055,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={editForm.equivalent_id}
                                             onChange={(e) => handleEditChange("equivalent_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                         <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
                                     </div>
@@ -973,6 +1064,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={editForm.old_id}
                                             onChange={(e) => handleEditChange("old_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                         <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
                                     </div>
@@ -987,7 +1079,7 @@ export default function AllSubjectList() {
                                 >
                                     Hủy
                                 </button>
-                                <button type="submit" className="subject-btn" disabled={isSaving}>
+                                <button type="submit" className="subject-btn" disabled={isSaving || !canEdit}>
                                     {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
                                 </button>
                             </div>
@@ -1034,7 +1126,7 @@ export default function AllSubjectList() {
                                 type="button"
                                 className="subject-btn danger"
                                 onClick={handleConfirmDelete}
-                                disabled={isDeleting}
+                                disabled={isDeleting || !canEdit}
                             >
                                 {isDeleting ? "Đang xóa..." : "Xóa môn"}
                             </button>
@@ -1068,6 +1160,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.subject_id}
                                             onChange={(e) => handleCreateChange("subject_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -1075,6 +1168,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.subject_name}
                                             onChange={(e) => handleCreateChange("subject_name", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -1082,6 +1176,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.subjectEL_name}
                                             onChange={(e) => handleCreateChange("subjectEL_name", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -1089,6 +1184,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.faculty_id}
                                             onChange={(e) => handleCreateChange("faculty_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -1096,6 +1192,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.subject_type}
                                             onChange={(e) => handleCreateChange("subject_type", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -1104,6 +1201,7 @@ export default function AllSubjectList() {
                                             type="number"
                                             value={createForm.theory_credits}
                                             onChange={(e) => handleCreateChange("theory_credits", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -1112,6 +1210,7 @@ export default function AllSubjectList() {
                                             type="number"
                                             value={createForm.practice_credits}
                                             onChange={(e) => handleCreateChange("practice_credits", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                     </div>
                                     <div className="subject-form-field">
@@ -1119,6 +1218,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.prerequisite_id}
                                             onChange={(e) => handleCreateChange("prerequisite_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                         <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
                                     </div>
@@ -1127,6 +1227,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.equivalent_id}
                                             onChange={(e) => handleCreateChange("equivalent_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                         <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
                                     </div>
@@ -1135,6 +1236,7 @@ export default function AllSubjectList() {
                                         <input
                                             value={createForm.old_id}
                                             onChange={(e) => handleCreateChange("old_id", e.target.value)}
+                                            disabled={!canEdit}
                                         />
                                         <span className="subject-form-note">Ngăn cách bằng dấu phẩy</span>
                                     </div>
@@ -1149,7 +1251,7 @@ export default function AllSubjectList() {
                                 >
                                     Hủy
                                 </button>
-                                <button type="submit" className="subject-btn" disabled={isCreating}>
+                                <button type="submit" className="subject-btn" disabled={isCreating || !canEdit}>
                                     {isCreating ? "Đang thêm..." : "Thêm môn"}
                                 </button>
                             </div>

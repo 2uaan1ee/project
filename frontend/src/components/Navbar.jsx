@@ -40,7 +40,7 @@ export default function Navbar() {
       { prefix: "/app/tuition-list", label: "7. Danh sách học phí" },
       { prefix: "/app/tuition", label: "8. Tình trạng học phí" },
       { prefix: "/app/regulations", label: "9. Thay đổi quy định" },
-      { prefix: "/app/all-subjects", label: "10. Điều chỉnh môn học" },
+      { prefix: "/app/all-subjects", label: "1. Điều chỉnh môn học" },
       { prefix: "/app/dashboard", label: "Trang chủ" },
     ];
 
