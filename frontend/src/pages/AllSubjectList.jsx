@@ -3,6 +3,7 @@ import React, {
     useCallback,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
@@ -135,6 +136,14 @@ function toCsvValue(value) {
     const str = Array.isArray(value) ? value.join(", ") : String(value);
     const escaped = str.replace(/"/g, '""');
     return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
+}
+
+function parseSubjectIdList(value) {
+    if (!value) return [];
+    return String(value)
+        .split(",")
+        .map((item) => item.trim().toUpperCase())
+        .filter(Boolean);
 }
 
 /* mapping -> { label, tooltip }  ========================= */
@@ -303,6 +312,10 @@ function SortableSubjectTable({
     const [order, setOrder] = useState("asc");
     const [orderBy, setOrderBy] = useState("subject_id");
     const [page, setPage] = useState(1);
+    const visibleHeadCells = useMemo(
+        () => headCells.filter((cell) => (cell.id === "actions" ? canEdit : true)),
+        [canEdit]
+    );
 
     const handleRequestSort = (property) => {
         if (property === "checkbox") return;
@@ -358,7 +371,7 @@ function SortableSubjectTable({
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            {headCells.map((headCell) => (
+                            {visibleHeadCells.map((headCell) => (
                                 <TableCell
                                     key={headCell.id}
                                     padding={headCell.id === "checkbox" ? "checkbox" : "normal"}
@@ -413,64 +426,64 @@ function SortableSubjectTable({
                                         )}
                                     </TableCell>
                                     <TableCell>{totalCredits}</TableCell>
-                                    <TableCell align="right">
-                                        <div className="subject-row-actions">
-                                            <Tooltip title={canEdit ? "Sửa môn học" : "Chỉ admin được chỉnh sửa"} arrow>
-                                                <button
-                                                    type="button"
-                                                    className="subject-action-btn"
-                                                    aria-label={`Sửa ${row.subject_id || row.subject_name || "môn học"}`}
-                                                    onClick={(event) => handleEditClick(event, row)}
-                                                    disabled={!canEdit}
-                                                >
-                                                    <svg
-                                                        className="subject-action-icon"
-                                                        viewBox="0 0 24 24"
-                                                        aria-hidden="true"
+                                    {canEdit ? (
+                                        <TableCell align="right">
+                                            <div className="subject-row-actions">
+                                                <Tooltip title="Sửa môn học" arrow>
+                                                    <button
+                                                        type="button"
+                                                        className="subject-action-btn"
+                                                        aria-label={`Sửa ${row.subject_id || row.subject_name || "môn học"}`}
+                                                        onClick={(event) => handleEditClick(event, row)}
                                                     >
-                                                        <path
-                                                            d="M16.862 3.487a1.5 1.5 0 0 1 2.12 0l1.53 1.53a1.5 1.5 0 0 1 0 2.12L8.25 19.4l-4.5 1.125L4.875 16l11.987-12.513Z"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="1.6"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </Tooltip>
-                                            <Tooltip title={canEdit ? "Xóa môn học" : "Chỉ admin được xóa"} arrow>
-                                                <button
-                                                    type="button"
-                                                    className="subject-action-btn danger"
-                                                    aria-label={`Xóa ${row.subject_id || row.subject_name || "môn học"}`}
-                                                    onClick={(event) => handleDeleteClick(event, row)}
-                                                    disabled={!canEdit}
-                                                >
-                                                    <svg
-                                                        className="subject-action-icon"
-                                                        viewBox="0 0 24 24"
-                                                        aria-hidden="true"
+                                                        <svg
+                                                            className="subject-action-icon"
+                                                            viewBox="0 0 24 24"
+                                                            aria-hidden="true"
+                                                        >
+                                                            <path
+                                                                d="M16.862 3.487a1.5 1.5 0 0 1 2.12 0l1.53 1.53a1.5 1.5 0 0 1 0 2.12L8.25 19.4l-4.5 1.125L4.875 16l11.987-12.513Z"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="1.6"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </Tooltip>
+                                                <Tooltip title="Xóa môn học" arrow>
+                                                    <button
+                                                        type="button"
+                                                        className="subject-action-btn danger"
+                                                        aria-label={`Xóa ${row.subject_id || row.subject_name || "môn học"}`}
+                                                        onClick={(event) => handleDeleteClick(event, row)}
                                                     >
-                                                        <path
-                                                            d="M6 6l12 12M18 6l-12 12"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="1.6"
-                                                            strokeLinecap="round"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </Tooltip>
-                                        </div>
-                                    </TableCell>
+                                                        <svg
+                                                            className="subject-action-icon"
+                                                            viewBox="0 0 24 24"
+                                                            aria-hidden="true"
+                                                        >
+                                                            <path
+                                                                d="M6 6l12 12M18 6l-12 12"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="1.6"
+                                                                strokeLinecap="round"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </Tooltip>
+                                            </div>
+                                        </TableCell>
+                                    ) : null}
                                 </TableRow>
                             );
                         })}
 
                         {pageRows.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={6} align="center">
+                                <TableCell colSpan={canEdit ? 6 : 5} align="center">
                                     Không có môn học nào.
                                 </TableCell>
                             </TableRow>
@@ -545,6 +558,9 @@ export default function AllSubjectList() {
     const [editSubject, setEditSubject] = useState(null);
     const [deleteSubject, setDeleteSubject] = useState(null);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
+    const [importStatus, setImportStatus] = useState("");
+    const [importErrors, setImportErrors] = useState([]);
     const [createForm, setCreateForm] = useState({
         subject_id: "",
         subject_name: "",
@@ -557,6 +573,11 @@ export default function AllSubjectList() {
         equivalent_id: "",
         old_id: "",
     });
+    const [createValidation, setCreateValidation] = useState({
+        prerequisite_id: "",
+        equivalent_id: "",
+    });
+    const [createError, setCreateError] = useState("");
     const [editForm, setEditForm] = useState({
         subject_name: "",
         subjectEL_name: "",
@@ -568,6 +589,11 @@ export default function AllSubjectList() {
         equivalent_id: "",
         old_id: "",
     });
+    const [editValidation, setEditValidation] = useState({
+        prerequisite_id: "",
+        equivalent_id: "",
+    });
+    const [editError, setEditError] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -575,6 +601,14 @@ export default function AllSubjectList() {
     const navigate = useNavigate();
     const userRole = sessionStorage.getItem("user_role") || "user";
     const canEdit = userRole === "admin";
+    const subjectIdSet = useMemo(() => {
+        return new Set(
+            rowData
+                .map((row) => String(row.subject_id || "").trim().toUpperCase())
+                .filter(Boolean)
+        );
+    }, [rowData]);
+    const importInputRef = useRef(null);
 
     const loadSubjects = useCallback(async () => {
         setIsLoading(true);
@@ -603,6 +637,22 @@ export default function AllSubjectList() {
     useEffect(() => {
         loadSubjects();
     }, [loadSubjects]);
+
+    useEffect(() => {
+        if (!editSubject) return;
+        setEditValidation({
+            prerequisite_id: buildMissingMessage("Môn tiên quyết", editForm.prerequisite_id),
+            equivalent_id: buildMissingMessage("Môn tương đương", editForm.equivalent_id),
+        });
+    }, [editSubject, editForm.prerequisite_id, editForm.equivalent_id, subjectIdSet]);
+
+    useEffect(() => {
+        if (!isCreateOpen) return;
+        setCreateValidation({
+            prerequisite_id: buildMissingMessage("Môn tiên quyết", createForm.prerequisite_id),
+            equivalent_id: buildMissingMessage("Môn tương đương", createForm.equivalent_id),
+        });
+    }, [isCreateOpen, createForm.prerequisite_id, createForm.equivalent_id, subjectIdSet]);
 
     const handleQuickFilter = useCallback((value) => {
         setQuickFilter(value);
@@ -656,13 +706,23 @@ export default function AllSubjectList() {
         return String(value);
     };
 
+    const buildMissingMessage = (label, value) => {
+        if (!value) return "";
+        const ids = parseSubjectIdList(value);
+        if (ids.length === 0) return "";
+        const missing = ids.filter((id) => !subjectIdSet.has(id));
+        if (missing.length === 0) return "";
+        return `${label} không tồn tại: ${missing.join(", ")}`;
+    };
+
     const handleOpenEdit = (row) => {
         if (!canEdit) {
             setError("Chỉ admin mới được phép chỉnh sửa môn học.");
             return;
         }
+        setEditError("");
         setEditSubject(row);
-        setEditForm({
+        const nextForm = {
             subject_name: row?.subject_name || "",
             subjectEL_name: row?.subjectEL_name || "",
             faculty_id: row?.faculty_id || "",
@@ -672,6 +732,11 @@ export default function AllSubjectList() {
             prerequisite_id: toInputList(row?.prerequisite_id),
             equivalent_id: toInputList(row?.equivalent_id),
             old_id: toInputList(row?.old_id),
+        };
+        setEditForm(nextForm);
+        setEditValidation({
+            prerequisite_id: buildMissingMessage("Môn tiên quyết", nextForm.prerequisite_id),
+            equivalent_id: buildMissingMessage("Môn tương đương", nextForm.equivalent_id),
         });
     };
 
@@ -680,7 +745,8 @@ export default function AllSubjectList() {
             setError("Chỉ admin mới được phép thêm môn học.");
             return;
         }
-        setCreateForm({
+        setCreateError("");
+        const nextForm = {
             subject_id: "",
             subject_name: "",
             subjectEL_name: "",
@@ -691,6 +757,11 @@ export default function AllSubjectList() {
             prerequisite_id: "",
             equivalent_id: "",
             old_id: "",
+        };
+        setCreateForm(nextForm);
+        setCreateValidation({
+            prerequisite_id: "",
+            equivalent_id: "",
         });
         setIsCreateOpen(true);
     };
@@ -698,11 +769,13 @@ export default function AllSubjectList() {
     const handleCloseCreate = () => {
         if (isCreating) return;
         setIsCreateOpen(false);
+        setCreateError("");
     };
 
     const handleCloseEdit = () => {
         if (isSaving) return;
         setEditSubject(null);
+        setEditError("");
     };
 
     const handleOpenDelete = (row) => {
@@ -720,10 +793,34 @@ export default function AllSubjectList() {
 
     const handleEditChange = (field, value) => {
         setEditForm((prev) => ({ ...prev, [field]: value }));
+        if (field === "prerequisite_id") {
+            setEditValidation((prev) => ({
+                ...prev,
+                prerequisite_id: buildMissingMessage("Môn tiên quyết", value),
+            }));
+        }
+        if (field === "equivalent_id") {
+            setEditValidation((prev) => ({
+                ...prev,
+                equivalent_id: buildMissingMessage("Môn tương đương", value),
+            }));
+        }
     };
 
     const handleCreateChange = (field, value) => {
         setCreateForm((prev) => ({ ...prev, [field]: value }));
+        if (field === "prerequisite_id") {
+            setCreateValidation((prev) => ({
+                ...prev,
+                prerequisite_id: buildMissingMessage("Môn tiên quyết", value),
+            }));
+        }
+        if (field === "equivalent_id") {
+            setCreateValidation((prev) => ({
+                ...prev,
+                equivalent_id: buildMissingMessage("Môn tương đương", value),
+            }));
+        }
     };
 
     const handleExport = () => {
@@ -766,15 +863,82 @@ export default function AllSubjectList() {
         URL.revokeObjectURL(url);
     };
 
+    const handleOpenImport = () => {
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép nhập danh sách môn học.");
+            return;
+        }
+        setImportStatus("");
+        setImportErrors([]);
+        if (importInputRef.current) importInputRef.current.click();
+    };
+
+    const handleImportFile = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+        if (!canEdit) {
+            setError("Chỉ admin mới được phép nhập danh sách môn học.");
+            return;
+        }
+        setIsImporting(true);
+        setError("");
+        setImportStatus("");
+        setImportErrors([]);
+        try {
+            const token = sessionStorage.getItem("token") || "";
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const res = await fetch("/api/subjects/import-html", {
+                method: "POST",
+                headers,
+                body: formData,
+            });
+            const payload = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(payload.message || `API lỗi (mã ${res.status})`);
+            }
+            const parsed = payload.parsed ?? 0;
+            const upserted = payload.upserted ?? 0;
+            const modified = payload.modified ?? 0;
+            const errorsList = Array.isArray(payload.errors) ? payload.errors : [];
+            setImportStatus(
+                `Đã nhập ${parsed} môn học (mới: ${upserted}, cập nhật: ${modified}).`
+            );
+            setImportErrors(errorsList);
+            await loadSubjects();
+        } catch (err) {
+            setError(err.message || "Không thể nhập danh sách môn học");
+        } finally {
+            setIsImporting(false);
+        }
+    };
+
     const handleSaveEdit = async (event) => {
         event.preventDefault();
         if (!canEdit) {
-            setError("Chỉ admin mới được phép chỉnh sửa môn học.");
+            setEditError("Chỉ admin mới được phép chỉnh sửa môn học.");
+            return;
+        }
+        if (editValidation.prerequisite_id || editValidation.equivalent_id) {
+            setEditError("Vui lòng kiểm tra môn tiên quyết và môn tương đương.");
+            return;
+        }
+        const editTheory = Number(editForm.theory_credits);
+        if (!Number.isNaN(editTheory) && editTheory < 0) {
+            setEditError("TC lý thuyết phải lớn hơn hoặc bằng 0.");
+            return;
+        }
+        const editPractice = Number(editForm.practice_credits);
+        if (!Number.isNaN(editPractice) && editPractice < 0) {
+            setEditError("TC thực hành phải lớn hơn hoặc bằng 0.");
             return;
         }
         if (!editSubject) return;
         setIsSaving(true);
-        setError("");
+        setEditError("");
         try {
             const token = sessionStorage.getItem("token") || "";
             const headers = {
@@ -802,7 +966,7 @@ export default function AllSubjectList() {
             }
             setEditSubject(null);
         } catch (err) {
-            setError(err.message || "Không thể cập nhật môn học");
+            setEditError(err.message || "Không thể cập nhật môn học");
         } finally {
             setIsSaving(false);
         }
@@ -811,15 +975,29 @@ export default function AllSubjectList() {
     const handleCreateSubject = async (event) => {
         event.preventDefault();
         if (!canEdit) {
-            setError("Chỉ admin mới được phép thêm môn học.");
+            setCreateError("Chỉ admin mới được phép thêm môn học.");
+            return;
+        }
+        if (createValidation.prerequisite_id || createValidation.equivalent_id) {
+            setCreateError("Vui lòng kiểm tra môn tiên quyết và môn tương đương.");
+            return;
+        }
+        const createTheory = Number(createForm.theory_credits);
+        if (!Number.isNaN(createTheory) && createTheory < 0) {
+            setCreateError("TC lý thuyết phải lớn hơn hoặc bằng 0.");
+            return;
+        }
+        const createPractice = Number(createForm.practice_credits);
+        if (!Number.isNaN(createPractice) && createPractice < 0) {
+            setCreateError("TC thực hành phải lớn hơn hoặc bằng 0.");
             return;
         }
         if (!createForm.subject_id.trim()) {
-            setError("Vui lòng nhập mã môn học");
+            setCreateError("Vui lòng nhập mã môn học");
             return;
         }
         setIsCreating(true);
-        setError("");
+        setCreateError("");
         try {
             const token = sessionStorage.getItem("token") || "";
             const headers = {
@@ -840,7 +1018,7 @@ export default function AllSubjectList() {
             setRowData((prev) => [created, ...prev]);
             setIsCreateOpen(false);
         } catch (err) {
-            setError(err.message || "Không thể thêm môn học");
+            setCreateError(err.message || "Không thể thêm môn học");
         } finally {
             setIsCreating(false);
         }
@@ -909,9 +1087,15 @@ export default function AllSubjectList() {
                         <button type="button" onClick={handleExport} disabled={!filteredRows.length}>
                             Xuất Excel
                         </button>
-                        {!canEdit ? <span className="pill muted">Chỉ admin được chỉnh sửa</span> : null}
                     </div>
                 </header>
+                <input
+                    ref={importInputRef}
+                    type="file"
+                    accept=".html,text/html"
+                    onChange={handleImportFile}
+                    style={{ display: "none" }}
+                />
 
                 {/* Thanh công cụ */}
                 <div className="subject-toolbar">
@@ -927,14 +1111,25 @@ export default function AllSubjectList() {
                                 />
                                 <span className="combo-suffix">⌕</span>
                             </div>
-                            <button
-                                type="button"
-                                className="subject-add-btn"
-                                onClick={handleOpenCreate}
-                                disabled={!canEdit}
-                            >
-                                + Thêm môn
-                            </button>
+                            {canEdit ? (
+                                <button
+                                    type="button"
+                                    className="subject-add-btn"
+                                    onClick={handleOpenCreate}
+                                >
+                                    + Thêm môn
+                                </button>
+                            ) : null}
+                            {canEdit ? (
+                                <button
+                                    type="button"
+                                    className="subject-add-btn"
+                                    onClick={handleOpenImport}
+                                    disabled={isImporting}
+                                >
+                                    {isImporting ? "Đang nhập..." : "Tải lên danh sách môn học"}
+                                </button>
+                            ) : null}
                         </div>
                     </div>
                     <div className="toolbar-actions">
@@ -951,6 +1146,21 @@ export default function AllSubjectList() {
                             <strong>Lỗi:</strong> {error}
                         </div>
                     )}
+                    {importStatus && !error && (
+                        <div className="success-banner">
+                            {importStatus}
+                        </div>
+                    )}
+                    {importErrors.length > 0 && (
+                        <div className="error-banner">
+                            <strong>Dòng lỗi ({importErrors.length}):</strong>{" "}
+                            {importErrors.map((item) => {
+                                const row = item?.row ? `#${item.row}` : "#?";
+                                const sid = item?.subject_id ? `(${item.subject_id})` : "";
+                                return `${row}${sid}: ${item?.reason || "Không hợp lệ"}`;
+                            }).join(" | ")}
+                        </div>
+                    )}
 
                     <div className={`subject-grid ${isLoading ? "is-loading" : ""}`}>
                         <SortableSubjectTable
@@ -965,7 +1175,7 @@ export default function AllSubjectList() {
                 </div>
             </section>
 
-            {editSubject && (
+            {canEdit && editSubject && (
                 <div className="subject-modal-backdrop" onClick={handleCloseEdit}>
                     <div className="subject-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="subject-modal-header">
@@ -986,6 +1196,11 @@ export default function AllSubjectList() {
                         </div>
                         <form onSubmit={handleSaveEdit}>
                             <div className="subject-modal-body">
+                                {editError ? (
+                                    <div className="error-banner">
+                                        <strong>Lỗi:</strong> {editError}
+                                    </div>
+                                ) : null}
                                 <div className="subject-modal-grid">
                                     <div className="subject-form-field">
                                         <label>Mã môn học</label>
@@ -1088,7 +1303,7 @@ export default function AllSubjectList() {
                 </div>
             )}
 
-            {deleteSubject && (
+            {canEdit && deleteSubject && (
                 <div className="subject-modal-backdrop" onClick={handleCloseDelete}>
                     <div className="subject-modal subject-modal--danger" onClick={(e) => e.stopPropagation()}>
                         <div className="subject-modal-header">
@@ -1135,7 +1350,7 @@ export default function AllSubjectList() {
                 </div>
             )}
 
-            {isCreateOpen && (
+            {canEdit && isCreateOpen && (
                 <div className="subject-modal-backdrop" onClick={handleCloseCreate}>
                     <div className="subject-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="subject-modal-header">
@@ -1154,6 +1369,11 @@ export default function AllSubjectList() {
                         </div>
                         <form onSubmit={handleCreateSubject}>
                             <div className="subject-modal-body">
+                                {createError ? (
+                                    <div className="error-banner">
+                                        <strong>Lỗi:</strong> {createError}
+                                    </div>
+                                ) : null}
                                 <div className="subject-modal-grid">
                                     <div className="subject-form-field">
                                         <label>Mã môn học</label>

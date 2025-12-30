@@ -76,6 +76,20 @@ export async function updateRegulationSettings(req, res) {
       message: "Chi phí 1 tín chỉ lý thuyết không hợp lệ.",
     });
   }
+  const practiceCoefficientValue = Number(creditCoefficientPractice);
+  const theoryCoefficientValue = Number(creditCoefficientTheory);
+  if (!Number.isFinite(practiceCoefficientValue) || practiceCoefficientValue <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Hệ số tín chỉ / tiết cho tín chỉ thực hành phải lớn hơn 0.",
+    });
+  }
+  if (!Number.isFinite(theoryCoefficientValue) || theoryCoefficientValue <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Hệ số tín chỉ / tiết cho tín chỉ lý thuyết phải lớn hơn 0.",
+    });
+  }
   const currentFee = await CourseRegistration.findOne({
     "tuition.fee_per_credit_theory": { $exists: true },
     "tuition.fee_per_credit_practice": { $exists: true },

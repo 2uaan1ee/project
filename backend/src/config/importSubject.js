@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { load } from "cheerio";          // ⬅️ dùng named import thay cho default
+import { getRegulationSettingsSnapshot } from "../services/regulationSettings.js";
 
 // ----- ESM __dirname -----
 const __filename = fileURLToPath(import.meta.url);
@@ -38,6 +39,7 @@ const SubjectSchema = new mongoose.Schema(
     previous_id:     [String],
     theory_credits:  { type: Number, default: 0 },
     practice_credits:{ type: Number, default: 0 },
+    total_periods:   { type: Number, default: 0 },
     status:          { type: String, enum: ["open", "closed"], default: "open" },
   },
   { collection: "subject", timestamps: true }
@@ -78,6 +80,10 @@ async function main() {
 
   const $ = load(html);
 
+  const settings = await getRegulationSettingsSnapshot();
+  const coeffTheory = Number(settings.creditCoefficientTheory) || 0;
+  const coeffPractice = Number(settings.creditCoefficientPractice) || 0;
+
   const docs = [];
   $("table.tablesorter tbody tr").each((_idx, el) => {
     const $row = $(el);
@@ -116,6 +122,8 @@ async function main() {
       previous_id,
       theory_credits,
       practice_credits,
+      total_periods:
+        theory_credits * coeffTheory + practice_credits * coeffPractice,
       status, // "open" | "closed"
     };
     docs.push(doc);

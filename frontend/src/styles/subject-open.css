@@ -561,6 +561,13 @@ body {
   border-bottom: 1px solid #ffc9c9;
 }
 
+.success-banner {
+  background: #ecfdf3;
+  color: #0a5b2a;
+  padding: 10px 12px;
+  border-bottom: 1px solid #bfe9cf;
+}
+
 .subject-grid {
   padding: 6px 10px 10px;
 }

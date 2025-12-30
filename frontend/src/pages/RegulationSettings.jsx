@@ -4,7 +4,7 @@ import "../styles/regulations.css";
 import { authFetch } from "../lib/auth";
 
 const navSections = [
-  { title: "Sinh viên", subtitle: "", count: 2 },
+  { title: "Sinh viên", subtitle: "", count: 1 },
   { title: "Môn học", subtitle: "", count: 2 },
   { title: "Đăng ký học phần", subtitle: "", count: 2 },
   { title: "Học phí", subtitle: "", count: 1 },
@@ -146,7 +146,7 @@ function TemplateAcademicContent({ canEdit }) {
 function StudentAcademicContent({
   maxStudentMajors,
   onMaxStudentMajorsChange,
-  settingsError,
+  settingsErrors,
   canEdit,
 }) {
   return (
@@ -171,7 +171,9 @@ function StudentAcademicContent({
             onChange={onMaxStudentMajorsChange}
             disabled={!canEdit}
           />
-          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+          {settingsErrors?.maxStudentMajors ? (
+            <small style={{color: "red"}}>{settingsErrors.maxStudentMajors}</small>
+          ) : null}
         </label>
       </div>
 
@@ -185,7 +187,7 @@ function SubjectPolicyContent({
   creditCoefficientTheory,
   onCreditCoefficientPracticeChange,
   onCreditCoefficientTheoryChange,
-  settingsError,
+  settingsErrors,
   canEdit,
 }) {
   return (
@@ -205,23 +207,27 @@ function SubjectPolicyContent({
           <span>Hệ số tín chỉ / tiết cho tín chỉ thực hành</span>
           <input
             type="number"
-            min={0}
+            min={1}
             value={creditCoefficientPractice ?? 1}
             onChange={onCreditCoefficientPracticeChange}
             disabled={!canEdit}
           />
-          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+          {settingsErrors?.creditCoefficientPractice ? (
+            <small style={{color: "red"}}>{settingsErrors.creditCoefficientPractice}</small>
+          ) : null}
         </label>
         <label className="input-block">
           <span>Hệ số tín chỉ / tiết cho tín chỉ lý thuyết</span>
           <input
             type="number"
-            min={0}
+            min={1}
             value={creditCoefficientTheory ?? 1}
             onChange={onCreditCoefficientTheoryChange}
             disabled={!canEdit}
           />
-          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+          {settingsErrors?.creditCoefficientTheory ? (
+            <small style={{color: "red"}}>{settingsErrors.creditCoefficientTheory}</small>
+          ) : null}
         </label>
       </div>
     </>
@@ -233,7 +239,7 @@ function CourseRegistrationPolicyContent({
   theoryCreditCost,
   onPracticeCreditCostChange,
   onTheoryCreditCostChange,
-  settingsError,
+  settingsErrors,
   canEdit,
 }) {
   return (
@@ -259,7 +265,9 @@ function CourseRegistrationPolicyContent({
             onChange={onTheoryCreditCostChange}
             disabled={!canEdit}
           />
-          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+          {settingsErrors?.theoryCreditCost ? (
+            <small style={{color: "red"}}>{settingsErrors.theoryCreditCost}</small>
+          ) : null}
         </label>
         <label className="input-block">
           <span>Chi phí 1 tín chỉ thực hành</span>
@@ -270,7 +278,9 @@ function CourseRegistrationPolicyContent({
             onChange={onPracticeCreditCostChange}
             disabled={!canEdit}
           />
-          {settingsError ? <small style={{color: "red"}}>{settingsError}</small> : null}
+          {settingsErrors?.practiceCreditCost ? (
+            <small style={{color: "red"}}>{settingsErrors.practiceCreditCost}</small>
+          ) : null}
         </label>
       </div>
     </>
@@ -339,6 +349,7 @@ export default function RegulationSettings() {
   const [maxStudentMajors, setMaxStudentMajors] = React.useState(1);
   const [settingsLoaded, setSettingsLoaded] = React.useState(false);
   const [settingsSaving, setSettingsSaving] = React.useState(false);
+  const [settingsErrors, setSettingsErrors] = React.useState({});
   const [settingsError, setSettingsError] = React.useState("");
   const [settingsSuccess, setSettingsSuccess] = React.useState("");
   const [settingsUpdatedAt, setSettingsUpdatedAt] = React.useState(null);
@@ -377,13 +388,15 @@ export default function RegulationSettings() {
             if (raw === "") {
               setMaxStudentMajors("");
               setSettingsSuccess("");
+              setSettingsErrors((prev) => ({ ...prev, maxStudentMajors: "" }));
               return;
             }
             const next = Math.max(0, Number(raw));
             setMaxStudentMajors(Number.isFinite(next) ? next : "");
             setSettingsSuccess("");
+            setSettingsErrors((prev) => ({ ...prev, maxStudentMajors: "" }));
           }}
-          settingsError={settingsError}
+          settingsErrors={settingsErrors}
           canEdit={canEdit}
         />
       );
@@ -398,24 +411,28 @@ export default function RegulationSettings() {
             if (raw === "") {
               setCreditCoefficientPractice("");
               setSettingsSuccess("");
+              setSettingsErrors((prev) => ({ ...prev, creditCoefficientPractice: "" }));
               return;
             }
             const next = Math.max(0, Number(raw));
             setCreditCoefficientPractice(Number.isFinite(next) ? next : "");
             setSettingsSuccess("");
+            setSettingsErrors((prev) => ({ ...prev, creditCoefficientPractice: "" }));
           }}
           onCreditCoefficientTheoryChange={(e) => {
             const raw = e.target.value;
             if (raw === "") {
               setCreditCoefficientTheory("");
               setSettingsSuccess("");
+              setSettingsErrors((prev) => ({ ...prev, creditCoefficientTheory: "" }));
               return;
             }
             const next = Math.max(0, Number(raw));
             setCreditCoefficientTheory(Number.isFinite(next) ? next : "");
             setSettingsSuccess("");
+            setSettingsErrors((prev) => ({ ...prev, creditCoefficientTheory: "" }));
           }}
-          settingsError={settingsError}
+          settingsErrors={settingsErrors}
           canEdit={canEdit}
         />
       );
@@ -430,24 +447,28 @@ export default function RegulationSettings() {
             if (raw === "") {
               setPracticeCreditCost("");
               setSettingsSuccess("");
+              setSettingsErrors((prev) => ({ ...prev, practiceCreditCost: "" }));
               return;
             }
             const next = Math.max(0, Number(raw));
             setPracticeCreditCost(Number.isFinite(next) ? next : "");
             setSettingsSuccess("");
+            setSettingsErrors((prev) => ({ ...prev, practiceCreditCost: "" }));
           }}
           onTheoryCreditCostChange={(e) => {
             const raw = e.target.value;
             if (raw === "") {
               setTheoryCreditCost("");
               setSettingsSuccess("");
+              setSettingsErrors((prev) => ({ ...prev, theoryCreditCost: "" }));
               return;
             }
             const next = Math.max(0, Number(raw));
             setTheoryCreditCost(Number.isFinite(next) ? next : "");
             setSettingsSuccess("");
+            setSettingsErrors((prev) => ({ ...prev, theoryCreditCost: "" }));
           }}
-          settingsError={settingsError}
+          settingsErrors={settingsErrors}
           canEdit={canEdit}
         />
       );
@@ -495,49 +516,62 @@ export default function RegulationSettings() {
       return;
     }
     if (!settingsLoaded) return;
+    setSettingsErrors({});
     if (maxStudentMajors === "" || maxStudentMajors === null) {
-      setSettingsError("Vui lòng nhập Số ngành học tối đa.");
+      setSettingsErrors({ maxStudentMajors: "Vui lòng nhập Số ngành học tối đa." });
       return;
     }
     const nextValue = Number(maxStudentMajors);
     if (!Number.isFinite(nextValue) || nextValue < 0) {
-      setSettingsError("Số ngành học tối đa không hợp lệ.");
+      setSettingsErrors({ maxStudentMajors: "Số ngành học tối đa không hợp lệ." });
       return;
     }
     if (creditCoefficientPractice === "" || creditCoefficientPractice === null) {
-      setSettingsError("Vui lòng nhập hệ số tín chỉ / tiết cho tín chỉ thực hành.");
+      setSettingsErrors({
+        creditCoefficientPractice: "Vui lòng nhập hệ số tín chỉ / tiết cho tín chỉ thực hành.",
+      });
       return;
     }
     if (creditCoefficientTheory === "" || creditCoefficientTheory === null) {
-      setSettingsError("Vui lòng nhập hệ số tín chỉ / tiết cho tín chỉ lý thuyết.");
+      setSettingsErrors({
+        creditCoefficientTheory: "Vui lòng nhập hệ số tín chỉ / tiết cho tín chỉ lý thuyết.",
+      });
       return;
     }
     if (practiceCreditCost === "" || practiceCreditCost === null) {
-      setSettingsError("Vui lòng nhập chi phí 1 tín chỉ thực hành.");
+      setSettingsErrors({ practiceCreditCost: "Vui lòng nhập chi phí 1 tín chỉ thực hành." });
       return;
     }
     if (theoryCreditCost === "" || theoryCreditCost === null) {
-      setSettingsError("Vui lòng nhập chi phí 1 tín chỉ lý thuyết.");
+      setSettingsErrors({ theoryCreditCost: "Vui lòng nhập chi phí 1 tín chỉ lý thuyết." });
       return;
     }
     const practiceValue = Number(creditCoefficientPractice);
     const theoryValue = Number(creditCoefficientTheory);
-    if (!Number.isFinite(practiceValue) || practiceValue < 0) {
-      setSettingsError("Hệ số tín chỉ / tiết cho tín chỉ thực hành không hợp lệ.");
+    if (!Number.isFinite(practiceValue) || practiceValue <= 0) {
+      setSettingsErrors({
+        creditCoefficientPractice: "Hệ số tín chỉ / tiết cho tín chỉ thực hành phải lớn hơn 0.",
+      });
       return;
     }
-    if (!Number.isFinite(theoryValue) || theoryValue < 0) {
-      setSettingsError("Hệ số tín chỉ / tiết cho tín chỉ lý thuyết không hợp lệ.");
+    if (!Number.isFinite(theoryValue) || theoryValue <= 0) {
+      setSettingsErrors({
+        creditCoefficientTheory: "Hệ số tín chỉ / tiết cho tín chỉ lý thuyết phải lớn hơn 0.",
+      });
       return;
     }
     const practiceCostValue = Number(practiceCreditCost);
     const theoryCostValue = Number(theoryCreditCost);
     if (!Number.isFinite(practiceCostValue) || practiceCostValue < 0) {
-      setSettingsError("Chi phí 1 tín chỉ thực hành không hợp lệ.");
+      setSettingsErrors({
+        practiceCreditCost: "Chi phí 1 tín chỉ thực hành không hợp lệ.",
+      });
       return;
     }
     if (!Number.isFinite(theoryCostValue) || theoryCostValue < 0) {
-      setSettingsError("Chi phí 1 tín chỉ lý thuyết không hợp lệ.");
+      setSettingsErrors({
+        theoryCreditCost: "Chi phí 1 tín chỉ lý thuyết không hợp lệ.",
+      });
       return;
     }
 
@@ -577,6 +611,7 @@ export default function RegulationSettings() {
         const payload = await res.json();
         if (!res.ok) throw new Error(payload?.message || "Không thể tải quy định");
         if (!cancelled) {
+          setSettingsErrors({});
           const value = payload?.settings?.maxStudentMajors;
           setMaxStudentMajors(
             Number.isFinite(Number(value)) ? Number(value) : 1
@@ -605,6 +640,7 @@ export default function RegulationSettings() {
       } catch (err) {
         if (!cancelled) {
           setSettingsError(err.message || "Không thể tải quy định");
+          setSettingsErrors({});
           setSettingsLoaded(true);
         }
       }
@@ -687,16 +723,18 @@ export default function RegulationSettings() {
           </div>
         </div>
         <div className="header-actions">
-          <button
-            type="button"
-            className="btn primary"
-            onClick={handleSaveSettings}
-            disabled={settingsSaving || !canEdit}
-          >
-            {settingsSaving ? "Đang lưu..." : "Lưu quy định"}
-          </button>
+          {canEdit ? (
+            <button
+              type="button"
+              className="btn primary"
+              onClick={handleSaveSettings}
+              disabled={settingsSaving}
+            >
+              {settingsSaving ? "Đang lưu..." : "Lưu quy định"}
+            </button>
+          ) : null}
           {settingsSuccess ? <span className="pill success">{settingsSuccess}</span> : null}
-          {!canEdit ? <span className="pill muted">Chỉ admin được chỉnh sửa</span> : null}
+          {settingsError ? <span className="pill warning">{settingsError}</span> : null}
         </div>
       </div>
 
@@ -739,16 +777,17 @@ export default function RegulationSettings() {
                 <p className="eyebrow">Hồ sơ đính kèm</p>
                 <h4>Tài liệu hỗ trợ</h4>
               </div>
-              <button type="button" className="link-btn" onClick={handleTriggerUpload} disabled={uploading || !canEdit}>
-                {uploading ? "Đang tải..." : "+ Thêm file"}
-              </button>
+              {canEdit ? (
+                <button type="button" className="link-btn" onClick={handleTriggerUpload} disabled={uploading}>
+                  {uploading ? "Đang tải..." : "+ Thêm file"}
+                </button>
+              ) : null}
             </div>
             <input
               ref={fileInputRef}
               type="file"
               style={{ display: "none" }}
               onChange={handleFileChange}
-              disabled={!canEdit}
             />
             {attachmentError && (
               <div className="attachment-error">
@@ -783,14 +822,13 @@ export default function RegulationSettings() {
                   ) : (
                     <span className="btn ghost small disabled">Không có link</span>
                   )}
-                  {item._id ? (
+                  {canEdit && item._id ? (
                     <button
                       type="button"
                       className="attachment-delete"
                       onClick={() => handleDeleteAttachment(item._id)}
                       aria-label="Xoá tài liệu"
                       title="Xoá tài liệu"
-                      disabled={!canEdit}
                     >
                       ×
                     </button>

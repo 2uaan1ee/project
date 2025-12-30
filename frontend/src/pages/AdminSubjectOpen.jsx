@@ -190,6 +190,7 @@ const AdminSubjectOpen = () => {
     semester: "HK2",
     file: null,
   });
+  const [importYearError, setImportYearError] = useState("");
 
   const [validationResult, setValidationResult] = useState(null);
 
@@ -217,6 +218,14 @@ const AdminSubjectOpen = () => {
   // Import từ Excel
   const handleImportExcel = async () => {
     try {
+      const yearMatch = String(importForm.academicYear || "").trim().match(/^(\d{4})-(\d{4})$/);
+      const yearError = yearMatch && Number(yearMatch[2]) === Number(yearMatch[1]) + 1
+        ? ""
+        : "Năm học sai định dạng";
+      if (yearError) {
+        setImportYearError(yearError);
+        return;
+      }
       if (!importForm.file) {
         setError("Vui lòng chọn file Excel");
         return;
@@ -243,6 +252,7 @@ const AdminSubjectOpen = () => {
       setSuccess(response.data.message);
       setOpenImportDialog(false);
       setImportForm({ academicYear: "2025-2026", semester: "HK2", file: null });
+      setImportYearError("");
       fetchLists();
     } catch (err) {
       if (err.response?.data?.missingByMajor) {
@@ -528,16 +538,30 @@ const AdminSubjectOpen = () => {
       ))}
 
       {/* Dialog Import Excel */}
-      <Dialog open={openImportDialog} onClose={() => setOpenImportDialog(false)}>
+      <Dialog
+        open={openImportDialog}
+        onClose={() => {
+          setOpenImportDialog(false);
+          setImportYearError("");
+        }}
+      >
         <DialogTitle>Import từ Excel</DialogTitle>
         <DialogContent>
           <Box display="flex" flexDirection="column" gap={2} mt={2}>
             <TextField
               label="Năm học"
               value={importForm.academicYear}
-              onChange={(e) =>
-                setImportForm({ ...importForm, academicYear: e.target.value })
-              }
+              onChange={(e) => {
+                const nextValue = e.target.value;
+                setImportForm({ ...importForm, academicYear: nextValue });
+                const match = String(nextValue || "").trim().match(/^(\d{4})-(\d{4})$/);
+                const nextError = match && Number(match[2]) === Number(match[1]) + 1
+                  ? ""
+                  : "Năm học sai định dạng";
+                setImportYearError(nextError);
+              }}
+              error={Boolean(importYearError)}
+              helperText={importYearError || "Ví dụ: 2025-2026"}
               fullWidth
             />
             <FormControl fullWidth>
@@ -572,7 +596,14 @@ const AdminSubjectOpen = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenImportDialog(false)}>Hủy</Button>
+          <Button
+            onClick={() => {
+              setOpenImportDialog(false);
+              setImportYearError("");
+            }}
+          >
+            Hủy
+          </Button>
           <Button onClick={handleImportExcel} variant="contained">
             Import
           </Button>
